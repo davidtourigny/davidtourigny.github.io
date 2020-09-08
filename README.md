@@ -3,7 +3,7 @@ davidtourigny.github.io
 
 Banner credit:
 
-Temporary image used for testing only, joint work with Jonathan Karr and Nicola Hawes
+Nicoletta Barolini, adadpted from joint work with Jonathan Karr and Nicola Hawes.
 
 This website is based on the template:
 
