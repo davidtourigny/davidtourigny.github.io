@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<title>TravWaves</title>
+<link rel="stylesheet" type="text/css" href="lwarp.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+     subequations: "0",
+     section: "",
+     loader: {
+          load: ['[tex]/tagformat', '[tex]/textmacros'],
+     },
+     startup: {
+          ready() {
+              //       These would be replaced by import commands if you wanted to make
+              //       a proper extension.
+              const Configuration = MathJax._.input.tex.Configuration.Configuration;
+              const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+              const Macro = MathJax._.input.tex.Symbol.Macro;
+              const TexError = MathJax._.input.tex.TexError.default;
+              const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+              const expandable = MathJax._.util.Options.expandable;
+
+
+              //       Insert the replacement string into the TeX string, and check
+              //       that there haven't been too many maxro substitutions (prevents
+              //       infinite loops).
+              const useArgument = (parser, text) => {
+                   parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+                   parser.i = 0;
+                   if (++parser.macroCount > parser.configuration.options.maxMacros) {
+                        throw new TexError('MaxMacroSub1',
+                        'MathJax maximum macro substitution count exceeded; ' +
+                        'is there a recursive macro call?');
+                   }
+              }
+
+
+              //       Create the command map for:
+              //            \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+              new CommandMap('Lwarp-macros', {
+                   ifstar: 'IfstarFunction',
+                   ifnextchar: 'IfnextcharFunction',
+                   ifblank: 'IfblankFunction',
+                   ifstrequal: 'IfstrequalFunction',
+                   gsubstitute: 'GsubstituteFunction',
+                   seteqnumber: 'SeteqnumberFunction'
+              }, {
+                   //       This function implements an ifstar macro.
+                   IfstarFunction(parser, name) {
+                        const resultstar = parser.GetArgument(name);
+                        const resultnostar = parser.GetArgument(name);
+                        const star = parser.GetStar();                        // true if there is a *
+                        useArgument(parser, star ? resultstar : resultnostar);
+                   },
+
+
+                   //       This function implements an ifnextchar macro.
+                   IfnextcharFunction(parser, name) {
+                        let whichchar = parser.GetArgument(name);
+                        if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+                            // $ syntax highlighting
+                            whichchar = String.fromCodePoint(parseInt(whichchar));
+                        }
+                        const resultnextchar = parser.GetArgument(name);
+                        const resultnotnextchar = parser.GetArgument(name);
+                        const gotchar = (parser.GetNext() === whichchar);
+                        useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+                   },
+
+
+                   // This function implements an ifblank macro.
+                   IfblankFunction(parser, name) {
+                        const blankarg = parser.GetArgument(name);
+                        const resultblank = parser.GetArgument(name);
+                        const resultnotblank = parser.GetArgument(name);
+                        const isblank = (blankarg.trim() == "");
+                        useArgument(parser, isblank ? resultblank : resultnotblank);
+                   },
+
+
+                   // This function implements an ifstrequal macro.
+                   IfstrequalFunction(parser, name) {
+                        const strequalfirst = parser.GetArgument(name);
+                        const strequalsecond = parser.GetArgument(name);
+                        const resultequal = parser.GetArgument(name);
+                        const resultnotequal = parser.GetArgument(name);
+                        const isequal = (strequalfirst == strequalsecond);
+                        useArgument(parser, isequal ? resultequal : resultnotequal);
+                   },
+
+
+                   // This function implements a gsub macro.
+                   GsubstituteFunction(parser, name) {
+                        const gsubfirst = parser.GetArgument(name);
+                        const gsubsecond = parser.GetArgument(name);
+                        const gsubthird = parser.GetArgument(name);
+                        let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+                        useArgument(parser, gsubresult);
+                   },
+
+
+                   //       This function modifies the equation numbers.
+                   SeteqnumberFunction(parser, name) {
+                            //   Get the macro parameters
+                            const star = parser.GetStar();                      // true if there is a *
+                            const optBrackets = parser.GetBrackets(name);        // contents of optional brackets
+                            const newsubequations = parser.GetArgument(name);      // the subequations argument
+                            const neweqsection = parser.GetArgument(name);      // the eq section argument
+                            const neweqnumber = parser.GetArgument(name);        // the eq number argument
+                            MathJax.config.subequations=newsubequations ;       // a string with boolean meaning
+                            MathJax.config.section=neweqsection ;               // a string with numeric meaning
+                            parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+                   }
+
+
+              });
+
+
+              //       Create the Lwarp-macros package
+              Configuration.create('Lwarp-macros', {
+                   handler: {macro: ['Lwarp-macros']}
+              });
+
+
+              MathJax.startup.defaultReady();
+
+
+              // For forward references:
+              MathJax.startup.input[0].preFilters.add(({math}) => {
+                   if (math.inputData.recompile){
+                            MathJax.config.subequations = math.inputData.recompile.subequations;
+                            MathJax.config.section = math.inputData.recompile.section;
+                   }
+              });
+              MathJax.startup.input[0].postFilters.add(({math}) => {
+                   if (math.inputData.recompile){
+                            math.inputData.recompile.subequations = MathJax.config.subequations;
+                            math.inputData.recompile.section = MathJax.config.section;
+                   }
+              });
+
+
+                   // For \left, \right with unicode-math:
+                   const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+                   const {Symbol} = MathJax._.input.tex.Symbol;
+                   const {MapHandler} = MathJax._.input.tex.MapHandler;
+                   const delimiter = MapHandler.getMap('delimiter');
+                   delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+                   delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+                   delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+                   delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+                   delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+                   delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+                   delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+                   delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+                   delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+                   delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+                   delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+                   delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+                   delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+                   delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+                   delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+                   delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+                   delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+                   delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+                   delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+                   delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+                   delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+                   delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+                   delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+                   delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+                   delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+                   delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+                   delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+                   delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+                   delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+                   delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+                   delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+                   delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+                   delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+                   delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+                   delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+                   delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+                   delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+                   delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+                   delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+          }       // ready
+     },           // startup
+
+
+     tex: {
+          packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+          tags: "ams",
+                   tagformat: {
+                            number: function (n) {
+                                 if(MathJax.config.subequations==0)
+                                        return(MathJax.config.section + n);
+                                 else
+                                        return(MathJax.config.section + String.fromCharCode(96+n));
+                            },
+                   },
+     }
+}
+</script>
+
+
+<script
+          id="MathJax-script"
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<div class="bodywithoutsidetoc">
+
+
+<main class="bodycontainer">
+
+
+<section class="textbody">
+
+<a id="TravWaves-autofile-0"></a>
+
+<!--MathJax customizations:-->
+
+
+<div class="hidden">
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+</div>
+
+<a id="TravWaves-autopage-1"></a>
+
+<p>
+
+</p>
+<div class="center">
+
+<p>
+<span
+    class="fbox"
+    style="display:inline-block ; border:1pt solid #000000; padding:3pt ; color:#000000"
+><span
+    class="makebox"
+    style="display:inline-block ; "
+                                 &#x2003;&#x2003;Jan                2024
+> &#x2003;&#x2003;LM Advanced Mathematical Biology 31128 &#x2003;&#x2003;                </span></span>
+</p>
+</div>
+
+<p>
+David S. Tourigny, School of Mathematics, University of Birmingham
+</p>
+
+<p>
+Disclaimer: These notes have not been subjected to the usual scrutiny reserved for formal publications. Please let me know if you identify any errors. The material is based on a similar course previously taught by Tom
+Montenegro-Johnson at the University of Birmingham
+</p>
+<!--
+...... section Part 4: Traveling waves ......
+-->
+<h4 id="autosec-3">Part 4: Traveling waves</h4>
+<a id="TravWaves-autopage-3"></a>
+
+
+<p>
+In this part of the course we will look at several different models that are described using special cases of the reaction-advection-diffusion equation and admit solutions that describe traveling waves.
+</p>
+<!--
+...... section Fisher-Kolmogorov-Petrovsky-Piskunov equation ......
+-->
+<h4 id="autosec-4"><span class="sectionnumber">4.1&#x2003;</span>Fisher-Kolmogorov-Petrovsky-Piskunov equation</h4>
+<a id="TravWaves-autopage-4"></a>
+
+
+<p>
+In this section, we will study an equation that was used in 1937 by the statistician and biologist Ronald Fisher to describe the spread of an advantageous mutation through a spatially-organised population (imagine a population
+aligned along a coastline for the one-dimensional case). Although this equation typically bears his name, a general form was also used by Kolmogorov, Petrovsky and Piskunov in their 1937 paper entitled “A study of the diffusion
+equation with increase in the amount of substance”, and so we once again attempt to do justice to everyone involved at that time.
+</p>
+<!--
+...... subsection FKPP equation for population growth ......
+-->
+<h5 id="autosec-5"><span class="sectionnumber">4.1.1&#x2003;</span>FKPP equation for population growth</h5>
+<a id="TravWaves-autopage-5"></a>
+
+
+<p>
+Fisher was specifically concerned with using a reaction-diffusion equation for \(c({\bf x},t)\), which for him represented the frequency of an advantageous mutant allele at time \(t\) and spatial position \(\bf x\) within a
+population. However, we can instead interpret \(c({\bf x},t)\) as the population density of a particular species in a fashion more analogous to what we have seen before. In the simplest model for exponential growth without
+boundary conditions we know that \(c\) will grow infinitely large as \(t \to \infty \), which is unrealistic for a population one must assume will remain finite given what we know about the real world. To counteract the problem
+of infinite population size, the concept of logistic growth was introduced at the start of this course. In logistic growth, the population size is assumed to be limited by one or more resources, resulting in a so-called carrying capacity,
+\(R\). In the absence of spatial variation, we saw that the ordinary differential equation for logistic growth is given by
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{0}\)</span>
+
+<!--
+
+                                                                                                              dc         c
+                                                                                                                 = kc 1 −                                                                                                                (4.1)
+                                                                                                              dt          R
+
+-->
+
+<p>
+
+\begin{equation}
+\frac {dc}{dt} = k c \left ( 1 - \frac {c}{R} \right )
+\end{equation}
+
+</p>
+
+<p>
+where \(k\) still has the interpretation of growth rate as before. Fisher’s equation results from extending the logistic growth model to the spatial domain, such that we have
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{1}\)</span>
+
+<!--
+
+                                                                                                       ∂c                     c
+                                                                                                          = ∇ · (D∇c) + kc 1 −    ,                                                                  (4.2)--><a id="logfisher"></a><!--
+                                                                                                       ∂t                      R
+
+-->
+
+<p>
+
+\begin{equation}
+\label {logfisher} \frac {\partial c}{\partial t} = \nabla \cdot ( D \nabla c) + k c \left ( 1 - \frac {c}{R} \right ) ,
+\end{equation}
+
+</p>
+
+<p>
+which has a dimensionless version
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{2}\)</span>
+
+<!--
+
+                                                                                                         ∂u
+                                                                                                            = ∇ · (∇u) + u(1 − u),                                                                       (4.3)--><a id="fisher"></a><!--
+                                                                                                         ∂t
+
+-->
+
+<p>
+
+\begin{equation}
+\label {fisher} \frac {\partial u }{\partial t} = \nabla \cdot ( \nabla u ) + u(1-u) ,
+\end{equation}
+
+</p>
+
+<p>
+where now \(0 \leq u \leq 1\) for all \(t &gt; 0\). This equation was first used by Fisher to study the propagation of a wave of mutation through populations, but it has many other wide-reaching applications, from chemical
+reaction kinetics to nuclear reactors. A more general form, where the reaction term \(u(1-u)\) is replaced by \(F(u) = u(1-u^q)\) for some \(q &gt; 0\), was also used by Kolmogorov, Petrovsky and Piskunov in some further
+applications to population genetics.
+</p>
+
+<p>
+The problem Fisher posed was to search for solutions to equation <a href="TravWaves.html#fisher">4.3</a> that represent traveling waves. We could imagine in his application a one-dimensional shore line population with a
+new mutant arising at one end, and the traveling wave representing the propagation of this mutant along the shore line as it begins to dominate the population. If \(u(x,t)\) represents the frequency of this mutant allele at time
+\(t\) and distance \(x\) from where the mutant emerged, then the extreme cases \(u = 0\) (no member of the population carries the mutation) and \(u = 1\) (all members of the population carry the mutation) are precisely the
+homogenous steady states (constant in time and space) of this system. The traveling wave is then one that “switches” between these two homogenous steady states, as it moves up (or down) the shore line: at time \(t= 0\) it starts
+with \(u(x,0) = 1\) for all \(x &lt; x_0\) and \(u(x,0)= 0\) for all \(x &gt; x_0\) (\(x_0\) being the point beyond which the mutation remains constrained at the initial time). A traveling wave solution then means one that
+satisfies the ansatz \(u(x,t) = U(z)\) with \(z\equiv x - s t\) for some wave speed \(s &gt;0\). If we advance one unit of time then the solution at \(t=1\) is given by \(u(x - s)\), which is just the initial solution \(u(x)\)
+advanced by \(s\). In the next subsection we will characterise such solutions.
+</p>
+<!--
+...... subsection Phase-plane method for traveling waves ......
+-->
+<h5 id="autosec-6"><span class="sectionnumber">4.1.2&#x2003;</span>Phase-plane method for traveling waves</h5>
+<a id="TravWaves-autopage-6"></a>
+
+
+<p>
+Substituting \(u(x,t) = U(x - s t) \equiv U(z)\) into the one-dimensional version of equation <a href="TravWaves.html#fisher">4.3</a> and using the chain rule yields a second-order ODE
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{3}\)</span>
+
+<!--
+
+                                                                                                          d2 U    dU
+                                                                                                             2
+                                                                                                               +s    + U (1 − U ) = 0,                                                         (4.4)--><a id="secondord"></a><!--
+                                                                                                          dz      dz
+
+-->
+
+<p>
+
+\begin{equation}
+\label {secondord} \frac {d^2 U }{d z^2} + s \frac {dU}{dz} + U(1-U) = 0 ,
+\end{equation}
+
+</p>
+
+<p>
+which we can transform to a coupled system of first-order ODEs by taking \(V = U&apos;\) (we now use primes to denote differentiation with respect to \(z\)) so that
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{4}\)</span>
+
+<!--
+
+
+                                                                                                       U ′ = V,    V ′ = −sV − U (1 − U ).                                                        (4.5)--><a id="system"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {system} U&apos; =V , \quad V&apos; = - s V - U(1-U) .
+\end{equation}
+
+</p>
+
+<p>
+In what follows, it is important to recall that \(U=u\) with \(0 \leq u \leq 1\) and argument \(z = x- st\) so that, when \(x\) is fixed, taking \(t \to \infty \) is equivalent to \(z \to - \infty \). Thus, the steady states
+of the above system <a href="TravWaves.html#system">4.5</a> are \((U,V) = (0,0)\) and \((U,V) = (1,0)\) that correspond, respectively, to the extreme solutions \(u = 0\) and \(u=1\) we discussed previously.
+</p>
+
+<p>
+To evaluate the stability of these critical points we first calculate the Jacobian matrix
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{5}\)</span>
+
+<!--
+
+                                                                                                                                          
+                                                                                                                            0            1
+                                                                                                          J(U, V ) =                                                                                                             (4.6)
+                                                                                                                         −1 + 2U         −s
+
+-->
+
+<p>
+
+\begin{equation}
+{\bf J}(U,V) = \begin{pmatrix} 0 &amp; 1 \\ -1 + 2U &amp; -s \end {pmatrix}
+\end{equation}
+
+</p>
+
+<p>
+and determine its eigenvalues at \((0,0)\) and \((1,0)\). The characteristic equation for eigenvalues of \({\bf J}(0,0)\) is
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{6}\)</span>
+
+<!--
+
+
+                                                                                                          −λ        1
+                                                                                    det(J(0, 0) − λI) =                  = λ(s + λ) + 1 = λ2 + sλ + 1 = 0                                                                        (4.7)
+                                                                                                          −1      −s − λ
+
+-->
+
+<p>
+
+\begin{equation}
+\mbox {det}({\bf J}(0,0) -\lambda {\bf I}) = \begin{vmatrix} -\lambda &amp; 1 \\ -1 &amp; -s - \lambda \end {vmatrix} = \lambda (s + \lambda ) +1 = \lambda ^2 + s \lambda + 1 = 0
+\end{equation}
+
+</p>
+
+<p>
+and therefore eigenvalues are
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{7}\)</span>
+
+<!--
+
+                                                                                                                            √
+                                                                                                                     −s ±       s2 − 4
+                                                                                                             λ± =                        .                                                                                       (4.8)
+                                                                                                                            2
+
+-->
+
+<p>
+
+\begin{equation}
+\lambda _{\pm } = \frac {- s \pm \sqrt {s^2 - 4}}{2} .
+\end{equation}
+
+</p>
+
+<p>
+Thus, when \(s \geq 2\) then both eigenvalues are real and negative, meaning in this case the first steady state \((U,V) = (0,0)\) is stable. We can also use the identification of \(U\) with \(u\) to make the argument that the
+case \(s &lt; 2\) (eigenvalues are complex conjugates with negative real part) can be excluded as non-physical: a spiral (stable focus) about the origin implies \(U&lt; 0 \) at some point arbitrarily close to the origin, which we
+note implies \(u&lt;0\). The characteristic equation for eigenvalues of \({\bf J}(1,0)\) is
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{8}\)</span>
+
+<!--
+
+
+                                                                                                          −λ        1
+                                                                                    det(J(1, 0) − λI) =                  = λ(s + λ) − 1 = λ2 + sλ − 1 = 0                                                                        (4.9)
+                                                                                                           1      −s − λ
+
+-->
+
+<p>
+
+\begin{equation}
+\mbox {det}({\bf J}(1,0) -\lambda {\bf I}) = \begin{vmatrix} -\lambda &amp; 1 \\ 1 &amp; -s - \lambda \end {vmatrix} = \lambda (s + \lambda ) -1 = \lambda ^2 + s \lambda - 1 = 0
+\end{equation}
+
+</p>
+
+<p>
+and therefore eigenvalues are
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{9}\)</span>
+
+<!--
+
+                                                                                                                            √
+                                                                                                                     −s ±       s2 + 4
+                                                                                                             λ± =                        .                                                                                      (4.10)
+                                                                                                                            2
+
+-->
+
+<p>
+
+\begin{equation}
+\lambda _{\pm } = \frac {- s \pm \sqrt {s^2 + 4}}{2} .
+\end{equation}
+
+</p>
+
+<p>
+For all cases of \(s &gt; 0\) both eigenvalues are real with one positive and one negative, so \((U,V) = (1,0)\) is therefore a saddle point.
+</p>
+
+<p>
+Finally, we complete the phase-plane analysis by studying the nullclines of the system <a href="TravWaves.html#system">4.5</a> (lines along which either \(U&apos;\) or \(V&apos;\) are zero). For \(U&apos;=0\) there is a
+nullcline given by \(V = 0\), which is the \(U\)-axis itself. On this nullcline, we have three scenarios
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{10}\)</span>
+
+<!--
+
+                                                                                                                 
+                                                                                                                 > 0, if U < 0
+                                                                                                                 
+                                                                                                     ′         2
+                                                                                                    V = −U + U     < 0, if 0 < U < 1                                                                                            (4.11)
+                                                                                                                 
+                                                                                                                   > 0, if U > 1
+                                                                                                                 
+
+
+-->
+
+<p>
+
+\begin{equation}
+V&apos;= - U + U^2 \begin{cases} &gt; 0 , \quad \mbox {if} \quad U &lt; 0 \\\‚&lt; 0 , \quad \mbox {if} \quad 0 &lt; U &lt; 1 \\ &gt; 0 , \quad \mbox {if} \quad U &gt;1 \end {cases}
+\end{equation}
+
+</p>
+
+<p>
+and therefore arrows along the phase-plane \(U\)-axis point vertically upwards in the regions \(U &lt; 0\) and \(U &gt;1\), and vertically downwards in the region \(0 &lt; U &lt; 1\). For \(V&apos;=0\), we have the nullcline
+given by \(s V +U(1-U)= 0\), which is the parabola given by
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{11}\)</span>
+
+<!--
+
+                                                                                                                               2
+                                                                                                                1           1            1
+                                                                                                            V =          U−          −                                                                                          (4.12)
+                                                                                                                s           2            4s
+
+-->
+
+<p>
+
+\begin{equation}
+V = \frac {1}{s} \left ( U -\frac {1}{2} \right )^2 - \frac {1}{4s}
+\end{equation}
+
+</p>
+
+<p>
+whose vertex is at the point \((1/2,-1/4s)\) and which passes through the points \((0,0)\) and \((1,0)\). On this nullcline, we have two scenarios
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{12}\)</span>
+
+<!--
+
+                                                                                                                 (
+                                                                                                                  < 0,      if V < 0
+                                                                                                          U′ = V                                                                                                                (4.13)
+                                                                                                                  > 0,      if V > 0
+
+-->
+
+<p>
+
+\begin{equation}
+U&apos;= V \begin{cases} &lt; 0 , \quad \mbox {if} \quad V &lt; 0 \\ &gt; 0 , \quad \mbox {if} \quad V &gt; 0 \end {cases}
+\end{equation}
+
+</p>
+
+<p>
+and therefore arrows along parabola point horizontally left in the region \(V &lt; 0\) and horizontally right in the region \(V &gt;0\). We can combine these results with the known stability of the point \((0,0)\) in the case \(s
+\geq 2\) to obtain a phase-plane portrait that illustrates the existence of a unique solution that joins the two critical points and satisfies
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{13}\)</span>
+
+<!--
+
+
+                                                                                   lim U (z) = 0,     lim U (z) = 1,       0 < U (z) < 1 for   − ∞ < z < ∞.                                                                     (4.14)
+                                                                                  z→∞                z→−∞
+
+
+-->
+
+<p>
+
+\begin{equation}
+\lim _{z \to \infty } U(z) = 0, \quad \lim _{z \to - \infty } U(z) = 1 , \quad 0 &lt; U(z) &lt; 1 \quad \mbox {for} \quad - \infty &lt; z &lt; \infty .
+\end{equation}
+
+</p>
+
+<p>
+Recalling once more that \(U(z) = u(x-st)\), we can identify the nature of this unique traveling wave for each \(s \geq 2\).
+</p>
+<!--
+...... subsection Initial conditions and minimum wave speed at the front ......
+-->
+<h5 id="autosec-7"><span class="sectionnumber">4.1.3&#x2003;</span>Initial conditions and minimum wave speed at the front</h5>
+<a id="TravWaves-autopage-7"></a>
+
+
+<p>
+By studying the eigenvalues of the linearised system obtained after assuming a traveling wave solution to the FKPP equation <a href="TravWaves.html#fisher">4.3</a>, we used a physical argument to justify that we must have
+a minimum wave speed, \(s \geq 2\). Fisher and Kolmogrov actually argued something slightly stronger, proving that, for the initial conditions presented in the first subsection, \(u(x,t)\) tends to a travelling wave solution with
+wave speed \(s = 2\). Recall these initial conditions are such that at time \(t= 0\) the solution satisfies \(u(x,0)= 0\) for all \(x &gt; x_0\) for some \(x_0\), and \(u(x,0)= 0\) for all \(x &gt; x_0\). We will not be able to
+go through the entire proof here, but use some intuition to illustrate.
+</p>
+
+<p>
+At the leading front of the wave we have that \(u\) is very small, meaning that the linear equation
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{14}\)</span>
+
+<!--
+
+                                                                                                               ∂ û   ∂ 2 û
+                                                                                                                    =        + û                                                               (4.15)--><a id="linear"></a><!--
+                                                                                                               ∂t     ∂x2
+
+-->
+
+<p>
+
+\begin{equation}
+\label {linear} \frac {\partial \hat {u}}{\partial t} = \frac {\partial ^2 \hat {u} }{\partial x^2} + \hat {u}
+\end{equation}
+
+</p>
+
+<p>
+is a good approximation in this region. We can also construct an initial condition for the linear solution such that \(\hat {u}(x,0) \geq u(x,0)\) for all \(x\) by taking \(\hat {u}(x,0) = A e^{-a x}\) with \(a &gt; 0\) and
+\(A\) sufficiently large enough (e.g. take \(A = e^{a x_0}\) since then \(\hat {u}(x,0) = e^{a (x_0-x)} \geq e^0 = 1 \geq u(x,0)\) for all \(x &lt; x_0\)). We define \(\delta u = \hat {u} - u\) as the difference
+between the linear and nonlinear solutions, and find that is must satisfy \(\delta u \geq 0\) for all \(t&gt;0\) since
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{15}\)</span>
+
+<!--
+
+                                                                                            ∂ 2 û
+                                                                                                         2
+                                                                                                                             ∂2                 ∂2
+                                                                                                                        
+                                                                              ∂                           ∂ u          2
+                                                                                 δu =           2
+                                                                                                   + û −    2
+                                                                                                               + u − u     =   2
+                                                                                                                                 δu + δu + u2 >     δu + δu                                                                    (4.16)
+                                                                              ∂t            ∂x            ∂x                 ∂x                 ∂x2
+
+-->
+
+<p>
+
+\begin{equation}
+\frac {\partial }{\partial t} \delta u = \left (\frac {\partial ^2 \hat {u}}{\partial x^2} + \hat {u} \right ) - \left ( \frac {\partial ^2 u}{\partial x^2} + u - u^2 \right ) = \frac
+{\partial ^2 }{\partial x^2} \delta u + \delta u + u^2 &gt; \frac {\partial ^2 }{\partial x^2} \delta u + \delta u
+\end{equation}
+
+</p>
+
+<p>
+and by construction we have \(\delta u \geq 0 \) at \(t=0\). Thus, \(u\) is bounded by \(\hat {u}\) for all time.
+</p>
+
+<p>
+We next look for a traveling wave solution to the linear equation and substitute \(\hat {u}(x,t) = A e^{-a(x-\hat {s}t)}\) into <a href="TravWaves.html#linear">4.15</a> to obtain the condition
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{16}\)</span>
+
+<!--
+
+                                                                                                                                    1
+                                                                                                        aŝ = a2 + 1 ⇒ ŝ = a +       ≥2                                                                                       (4.17)
+                                                                                                                                    a
+
+-->
+
+<p>
+
+\begin{equation}
+a\hat {s} = a^2 + 1 \Rightarrow \hat {s} = a + \frac {1}{a} \geq 2
+\end{equation}
+
+</p>
+
+<p>
+where the lower bound is met when \(a = 1\). Thus, because \(u\) is bounded by \(\hat {u}\) its wave speed can not be greater than \(\hat {s}\) and, since this must hold for all \(\hat {s}\) including \(\hat {s} =2\), the
+nonlinear wave speed must be \(2\).
+</p>
+<!--
+...... section Geographic spread of epidemics ......
+-->
+<h4 id="autosec-8"><span class="sectionnumber">4.2&#x2003;</span>Geographic spread of epidemics</h4>
+<a id="TravWaves-autopage-8"></a>
+
+
+<p>
+Traveling waves can also be used to model the spread of an infectious disease through a population, i.e. an epidemic. In this section, we shall first introduce the Kermack-McKendrick model for spread of an infectious disease in a
+well-mixed population. This will enable us to consider the basic aspects of epidemiological modelling of disease transmission and the time development of epidemics. The model will then be extended to a population distributed in a
+spatial domain, where we will study spread of the disease in space via traveling waves.
+</p>
+<!--
+...... subsection Kermack-McKendrick epidemic model ......
+-->
+<h5 id="autosec-9"><span class="sectionnumber">4.2.1&#x2003;</span>Kermack-McKendrick epidemic model</h5>
+<a id="TravWaves-autopage-9"></a>
+
+
+<p>
+Consider an infectious disease that, after recovery, confers immunity (we only model complete immunity, not immunity that is slowly lost over time). The total population, \(P_T\), can be divided into three sub-populations whose
+compositions vary in time: 1) the susceptible sub-population, \(P_S\), who can catch the disease; 2) the infectious sub-population, \(P_I\), who have the disease and can transmit it; and 3) the removed sub-population, \(P_R\),
+who have had the disease and either recovered or died. The progress of disease is schematically described by \(P_S \to P_I \to P_R\) and these models are often also called SIR models.
+</p>
+
+<p>
+To derive the Kermack-McKendrick model we make a number of additional simplifying assumptions:
+</p>
+<ul style="list-style-type:none">
+
+<li>
+<p>
+(a) The total population remains at constant size and is “well-mixed” such that the spatial distributions of sub-populations are not considered
+</p>
+
+</li>
+<li>
+
+<p>
+(b) The rate of increase in the infectious sub-population is proportional to the number of infectious and susceptible members of the population at any given time
+</p>
+
+</li>
+<li>
+
+<p>
+(c) The rate of removal (via death or recovery) of the infectious sub-population is proportional to the number of infectious members of the population at any given time
+</p>
+
+</li>
+<li>
+
+<p>
+(d) The incubation period of the disease is short enough to be considered negligible (any member who contracts the disease is infectious right away).
+</p>
+</li>
+</ul>
+
+<p>
+With these assumptions we arrive at the ODE system
+</p>
+<span class="hidden"> \(\seteqnumber{0}{}{17}\)</span>
+
+
+<!--
+
+
+                                                                                                         dPS
+                                                                                                             = −kI PS PI                                                                                                       (4.18)
+                                                                                                          dt
+                                                                                                         dPI
+                                                                                                             = k I PS PI − k R PI                                                                                              (4.19)
+                                                                                                          dt
+                                                                                                         dPR
+                                                                                                             = −kR PI                                                                                                          (4.20)
+                                                                                                          dt
+
+
+-->
+
+
+<p>
+
+\begin{align}
+\frac {dP_S}{dt} &amp;= -k_I P_S P_I \\ \frac {dP_I}{dt} &amp;= k_I P_S P_I - k_R P_I \\ \frac {dP_R}{dt} &amp;= -k_R P_I
+\end{align}
+where \(k_I &gt; 0\) and \(k_R &gt;0\) are the rate constants of infection and removal, respectively, and the total population size is conserved for all time, i.e. \(P_T(t) = P_S(t) + P_I(t) + P_R(t) \Rightarrow dP_T/dt =
+0\). As initial conditions we take
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{20}\)</span>
+
+<!--
+
+
+                                                                                            PS (0) = S0 > 0,    PI (0) = I0 > 0,      PR (0) = 0.                                                                              (4.21)
+
+-->
+
+<p>
+
+\begin{equation}
+P_S(0) = S_0 &gt; 0, \quad P_I(0) = I_0 &gt; 0, \quad P_R(0) = 0.
+\end{equation}
+
+</p>
+
+<p>
+Given the above model, a central question is whether or not the infection will spread or, in other words, whether or not there will be an epidemic. Since
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{21}\)</span>
+
+<!--
+
+                                                                                 dPI
+                                                                                     (0) = kI PS (0)PI (0) − kR PI (0) = kI S0 I0 − kR I0 = I0 (kI S0 − kR )                                                                   (4.22)
+                                                                                  dt
+
+-->
+
+<p>
+
+\begin{equation}
+\frac {dP_I}{dt}(0) = k_I P_S(0) P_I(0) - k_R P_I(0) = k_I S_0 I_0 - k_R I_0 = I_0(k_I S_0 - k_R)
+\end{equation}
+
+</p>
+
+<p>
+and
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{22}\)</span>
+
+<!--
+
+                                                                                                        dPS
+                                                                                                            ≤ 0,      for all t ≥ 0                                                                                            (4.23)
+                                                                                                         dt
+
+-->
+
+<p>
+
+\begin{equation}
+\frac {dP_S}{dt} \leq 0 , \quad \mbox {for all} \quad t \geq 0
+\end{equation}
+
+</p>
+
+<p>
+we find that the parameter
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{23}\)</span>
+
+<!--
+
+                                                                                                                      kI S0
+                                                                                                                 ρ=                                                                                                            (4.24)
+                                                                                                                       kR
+
+-->
+
+<p>
+
+\begin{equation}
+\rho = \frac {k_IS_0}{k_R}
+\end{equation}
+
+</p>
+
+<p>
+determines whether or not there will be an epidemic. Specifically, \(\rho &lt; 1\) implies \(k_IS_0 &gt; k_R\) so we have \(dP_I/dt \leq 0\) for all \(t \geq 0\) and therefore \(P_I(t) \to 0\) as \(t \to \infty \),
+meaning the infection dies out (i.e., no epidemic occurs). On the other hand, if \(\rho &gt; 1\), then \(P_I\) will initially increase and we will have an epidemic. The parameter \(\rho \) is often called the reproduction rate of
+the infection: it is the number of secondary infections produced by one primary infection in a wholly susceptible population. If more that one secondary infection is produced from one primary infection (\(\rho &gt; 1\)), then an
+epidemic ensues.
+</p>
+<!--
+...... subsection Epidemic model with spatial spread ......
+-->
+<h5 id="autosec-10"><span class="sectionnumber">4.2.2&#x2003;</span> Epidemic model with spatial spread</h5>
+<a id="TravWaves-autopage-10"></a>
+
+
+<p>
+The first assumption (a) of the Kermack-McKendrick model is that the population is well-mixed. Recall from the introduction how this assumption enables us to model the system with a system of ODEs. Here we relax this
+assumption by allowing individuals within the population to travel in space, such that \(P_S,P_I,P_R\) are now functions of both space and time. For simplicity, we consider only one spatial dimension and drop our consideration of
+\(P_R\), since its dynamics are entirely determined by knowledge of \(P_S(x,t)\) and \(P_I(x,t)\). We furthermore assume that the spatial dispersal of individuals within the population is governed by simple diffusion (both
+susceptible and infectious individuals have the same diffusion coefficient, \(D\)) and, at every point in space, individuals interact according to the dynamics of the Kermack-McKendrick model. The model therefore takes the form
+</p>
+<span class="hidden"> \(\seteqnumber{0}{}{24}\)</span>
+
+
+<!--
+
+
+                                                                                                    ∂PS                    ∂ 2 PS
+                                                                                                        = −kI PS PI + D                                                                                                         (4.25)
+                                                                                                     ∂t                     ∂x2
+                                                                                                    ∂PI                           ∂ 2 PI
+                                                                                                        = k I PS PI − k R PI + D                                                                                                (4.26)
+                                                                                                     ∂t                           ∂x2
+
+
+-->
+
+
+<p>
+
+\begin{align}
+\frac {\partial P_S}{\partial t} &amp;= - k_I P_S P_I + D \frac {\partial ^2 P_S}{\partial x^2} \\ \frac {\partial P_I}{\partial t} &amp;= k_I P_S P_I - k_R P_I + D \frac {\partial ^2
+P_I}{\partial x^2}
+\end{align}
+and we impose an initial homogenous susceptible population density \(P_S(x,0) = S_0\). The problem is then to characterise the conditions for spatial spread of the disease.
+</p>
+
+<p>
+To simplify notation, we first perform non-dimensionalisation using the scalings
+</p>
+
+<p>
+\[ P_S = S_0 P_S^* , \quad P_I = S_0 P_I^* , \quad x = \sqrt {\frac {D}{k_I S_0}}x^* , \quad t = \frac {1}{k_I S_0} t^* \]
+</p>
+
+<p>
+to obtain
+</p>
+<span class="hidden"> \(\seteqnumber{0}{}{26}\)</span>
+
+
+<!--
+
+
+                                                                                                    ∂PS∗                ∂ 2 PS∗
+                                                                                                      ∗
+                                                                                                         = −PS∗ PI∗ +                                                                                                           (4.27)
+                                                                                                    ∂t                 ∂(x∗ )2
+                                                                                                    ∂PI∗              kR ∗       ∂ 2 PI∗
+                                                                                                         = PS∗ PI∗ −        PI +                                                                                                (4.28)
+                                                                                                     ∂t              kI S0       ∂(x∗ )2
+
+
+-->
+
+
+<p>
+
+\begin{align}
+\frac {\partial P_S^*}{\partial t^*} &amp;= - P_S^* P_I^* + \frac {\partial ^2 P_S^*}{\partial (x^*)^2} \\ \frac {\partial P_I^*}{\partial t} &amp;= P_S^* P_I^* - \frac {k_R}{k_IS_0}P_I^* +
+\frac {\partial ^2 P_I^*}{\partial (x^*)^2}
+\end{align}
+which, after dropping the asterisks and identifying \(k_R/k_IS_0 = 1/\rho \) with the inverse of the reproduction rate, becomes
+</p>
+<span class="hidden"> \(\seteqnumber{0}{}{28}\)</span>
+
+
+<!--
+
+
+                                                                                                       ∂PS             ∂ 2 PS
+                                                                                                           = −PS PI +                                                                                                           (4.29)
+                                                                                                        ∂t              ∂x2
+                                                                                                       ∂PI           1        ∂ 2 PI
+                                                                                                           = PS P I − PI +           .                                                                                          (4.30)
+                                                                                                        ∂t           ρ        ∂x2
+
+
+-->
+
+
+<p>
+
+\begin{align}
+\frac {\partial P_S}{\partial t} &amp;= - P_S P_I + \frac {\partial ^2 P_S}{\partial x^2} \\ \frac {\partial P_I}{\partial t} &amp;= P_S P_I - \frac {1}{\rho }P_I + \frac {\partial ^2
+P_I}{\partial x^2} .
+\end{align}
+We want to characterise traveling wave solutions to these equations, and so make the ansatz \(P_S(x,t) = P_S(z)\) and \(P_I(x,t) = P_I(z)\) where \(z = x - st\). This reduces the system to two, coupled second-order
+ODEs of the form
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{30}\)</span>
+
+<!--
+
+                                                                                                                                                    
+                                                                                                                                                   1
+                                                                                         PS′′ + sPS′ − PS PI = 0,   PI′′ + sPI′ + PI          PS −     =0                                                                       (4.31)
+                                                                                                                                                   ρ
+
+-->
+
+<p>
+
+\begin{equation}
+P_S&apos;&apos; + s P_S&apos; -P_SP_I = 0, \quad P_I&apos;&apos; + s P_I&apos; +P_I\left ( P_S - \frac {1}{\rho }\right ) = 0
+\end{equation}
+
+</p>
+
+<p>
+for some wave speed \(s\), where the primes denote differentiation with respect to \(z\). The existence problem for a traveling wave solution with wave speed \(s &gt; 0\) is then translated to finding a range of values for \(\rho
+\) such that
+</p>
+
+<p>
+\[ P_I (- \infty ) = P_I ( \infty ) = 0 , \quad 0 \leq P_S (- \infty ) &lt; P_S( \infty ) = 1 .                          \]
+</p>
+
+<p>
+In other words, there will be a traveling wave that propagates in time \(t\) along the spatial \(x\) dimension in an initially fully-susceptible population.
+</p>
+
+<p>
+While the fourth-order system is difficult to study in phase-space as we did previously for the FKPP equation, we can make use of similar arguments used at the end of the previous section to say that \(P_I\) will be very small and
+\(P_S\) close to one near the leading front, to justify the linear approximation
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{31}\)</span>
+
+<!--
+
+                                                                                                                                      
+                                                                                                                                   1
+                                                                                                      PI′′ + sPI′ + PI        1−           ≈ 0.                                                                                 (4.32)
+                                                                                                                                   ρ
+
+-->
+
+<p>
+
+\begin{equation}
+P_I&apos;&apos; + s P_I&apos; +P_I\left ( 1 - \frac {1}{\rho }\right ) \approx 0 .
+\end{equation}
+
+</p>
+
+<p>
+In this regime, we have a solution of the form \(P_I(z)\propto \exp (\lambda z)\), where \(\lambda \) satisfies
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{32}\)</span>
+
+<!--
+
+                                                                                                                        
+                                                                                                                       1
+                                                                                                         λ2 + sλ + 1 −     = 0,                                                                                                 (4.33)
+                                                                                                                       ρ
+
+-->
+
+<p>
+
+\begin{equation}
+\lambda ^2 + s\lambda + \left ( 1 - \frac {1}{\rho }\right ) = 0 ,
+\end{equation}
+
+</p>
+
+<p>
+which we solve to obtain
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{33}\)</span>
+
+<!--
+
+                                                                                                                    p
+                                                                                                             −s ±    s2 − 4(1 − 1/ρ)
+                                                                                                      λ± =                           .                                                                                          (4.34)
+                                                                                                                        2
+
+-->
+
+<p>
+
+\begin{equation}
+\lambda _\pm = \frac {-s \pm \sqrt {s^2 - 4(1-1/\rho )}}{2} .
+\end{equation}
+
+</p>
+
+<p>
+As for the FKPP equation, we must exclude complex conjugates that correspond to non-physical solutions that oscillate about \(P_I = 0\) since that would imply \(P_I(z) &lt; 0\) for some values of \(z\). Therefore, if a
+traveling wave solution is to exist, the wave speed \(s\) and reproduction rate \(\rho \) must together satisfy
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{34}\)</span>
+
+<!--
+
+                                                                                                           s      
+                                                                                                                 1
+                                                                                                        s≥2   1−    ,              ρ > 1.                                                                                       (4.35)
+                                                                                                                 ρ
+
+-->
+
+<p>
+
+\begin{equation}
+s \geq 2\sqrt {\left ( 1 - \frac {1}{\rho }\right )}, \quad \rho &gt; 1.
+\end{equation}
+
+</p>
+
+<p>
+We see that the \(\rho &gt; 1\) condition is exactly the same as the condition for an infection to generate an epidemic in a well-mixed population and, assuming this to be the case, the condition on \(s\) sets the minimum wave
+speed at which the epidemic will travel through the population. As \(\rho \) is increased, this minimum wave speed becomes smaller and smaller.
+</p>
+<div class="theoremcontents">
+
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+<span class="theoremlabel">Exercise 4.1 </span> Find a change of coordinates such that the FKPP-equation <a href="TravWaves.html#logfisher">4.2</a> reduces to its dimensionless form <a
+href="TravWaves.html#fisher">4.3</a>.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="theoremcontents">
+
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+<span class="theoremlabel">Exercise 4.2 </span> Show that in the special case \(s=5/\sqrt {6}\), a traveling wave solution to the second-order ODE <a href="TravWaves.html#secondord">4.4</a> is given analytically by
+</p>
+
+<p>
+\[ U(z) = \frac {1}{\left (1+C \exp (z/ \sqrt {6}) \right )^2} \]
+</p>
+
+<p>
+where \(C &gt; 0\) is an arbitrary positive constant.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="theoremcontents">
+
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+<span class="theoremlabel">Exercise 4.3 </span> Consider the one-dimensional spatial system
+</p>
+
+<p>
+\[ \frac {\partial u}{\partial t} = - u(u- R) (u -1) + \frac {\partial ^2 u}{\partial x^2} \]
+</p>
+
+<p>
+where \(0 &lt; R &lt; 1\) is a constant parameter.
+</p>
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+(a) Substitute the traveling wave ansatz \(u(x,t) = U(z)\) with \(z = x - st\) and \(s \geq 0\) to reduce this equation to a system of coupled first-order ODEs.
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+(b) Find the steady states of the ODE system obtained in part (a) and evaluate their stability.
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+(c) Determine a lower bound on \(s\) that means none of the steady states represent a spiral solution.
+</p>
+<p>
+
+
+</p>
+</li>
+</ul>
+
+</li>
+
+</ul>
+
+</div>
+
+<a id="TravWaves-autofile-last"></a>
+</section>
+
+</main>
+
+</div>
+
+</body>
+</html>

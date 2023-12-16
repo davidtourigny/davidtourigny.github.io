@@ -1,0 +1,2267 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<title>SpatInstab</title>
+<link rel="stylesheet" type="text/css" href="lwarp.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+     subequations: "0",
+     section: "",
+     loader: {
+          load: ['[tex]/tagformat', '[tex]/textmacros'],
+     },
+     startup: {
+          ready() {
+              //       These would be replaced by import commands if you wanted to make
+              //       a proper extension.
+              const Configuration = MathJax._.input.tex.Configuration.Configuration;
+              const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+              const Macro = MathJax._.input.tex.Symbol.Macro;
+              const TexError = MathJax._.input.tex.TexError.default;
+              const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+              const expandable = MathJax._.util.Options.expandable;
+
+
+              //       Insert the replacement string into the TeX string, and check
+              //       that there haven't been too many maxro substitutions (prevents
+              //       infinite loops).
+              const useArgument = (parser, text) => {
+                   parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+                   parser.i = 0;
+                   if (++parser.macroCount > parser.configuration.options.maxMacros) {
+                        throw new TexError('MaxMacroSub1',
+                        'MathJax maximum macro substitution count exceeded; ' +
+                        'is there a recursive macro call?');
+                   }
+              }
+
+
+              //       Create the command map for:
+              //            \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+              new CommandMap('Lwarp-macros', {
+                   ifstar: 'IfstarFunction',
+                   ifnextchar: 'IfnextcharFunction',
+                   ifblank: 'IfblankFunction',
+                   ifstrequal: 'IfstrequalFunction',
+                   gsubstitute: 'GsubstituteFunction',
+                   seteqnumber: 'SeteqnumberFunction'
+              }, {
+                   //       This function implements an ifstar macro.
+                   IfstarFunction(parser, name) {
+                        const resultstar = parser.GetArgument(name);
+                        const resultnostar = parser.GetArgument(name);
+                        const star = parser.GetStar();                        // true if there is a *
+                        useArgument(parser, star ? resultstar : resultnostar);
+                   },
+
+
+                   //       This function implements an ifnextchar macro.
+                   IfnextcharFunction(parser, name) {
+                        let whichchar = parser.GetArgument(name);
+                        if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+                            // $ syntax highlighting
+                            whichchar = String.fromCodePoint(parseInt(whichchar));
+                        }
+                        const resultnextchar = parser.GetArgument(name);
+                        const resultnotnextchar = parser.GetArgument(name);
+                        const gotchar = (parser.GetNext() === whichchar);
+                        useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+                   },
+
+
+                   // This function implements an ifblank macro.
+                   IfblankFunction(parser, name) {
+                        const blankarg = parser.GetArgument(name);
+                        const resultblank = parser.GetArgument(name);
+                        const resultnotblank = parser.GetArgument(name);
+                        const isblank = (blankarg.trim() == "");
+                        useArgument(parser, isblank ? resultblank : resultnotblank);
+                   },
+
+
+                   // This function implements an ifstrequal macro.
+                   IfstrequalFunction(parser, name) {
+                        const strequalfirst = parser.GetArgument(name);
+                        const strequalsecond = parser.GetArgument(name);
+                        const resultequal = parser.GetArgument(name);
+                        const resultnotequal = parser.GetArgument(name);
+                        const isequal = (strequalfirst == strequalsecond);
+                        useArgument(parser, isequal ? resultequal : resultnotequal);
+                   },
+
+
+                   // This function implements a gsub macro.
+                   GsubstituteFunction(parser, name) {
+                        const gsubfirst = parser.GetArgument(name);
+                        const gsubsecond = parser.GetArgument(name);
+                        const gsubthird = parser.GetArgument(name);
+                        let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+                        useArgument(parser, gsubresult);
+                   },
+
+
+                   //       This function modifies the equation numbers.
+                   SeteqnumberFunction(parser, name) {
+                            //   Get the macro parameters
+                            const star = parser.GetStar();                      // true if there is a *
+                            const optBrackets = parser.GetBrackets(name);        // contents of optional brackets
+                            const newsubequations = parser.GetArgument(name);      // the subequations argument
+                            const neweqsection = parser.GetArgument(name);      // the eq section argument
+                            const neweqnumber = parser.GetArgument(name);        // the eq number argument
+                            MathJax.config.subequations=newsubequations ;       // a string with boolean meaning
+                            MathJax.config.section=neweqsection ;               // a string with numeric meaning
+                            parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+                   }
+
+
+              });
+
+
+              //       Create the Lwarp-macros package
+              Configuration.create('Lwarp-macros', {
+                   handler: {macro: ['Lwarp-macros']}
+              });
+
+
+              MathJax.startup.defaultReady();
+
+
+              // For forward references:
+              MathJax.startup.input[0].preFilters.add(({math}) => {
+                   if (math.inputData.recompile){
+                            MathJax.config.subequations = math.inputData.recompile.subequations;
+                            MathJax.config.section = math.inputData.recompile.section;
+                   }
+              });
+              MathJax.startup.input[0].postFilters.add(({math}) => {
+                   if (math.inputData.recompile){
+                            math.inputData.recompile.subequations = MathJax.config.subequations;
+                            math.inputData.recompile.section = MathJax.config.section;
+                   }
+              });
+
+
+                   // For \left, \right with unicode-math:
+                   const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+                   const {Symbol} = MathJax._.input.tex.Symbol;
+                   const {MapHandler} = MathJax._.input.tex.MapHandler;
+                   const delimiter = MapHandler.getMap('delimiter');
+                   delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+                   delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+                   delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+                   delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+                   delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+                   delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+                   delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+                   delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+                   delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+                   delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+                   delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+                   delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+                   delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+                   delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+                   delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+                   delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+                   delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+                   delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+                   delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+                   delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+                   delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+                   delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+                   delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+                   delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+                   delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+                   delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+                   delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+                   delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+                   delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+                   delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+                   delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+                   delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+                   delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+                   delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+                   delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+                   delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+                   delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+                   delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+                   delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+          }       // ready
+     },           // startup
+
+
+     tex: {
+          packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+          tags: "ams",
+                   tagformat: {
+                            number: function (n) {
+                                 if(MathJax.config.subequations==0)
+                                        return(MathJax.config.section + n);
+                                 else
+                                        return(MathJax.config.section + String.fromCharCode(96+n));
+                            },
+                   },
+     }
+}
+</script>
+
+
+<script
+          id="MathJax-script"
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<div class="bodywithoutsidetoc">
+
+
+<main class="bodycontainer">
+
+
+<section class="textbody">
+
+<a id="SpatInstab-autofile-0"></a>
+
+<!--MathJax customizations:-->
+
+
+<div class="hidden">
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+</div>
+
+<a id="SpatInstab-autopage-1"></a>
+
+<p>
+
+</p>
+<div class="center">
+
+<p>
+<span
+    class="fbox"
+    style="display:inline-block ; border:1pt solid #000000; padding:3pt ; color:#000000"
+><span
+    class="makebox"
+    style="display:inline-block ; "
+                                 &#x2003;&#x2003;Jan                2024
+> &#x2003;&#x2003;LM Advanced Mathematical Biology 31128 &#x2003;&#x2003;                </span></span>
+</p>
+</div>
+
+<p>
+David S. Tourigny, School of Mathematics, University of Birmingham
+</p>
+
+<p>
+Disclaimer: These notes have not been subjected to the usual scrutiny reserved for formal publications. Please let me know if you identify any errors. The material is based on a similar course previously taught by Tom
+Montenegro-Johnson at the University of Birmingham
+</p>
+<!--
+...... section Part 5: Spatial instabilities ......
+-->
+<h4 id="autosec-3">Part 5: Spatial instabilities</h4>
+<a id="SpatInstab-autopage-3"></a>
+
+
+<p>
+In this part of the course we will consider a few more systems of two species interacting within a spatial domain. We shall explore two types of instabilities that can occur in these systems, which includes the work in mathematical
+biology done by Alan Turing.
+</p>
+<!--
+...... section Patlak-Keller-Segel microbial taxis models ......
+-->
+<h4 id="autosec-4"><span class="sectionnumber">5.1&#x2003;</span>Patlak-Keller-Segel microbial taxis models</h4>
+<a id="SpatInstab-autopage-4"></a>
+
+
+<p>
+Taxis is the movement of organisms in response to a stimulus (often chemical, but not always). Classic examples are the swimming of bacteria towards higher nutrient concentrations or the spatial coordination of single cells to form
+multi-cellular structures in response to secreted signals. Early descriptions of chemotaxis were provided by W. Engelmann (1881) and W. F. Pfeffer (1884) in bacteria, and H. S. Jennings (1906) in ciliates. Theoretical and
+mathematical models of chemotaxis originated with the works of C. S. Patlak in the 1950s and were further developed by E. F. Keller and L. A. Segel in the 1970s. In this section, we will introduce and study some of their models
+for bacteria and cellular slime molds (the amoeba Dictyostelium discoideum).
+</p>
+<!--
+...... subsection Taxis flux based on external signals ......
+-->
+<h5 id="autosec-5"><span class="sectionnumber">5.1.1&#x2003;</span>Taxis flux based on external signals</h5>
+<a id="SpatInstab-autopage-5"></a>
+
+
+<p>
+We previously suggested that (chemo)taxis could be modelled by taking a conservative advective flux vector: one that is given as the gradient of some scalar field \({\bf v} = \chi \nabla \phi \), where here we have used the
+proportionality constant \(\chi \) to capture the direction and magnitude of the response to signal \(\phi = \phi ({\bf x},t)\). We first assume that the concentration field \(\phi \) is external to the organism, i.e. not effected
+by the concentration of cells, \(c\). This would be the case for phytoplankton, for example, which tend to move towards regions with higher light. For that scenario, \(\phi \) would depend on the intensity of light in sea water.
+</p>
+
+<p>
+Substituting \({\bf v} = \chi \nabla \phi \) into the reaction-advection-diffusion equation and assuming that there is no growth or death of phytoplankton over the timeframe of interest, we obtain
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{0}\)</span>
+
+<!--
+
+                                                                                           ∂c
+                                                                                              = ∇ · (D∇c) − ∇ · (χc∇ϕ) = ∇ · (D∇c − χc∇ϕ)                                                       (5.1)--><a id="phototaxis"></a><!--
+                                                                                           ∂t
+
+-->
+
+<p>
+
+\begin{equation}
+\label {phototaxis} \frac {\partial c}{\partial t} = \nabla \cdot ( D \nabla c) - \nabla \cdot (\chi c \nabla \phi ) = \nabla \cdot ( D \nabla c - \chi c \nabla \phi )
+\end{equation}
+
+</p>
+
+<p>
+where \(c=c({\bf x},t)\) denotes the concentration and \(D\) is their coefficient of diffusion in sea water. This equation therefore describes movement of phytoplankton by both random motion (diffusion) and taxis, which involves
+movement towards regions with higher light intensity if \(\chi &gt; 0\). We now make the simplifying assumption that light is spread uniformly in the \(x\) and \(y\) directions, so that \(\phi = \phi (z)\) only varies by
+depth, \(z\). We simplify by reducing equation <a href="SpatInstab.html#phototaxis">5.1</a> to one spatial dimension
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{1}\)</span>
+
+<!--
+
+                                                                                                                               
+                                                                                                        ∂c   ∂       ∂c      ∂ϕ
+                                                                                                           =       D    − χc                                                                                                         (5.2)
+                                                                                                        ∂t   ∂z      ∂z      ∂z
+
+-->
+
+<p>
+
+\begin{equation}
+\frac {\partial c}{\partial t} = \frac {\partial }{\partial z} \left ( D \frac {\partial c}{\partial z} - \chi c \frac {\partial \phi }{\partial z} \right )
+\end{equation}
+
+</p>
+
+<p>
+where we have also assumed that the diffusion coefficient is constant throughout. We furthermore impose that the phytoplankton are confined to a region of space \([0,L]\), such that there can be none that enter or leave the
+domain.
+</p>
+
+<p>
+To find a steady state solution to this equation, set \(\partial c / \partial t = 0\) to obtain
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{2}\)</span>
+
+<!--
+
+                                                                                                           dJ            dc     dϕ
+                                                                                                      0=      ,   J ≡D      − χc ,                                                                                                   (5.3)
+                                                                                                           dz            dz     dz
+
+-->
+
+<p>
+
+\begin{equation}
+0 = \frac {dJ}{dz} , \quad J \equiv D \frac {d c}{d z} - \chi c \frac {d \phi }{dz},
+\end{equation}
+
+</p>
+
+<p>
+which shows that the flux \(J\) must be constant. Since it must also vanish at the boundaries \(J(0) = J(L) = 0\), we therefore have \(J = 0\) everywhere, which implies
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{3}\)</span>
+
+<!--
+
+                                                                                                        1 dc   d            χ dϕ
+                                                                                                             =    (log c) =                                                                                                          (5.4)
+                                                                                                        c dz   dz           D dz
+
+-->
+
+<p>
+
+\begin{equation}
+\frac {1}{c} \frac {d c}{d z} = \frac {d}{dz} (\log c)= \frac {\chi }{D} \frac {d \phi }{dz}
+\end{equation}
+
+</p>
+
+<p>
+and we integrate both sides over \(z\) to obtain
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{4}\)</span>
+
+<!--
+
+                                                                                                                                   
+                                                                                                                            χϕ(z)
+                                                                                                        c(z) = c0 exp                   .                                                                                            (5.5)
+                                                                                                                             D
+
+-->
+
+<p>
+
+\begin{equation}
+c(z) = c_0 \exp \left ( \frac {\chi \phi (z)}{D} \right ) .
+\end{equation}
+
+</p>
+
+<p>
+Here \(c_0\) is a normalisation constant such that the integral of \(c(z)\) over the interval \([0,L]\) equals the total number of cells. We could take, for example, \(\phi \) to be directly proportional to the intensity of light, for
+which the Bouguer-Beer-Lambert law says that we have exponential attenuation in water such that
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{5}\)</span>
+
+<!--
+
+
+                                                                                                           ϕ(z) = ϕ0 exp(−µz).                                                                                                       (5.6)
+
+-->
+
+<p>
+
+\begin{equation}
+\phi (z) = \phi _0 \exp (- \mu z) .
+\end{equation}
+
+</p>
+<!--
+...... subsection Keller-Segel chemotaxis model ......
+-->
+<h5 id="autosec-6"><span class="sectionnumber">5.1.2&#x2003;</span>Keller-Segel chemotaxis model</h5>
+<a id="SpatInstab-autopage-6"></a>
+
+
+<p>
+Previously, we assumed that the sensed signal \(\phi \) is not altered by the microorganism (e.g. light intensity at a given depth is not effected by concentration of phytoplankton) nor transported via diffusion. Often these are not
+valid assumptions however, as is particularly true in cases where the signalling molecule is a small chemical produced by the microorganism itself. One example is the aggregation of slime molds (D. discoideum), where individual
+amoebae produce the signalling molecule, cyclic AMP (cAMP), which then attracts others through chemotaxis. We assume that the rate of cAMP production in any given region of space is proportional to the concentration of
+amoeba in that region. cAMP is unstable and degrades in the environment, and we assume first-order reaction kinetics so that the rate of its degradation is described by a linear function of its concentration. Thus, given a fixed
+concentration of amoeba \(c\) and synthesis and degradation rate constants \(\alpha &gt; 0\) and \(\beta &gt; 0\), respectively, the temporal evolution of the concentration \(\phi \) of cAMP is determined by
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{6}\)</span>
+
+<!--
+
+                                                                                                                                dϕ
+                                                                                                                                   = αc − βϕ.                                                      (5.7)--><a id="camptime"></a><!--
+                                                                                                                                dt
+
+-->
+
+<p>
+
+\begin{equation}
+\label {camptime} \frac {d \phi }{dt} = \alpha c - \beta \phi .
+\end{equation}
+
+</p>
+
+<p>
+Furthermore, assuming amoebae are produced at some constant rate \(\gamma \) and die with first order rate constant \(\delta &gt; 0\), we have
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{7}\)</span>
+
+<!--
+
+                                                                                                                                    dc
+                                                                                                                                       = γ − δc.                                                (5.8)--><a id="amoebatime"></a><!--
+                                                                                                                                    dt
+
+-->
+
+<p>
+
+\begin{equation}
+\label {amoebatime} \frac {d c}{dt} = \gamma - \delta c .
+\end{equation}
+
+</p>
+
+<p>
+Allowing for spatial variation including transport by both diffusion and chemotaxis, these assumptions result in the coupled reaction-advection-diffusion equations
+</p>
+<span class="hidden"> \(\seteqnumber{0}{}{8}\)</span>
+
+
+<!--
+
+
+                                                                                                                 ∂c
+                                                                                                                    = ∇ · (Dc ∇c − χc∇ϕ) + γ − δc                      (5.9)                              --><a id="amoeba"></a><!--
+                                                                                                                 ∂t
+                                                                                                                 ∂ϕ
+                                                                                                                    = ∇ · (Dϕ ∇ϕ) + αc − βϕ                             (5.10)                              --><a id="camp"></a><!--
+                                                                                                                 ∂t
+
+
+-->
+
+
+<p>
+
+\begin{align}
+\label {amoeba} \frac {\partial c}{\partial t} &amp;= \nabla \cdot ( D_c \nabla c - \chi c \nabla \phi ) + \gamma - \delta c \\ \label {camp} \frac {\partial \phi }{\partial t} &amp;= \nabla
+\cdot ( D_\phi \nabla \phi ) + \alpha c - \beta \phi
+\end{align}
+where we have introduced separate diffusion coefficients for amoeba (\(D_c\)) and cAMP (\(D_\phi \)), both constant. We also take \(\chi &gt; 0\) since cAMP is attracting.
+</p>
+
+<p>
+To understand the aggregation of slime molds, we are interested in solutions where \(c\) is not homogenous in space. For simplicity, we model a one-dimensional spatial domain parametrised by \(x\). A homogenous solution to the
+coupled system (<a href="SpatInstab.html#amoeba">5.9</a>-<a href="SpatInstab.html#camp">5.10</a>) at steady state is one where \(c(x,t) = c_0 \), \(\phi (x,t) = \phi _0 \), i.e. concentrations of both amoeba
+and cAMP are constant in space and time. In particular, this implies that
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{10}\)</span>
+
+<!--
+
+                                                                                                                                     γ             αγ
+                                                                                                                              c0 =     ,   ϕ0 =                                                                                     (5.11)
+                                                                                                                                     δ             βδ
+
+-->
+
+<p>
+
+\begin{equation}
+c_0 = \frac {\gamma }{\delta } , \quad \phi _0 = \frac {\alpha \gamma }{\beta \delta }
+\end{equation}
+
+</p>
+
+<p>
+and we see that the Jacobian of the local dynamics described by equations (<a href="SpatInstab.html#camptime">5.7</a>-<a href="SpatInstab.html#amoebatime">5.8</a>) is
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{11}\)</span>
+
+<!--
+
+                                                                                                      
+                                                                                              −δ     0
+                                                                    J ≡ J(c0 , ϕ0 ) =                    ,                                                             (5.12)                              --><a id="Jacob"></a><!--
+                                                                                              α     −β
+
+-->
+
+<p>
+
+\begin{equation}
+\label {Jacob} {\bf J} \equiv {\bf J}(c_0,\phi _0) = \begin{pmatrix} -\delta &amp; 0 \\ \alpha &amp; -\beta \end {pmatrix} ,
+\end{equation}
+
+</p>
+
+<p>
+which has eigenvalues \(-\delta ,-\beta &lt; 0\) so that \((c_0,\phi _0)\) is stable steady state solution when \(D_c =D_\phi =0\). To trigger aggregation, conditions must be such that a homogenous solution becomes
+unstable to small perturbations when \(D_c,D_\phi \neq 0\). We consider small perturbations of the form
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{12}\)</span>
+
+<!--
+
+
+                                                                                                         c(x, t) = c0 + C(x, t),           ϕ(x, t) = ϕ0 + Φ(x, t).                                                                  (5.13)
+
+-->
+
+<p>
+
+\begin{equation}
+c(x,t) = c_0 + C(x,t), \quad \phi (x,t) = \phi _0 + \Phi (x,t) .
+\end{equation}
+
+</p>
+
+<p>
+Substitution into <a href="SpatInstab.html#amoeba">5.9</a>-<a href="SpatInstab.html#camp">5.10</a> gives
+</p>
+<span class="hidden"> \(\seteqnumber{0}{}{13}\)</span>
+
+
+<!--
+
+
+                                                                                                                                      
+                                                                                                      ∂C   ∂      ∂C               ∂Φ
+                                                                                                         =     Dc     − χ(c0 + C)        − δC
+                                                                                                      ∂t   ∂x     ∂x                ∂x
+                                                                                                             ∂2C                ∂ 2 Φ ∂C ∂Φ
+                                                                                                                                              
+                                                                                                         = Dc 2 − χ (c0 + C) 2 +                 − δC
+                                                                                                             ∂x                 ∂x       ∂x ∂x
+                                                                                                             ∂2C    χγ ∂ 2 Φ
+                                                                                                         ≈ Dc 2 −            − δC
+                                                                                                             ∂x      δ ∂x2
+                                                                                                      ∂Φ     ∂2Φ
+                                                                                                         = Dϕ 2 + αC − βΦ,
+                                                                                                      ∂t     ∂x
+
+
+-->
+
+
+<p>
+
+\begin{align*}
+\frac {\partial C}{\partial t} &amp;= \frac {\partial }{\partial x} \left ( D_c\frac {\partial C}{\partial x} - \chi (c_0+C) \frac {\partial \Phi }{\partial x}\right ) - \delta C \\ &amp;= D_c
+\frac {\partial ^2 C}{\partial x^2} - \chi \left ( (c_0 + C) \frac {\partial ^2 \Phi }{\partial x^2} + \frac {\partial C}{\partial x} \frac {\partial \Phi }{\partial x} \right ) - \delta C \\
+&amp;\approx D_c \frac {\partial ^2 C}{\partial x^2} - \frac { \chi \gamma }{\delta }\frac {\partial ^2 \Phi }{\partial x^2} - \delta C\\ \frac {\partial \Phi }{\partial t} &amp;= D_{\phi }
+\frac {\partial ^2 \Phi }{\partial x^2} + \alpha C - \beta \Phi ,
+\end{align*}
+where, in going from the second to third line, we have neglected second order terms in \(C\) and \(\Phi \) since both are small. We consider a particular form of pertubation<sup>1</sup>
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{13}\)</span>
+
+<!--
+
+
+                                                                                                          C(x, t) = Ĉ(t) cos kx,          Φ(x, t) = Φ̂(t) cos kx,                                                                  (5.14)
+
+-->
+
+<p>
+
+\begin{equation}
+C(x,t) = \hat {C} (t) \cos k x , \quad \Phi (x,t) = \hat {\Phi }(t) \cos k x ,
+\end{equation}
+
+</p>
+
+<p>
+which (after substituting and dividing through by \(\cos k x\)) gives the following linear system of ordinary equations:
+</p>
+<span class="hidden"> \(\seteqnumber{0}{}{14}\)</span>
+
+
+<!--
+
+
+
+                                                                                                                     dĈ                           χγ
+                                                                                                                         = −δ Ĉ − k 2 Dc Ĉ + k 2 Φ̂                (5.15)                          --><a id="odesystem1"></a><!--
+                                                                                                                     dt                             δ
+                                                                                                                     dΦ̂
+                                                                                                                         = αĈ − β Φ̂ − k 2 Dϕ Φ̂.                   (5.16)                          --><a id="odesystem2"></a><!--
+                                                                                                                     dt
+
+
+-->
+
+
+<p>
+
+\begin{align}
+\label {odesystem1} \frac {d\hat {C}}{dt} &amp;= - \delta \hat {C}-k^2 D_c \hat {C} + k^2 \frac { \chi \gamma }{\delta } \hat {\Phi } \\ \label {odesystem2} \frac {d\hat {\Phi }}{dt} &amp;=
+\alpha \hat {C} - \beta \hat {\Phi }- k^2 D_\phi \hat {\Phi }.
+\end{align}
+The stability of this linear system therefore determines the stability of the homogenous steady state of the system (<a href="SpatInstab.html#amoeba">5.9</a>-<a href="SpatInstab.html#camp">5.10</a>).
+</p>
+
+<p>
+To evaluate the conditions for instability, we first observe that the corresponding Jacobian is a modified form of the original <a href="SpatInstab.html#Jacob">5.12</a> such that
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{16}\)</span>
+
+<!--
+
+                                                                                                                         
+                                                               −δ     0                  Dc     0               χγ       0   1
+                                                    Jmod =                    − k2                       + k2                   .                                      (5.17)                           --><a id="modJacob"></a><!--
+                                                                α    −β                  0     −Dϕ               δ       0   0
+
+-->
+
+<p>
+
+\begin{equation}
+\label {modJacob} {\bf J}_{\mbox {mod}} = \begin{pmatrix} -\delta &amp; 0 \\ \alpha &amp; -\beta \end {pmatrix} -k^2 \begin{pmatrix} D_c &amp; 0 \\ 0 &amp; -D_\phi \end {pmatrix} + k^2 \frac {
+\chi \gamma }{\delta } \begin{pmatrix} 0 &amp; 1 \\ 0 &amp; 0 \end {pmatrix} .
+\end{equation}
+
+</p>
+
+<p>
+As usual, the conditions for the stability of \((c_0, \phi _0)\) are determined by the characteristic polynomial for eigenvalues
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{17}\)</span>
+
+<!--
+
+
+                                                                                                    det(Jmod − λ1) = λ2 − Tr(Jmod )λ + det(Jmod ) = 0,                                                                              (5.18)
+
+-->
+
+<p>
+
+\begin{equation}
+\mbox {det}({\bf J}_{\mbox {mod}} - \lambda \mathbf {1}) = \lambda ^2 - \mbox {Tr}({\bf J}_{\mbox {mod}}) \lambda + \mbox {det}({\bf J}_{\mbox {mod}}) = 0 ,
+\end{equation}
+
+</p>
+
+<p>
+which we solve using the quadratic formula to obtain
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{18}\)</span>
+
+<!--
+
+                                                                                                             1            q                        
+                                                                                                     λ± =       Tr(Jmod ) ± Tr(Jmod )2 − 4det(Jmod ) .                                                                              (5.19)
+                                                                                                             2
+
+-->
+
+<p>
+
+\begin{equation}
+\lambda _{\pm } = \frac {1}{2} \left ( \mbox {Tr}({\bf J}_{\mbox {mod}}) \pm \sqrt {\mbox {Tr}({\bf J}_{\mbox {mod}})^2 -4 \mbox {det}({\bf J}_{\mbox {mod}})} \right ).
+\end{equation}
+
+</p>
+
+<p>
+From the stability condition \(\mbox {Re}(\lambda _{\pm }) &lt; 0\), we recognise that this implies \(\mbox {Tr}({\bf J}_{\mbox {mod}}) &lt; 0\) and \(\mbox {det}({\bf J}_{\mbox {mod}}) &gt; 0\) for \((c_0,
+\phi _0)\) to be a stable critical point. In particular, we have that
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{19}\)</span>
+
+<!--
+
+
+                                                                                              Tr(Jmod ) = Tr(J) − k 2 (Dc + Dϕ ) = −(δ + β) − k 2 (Dc + Dϕ ) < 0                                                                    (5.20)
+
+-->
+
+<p>
+
+\begin{equation}
+\mbox {Tr}({\bf J}_{\mbox {mod}}) = \mbox {Tr}({\bf J}) - k^2 ( D_c + D_\phi ) = -(\delta + \beta ) - k^2 ( D_c + D_\phi ) &lt; 0
+\end{equation}
+
+</p>
+
+<p>
+where the strict inequality follows because \(D_c,D_\phi \) are both non-negative, and therefore the stability of \((c_0, \phi _0)\) must be established by the determinant. The determinant of \({\bf J}_{\mbox {mod}}\) is
+quadratic in the variable \(k^2\)
+</p>
+<span class="hidden"> \(\seteqnumber{0}{}{20}\)</span>
+
+
+<!--
+
+
+                                                                                                                                                 χγα
+                                                                                                   det(Jmod ) = (δ + k 2 Dc )(β + k 2 Dϕ ) − k 2
+                                                                                                                                                  δ
+                                                                                                                  2 2            2
+                                                                                                                                                    χγα 
+                                                                                                              = (k ) Dc Dϕ + k Dc β + Dϕ δ −               + δβ
+                                                                                                                                                      δ
+
+
+-->
+
+
+<p>
+
+\begin{align*}
+\mbox {det}({\bf J}_{\mbox {mod}} ) &amp;= (\delta + k^2D_c)(\beta + k^2 D_\phi ) - k^2 \frac {\chi \gamma \alpha }{\delta } \\ &amp;= (k^2)^2D_cD_\phi + k^2\left (D_c \beta + D_\phi \delta -
+\frac {\chi \gamma \alpha }{\delta }\right ) + \delta \beta
+\end{align*}
+and, if it remains positive for all values of \(k^2\), then the homogenous steady state remains stable. However, if it becomes negative for some value of \(k^2\) then we have a spatial instability. The condition for the determinant of
+the modified Jacobian to be negative is
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{20}\)</span>
+
+<!--
+
+                                                χγα   (δ + k 2 Dc )(β + k 2 Dϕ )
+                                                    >                            .                                                                      (5.21)                                 --><a id="instabcondition"></a><!--
+                                                 δ                k2
+
+-->
+
+<p>
+
+\begin{equation}
+\label {instabcondition} \frac {\chi \gamma \alpha }{\delta } &gt; \frac {(\delta + k^2 D_c)(\beta + k^2 D_\phi )}{k^2} .
+\end{equation}
+
+</p>
+
+<p>
+If we take fixed values of \(\alpha , \beta , \gamma ,\delta , D_c, D_\phi \) and slowly increase \(\chi \) from zero, then at some point there will be a critical value \(\chi ^*\) beyond which the inequality for instability
+is satisfied for some critical wavenumber \(k^*\). That is to say, \(k^*\) is the minimum of the right-hand side and it is the mode \(\cos k^* x\) that will be the first to grow when \(\chi \) passes \(\chi ^*\). More
+specifically, \(k^*\) will depend on the boundary conditions the value of \(\chi ^*\) reflects the strength of chemotaxis required to generate aggregation.
+</p>
+<div role="note" class="footnotes">
+
+<a id="SpatInstab-autopage-7"></a>
+<p>
+<sup>1</sup>&nbsp;More general forms of perturbation and higher dimensions were considered in the original paper Journal of Theoretical Biology Vol. 26, 399-415 with qualitatively comparable results. We shall be more explicit
+about where this particular form of perturbation comes from in the next subsection and exercises.
+</p>
+
+
+</div>
+<!--
+...... section Chemical basis for morphogenesis ......
+-->
+<h4 id="autosec-8"><span class="sectionnumber">5.2&#x2003;</span>Chemical basis for morphogenesis</h4>
+<a id="SpatInstab-autopage-8"></a>
+
+
+<p>
+Patterns are everywhere in biology: from the spots or stripes on the coats of large cats to the regular arrangement of different cell types within a tissue. When Turing turned his hand to biology in the early 1950s<sup>2</sup>, he
+suggested a general theory for pattern formation by which simple signalling molecules and chemicals (which he called morphogens) could generate this type of complexity when coupled by a reaction-diffusion mechanism. Unlike in
+the chemotaxis model, where an active advection process drives slime molds up a concentration gradient to trigger aggregation, it was initially assumed that spatial instabilities could not be driven by diffusion alone. Turing’s work
+challenged this preconception and led to an explosion of new ideas in mathematical biology.
+</p>
+<div role="note" class="footnotes">
+
+<a id="SpatInstab-autopage-9"></a>
+<p>
+<sup>2</sup>&nbsp;After making a series of monumental contributions to the fields of mathematical logic, computer science and cryptography, among others...
+</p>
+
+
+</div>
+<!--
+...... subsection Diffusion-driven spatial instabilities ......
+-->
+<h5 id="autosec-10"><span class="sectionnumber">5.2.1&#x2003;</span>Diffusion-driven spatial instabilities</h5>
+<a id="SpatInstab-autopage-10"></a>
+
+
+<p>
+Turing’s suggestion was to consider two morphogens with concentrations \(u(\mathbf {x},t)\) and \(v(\mathbf {x},t)\) that can interact or react chemically, and diffuse with diffusion coefficients \(D_u\) and \(D_v\),
+respectively. By now, we already know very well what such a system looks like mathematically:
+</p>
+<span class="hidden"> \(\seteqnumber{0}{}{21}\)</span>
+
+
+<!--
+
+
+                                                                                                          ∂u
+                                                                                                             = ∇ · (Du ∇u) + f (u, v)                                    (5.22)                          --><a id="fullu"></a><!--
+                                                                                                          ∂t
+                                                                                                          ∂v
+                                                                                                             = ∇ · (Dv ∇v) + g(u, v)                                     (5.23)                          --><a id="fullv"></a><!--
+                                                                                                          ∂t
+
+
+-->
+
+
+<p>
+
+\begin{align}
+\label {fullu} \frac {\partial u}{\partial t} &amp;= \nabla \cdot ( D_u \nabla u ) + f(u,v) \\ \label {fullv} \frac {\partial v}{\partial t} &amp;= \nabla \cdot ( D_v \nabla v) + g(u,v)
+\end{align}
+where \(f,g: \mathbb {R}^2 \to \mathbb {R}\) are general functions that describe the reaction term. This system appears quite similar to the Keller-Segel chemotaxis model, where two variables (in that case amoeba and
+cAMP) interact in a spatial-temporal domain and we will ask under what conditions the spatially homogenous (non-pattern) state becomes unstable (to drive pattern formation). However, there is a very important difference. In the
+Keller-Segel model, part of the interaction between amoeba and cAMP was described by an additional derivative term (recall the gradient parameter \(\chi &gt; 0\)) that explained the tendency of amoeba to move towards
+regions of space with higher concentrations of cAMP. In turn, this necessarily driving conditions where the spatially homogenous constant solution becomes unstable, leading to aggregation. On the contrary, in the reaction-diffusion
+system described by (<a href="SpatInstab.html#fullu">5.22</a>), (<a href="SpatInstab.html#fullv">5.23</a>), the only interaction between \(u\) and \(v\) occurs in the reaction terms. Since diffusion on its own has a
+tendency to smooth out gradients over time, a natural expectation is that the diffusive coupling of \(u\) and \(v\) should increase the stability of the spatially homogenous constant solution. Turing derived the conditions under
+which this (apparently reasonable) expectation turns out not to be true!
+</p>
+
+<p>
+We will first assume stability of a steady state solution to the set of homogenous reaction equations in the absence of diffusion (set \(D_u = D_v = 0\) in <a href="SpatInstab.html#fullu">5.22</a> and <a
+href="SpatInstab.html#fullv">5.23</a> as we did in the Keller-Segel model), given by \(u=u_0, v=v_0\) such that \(f(u_0,v_0) = g(u_0,v_0) = 0\). The Jacobian matrix of the reaction system at this critical point is given
+by
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{23}\)</span>
+
+<!--
+
+                                                                                                                                                  
+                                                                                                                              fu              fv
+                                                                                                           J ≡ J(u0 , v0 ) =                                                                                                     (5.24)
+                                                                                                                               gu             gv
+
+-->
+
+<p>
+
+\begin{equation}
+{\bf J} \equiv {\bf J}(u_0,v_0) = \begin{pmatrix} f_u &amp; f_v \\ g_u &amp; g_v \end {pmatrix}
+\end{equation}
+
+</p>
+
+<p>
+where here we have used shorthand \(f_u = \partial f(u_0,v_0)/\partial u\), \(g_v = \partial g(u_0,v_0)/\partial v\),... and so on for partial derivatives evaluated at the steady state (important not to confuse this
+with the component notation for vectors or subscripts on diffusion coefficients!). As before, the stability condition \(\mbox {Re}(\lambda _{\pm }) &lt; 0\) for eigenvalues of \({\bf J} \) implies \(\mbox {Tr}({\bf J}) &lt;
+0\) and \(\mbox {det}({\bf J}) &gt; 0\) for \((c_0, \phi _0)\) to be a stable critical point of the homogenous system. Our assumption therefore requires
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{24}\)</span>
+
+<!--
+
+
+                                                                                           Tr(J) = fu + gv < 0 and                 det(J) = fu gv − fv gu > 0.                                                                   (5.25)
+
+-->
+
+<p>
+
+\begin{equation}
+\mbox {Tr}({\bf J}) = f_u + g_v &lt; 0 \quad \mbox {and} \quad \mbox {det}({\bf J}) = f_u g_v- f_vg_u &gt; 0 .
+\end{equation}
+
+</p>
+
+<p>
+In the first instance when adding back in diffusion, we consider a one-dimensional spatial domain as for the Keller-Segel model and make the same type of perturbation to the homogenous steady state so that
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{25}\)</span>
+
+<!--
+
+
+                                                                                                u(x, t) = u0 + U (x, t),           v(x, t) = v0 + V (x, t)                                                                       (5.26)
+
+-->
+
+<p>
+
+\begin{equation}
+u(x,t) = u_0 + U(x,t) , \quad v(x,t) = v_0 + V(x,t)
+\end{equation}
+
+</p>
+
+<p>
+with
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{26}\)</span>
+
+<!--
+
+
+                                                                                                U (x, t) = Û (t) cos kx,          V (x, t) = V̂ (t) cos kx.                                                                     (5.27)
+
+-->
+
+<p>
+
+\begin{equation}
+U(x,t) = \hat {U} (t) \cos k x , \quad V(x,t) = \hat {V}(t) \cos k x .
+\end{equation}
+
+</p>
+
+<p>
+The linearised system is then given by
+</p>
+<span class="hidden"> \(\seteqnumber{0}{}{27}\)</span>
+
+
+<!--
+
+
+
+                                                                                                          dÛ
+                                                                                                              = fu Û + fv V̂ − k 2 Du Û
+                                                                                                          dt
+                                                                                                          dV̂
+                                                                                                              = gu Û + gv V̂ − k 2 Dv V̂
+                                                                                                          dt
+
+
+-->
+
+
+<p>
+
+\begin{align*}
+\frac {d\hat {U}}{dt} &amp;= f_u \hat {U} + f_v \hat {V} - k^2 D_u \hat {U} \\ \frac {d\hat {V}}{dt} &amp;= g_u \hat {U} + g_v \hat {V} - k^2 D_v \hat {V}
+\end{align*}
+with modified Jacobian
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{27}\)</span>
+
+<!--
+
+                                                                                                                                                         
+                                                                                                                   fu     fv                  Du       0
+                                                                                                     Jmod =                        − k2                                                                                          (5.28)
+                                                                                                                   gu     gv                   0       Dv
+
+-->
+
+<p>
+
+\begin{equation}
+{\bf J}_{\mbox {mod}} = \begin{pmatrix} f_u &amp; f_v \\ g_u &amp; g_v \end {pmatrix} - k^2 \begin{pmatrix} D_u &amp; 0 \\ 0 &amp; D_v \end {pmatrix}
+\end{equation}
+
+</p>
+
+<p>
+and again we see that \(\mbox {Tr}({\bf J}_{\mbox {mod}}) = \mbox {Tr}({\bf J})- k^2(D_u+D_v) &lt; 0 \). To get a spatial instability we therefore require the determinant to be negative, which is given by the following
+quadratic \(Q\) in \(k^2\):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{28}\)</span>
+
+<!--
+
+
+                                                   det(Jmod ) = Du Dv k 4 − (Du gv + Dv fu )k 2 + fu gv − fv gu ≡ Q(k 2 ).                                               (5.29)                          --><a id="quadq"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {quadq} \mbox {det}({\bf J}_{\mbox {mod}}) = D_uD_v k^4 -(D_ug_v +D_vf_u) k^2 + f_ug_v - f_vg_u \equiv Q(k^2) .
+\end{equation}
+
+</p>
+
+<p>
+Since we are looking for \(Q(k^2)&lt; 0\) with argument \(k^2 &gt; 0\), and we have already assumed that \(f_ug_v - f_vg_u &gt; 0\), by looking at <a href="SpatInstab.html#quadq">5.29</a> we see this necessarily
+implies the condition
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{29}\)</span>
+
+<!--
+
+
+                                                                                                               Du gv + Dv fu > 0.                                                                                                (5.30)
+
+-->
+
+<p>
+
+\begin{equation}
+D_ug_v +D_vf_u &gt; 0.
+\end{equation}
+
+</p>
+
+<p>
+The above condition is not sufficiently strong, however. We also recognise the leading coefficient of \(Q(z)\) is positive and therefore it defines upwards opening parabola. If \(Q(k^2)&lt; 0\) for some wavenumber \(k\) we must
+furthermore have that the minimum of \(Q(z)\) is negative, so we set the derivative to zero
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{30}\)</span>
+
+<!--
+
+                                                                                                          dQ
+                                                                                                    0=       = 2Du Dv z − (Du gv + Dv fu )                                                                                       (5.31)
+                                                                                                          dz
+
+-->
+
+<p>
+
+\begin{equation}
+0 = \frac {dQ}{dz} = 2D_u D_v z - (D_ug_v +D_vf_u)
+\end{equation}
+
+</p>
+
+<p>
+and find the minimum is attained at
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{31}\)</span>
+
+<!--
+
+                                                                                                                        (Du gv + Dv fu )
+                                                                                                             z∗ =                        .                                                                                       (5.32)
+                                                                                                                            2Du Dv
+
+-->
+
+<p>
+
+\begin{equation}
+z^* = \frac {(D_ug_v +D_vf_u) }{2D_u D_v} .
+\end{equation}
+
+</p>
+
+<p>
+Substituting for \(z^*\) we find the minimum value of \(Q(z)\) to be
+</p>
+<span class="hidden"> \(\seteqnumber{0}{}{32}\)</span>
+
+
+<!--
+
+
+                                                                                              (Du gv + Dv fu )2     (Du gv + Dv fu )(Du gv + Dv fu )
+                                                                          Q∗ = Q(z ∗ ) = Du Dv              2
+                                                                                                                 −                                   + fu gv − fv gu
+                                                                                                 4(Du Dv )                     2Du Dv
+                                                                                          (Du gv + Dv fu )2
+                                                                                       =−                    + fu gv − fv gu ,
+                                                                                              4Du Dv
+
+
+-->
+
+
+<p>
+
+\begin{align*}
+Q^* = Q(z^*) &amp;= D_uD_v\frac {(D_ug_v+D_vf_u)^2}{4(D_uD_v)^2} - \frac {(D_ug_v+D_vf_u)(D_ug_v+D_vf_u)}{2 D_u D_v} + f_u g_v - f_vg_u \\ &amp;= -\frac {(D_ug_v+D_vf_u)^2}{4D_uD_v} + f_u g_v
+- f_vg_u ,
+\end{align*}
+which, from the condition \(Q^* &lt; 0\), we can obtain the condition for spatial instability
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{32}\)</span>
+
+<!--
+
+                                                                                                       (Du gv + Dv fu )2
+                                                                                                                         > fu gv − fv gu .                                                                                       (5.33)
+                                                                                                           4Du Dv
+
+-->
+
+<p>
+
+\begin{equation}
+\frac {(D_ug_v+D_vf_u)^2}{4D_uD_v} &gt; f_u g_v - f_vg_u .
+\end{equation}
+
+</p>
+
+<p>
+To summarise, we have therefore arrived at a set of necessary conditions (Turing conditions) for spatial instability of the homogenous steady state solution to the reaction-diffusion system (<a
+href="SpatInstab.html#fullu">5.22</a>-<a href="SpatInstab.html#fullv">5.23</a>). These are
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{33}\)</span>
+
+<!--
+
+
+                                                                                                        fu + gv < 0,           fu gv − fv gu > 0                                                                                 (5.34)
+
+-->
+
+<p>
+
+\begin{equation}
+f_u + g_v &lt; 0 , \quad f_u g_v - f_v g_u &gt; 0
+\end{equation}
+
+</p>
+
+<p>
+and
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{34}\)</span>
+
+<!--
+
+                                                                                                                    (Du gv + Dv fu )2
+                                                                                            Du gv + Dv fu > 0,                        > fu gv − fv gu .                                                                          (5.35)
+                                                                                                                        4Du Dv
+
+-->
+
+<p>
+
+\begin{equation}
+D_ug_v +D_vf_u &gt; 0 , \quad \frac {(D_ug_v+D_vf_u)^2}{4D_uD_v} &gt; f_u g_v - f_vg_u .
+\end{equation}
+
+</p>
+
+<p>
+The first and the third conditions combined imply that the derivatives \(f_u\) and \(g_v\) must be of opposite signs and the ratio of diffusion coefficients \(D_u/D_v\) must be sufficiently far away from one. When these conditions
+hold, then the unstable modes are those with wavenumbers \(k\) such that \(Q(k^2) &lt; 0\).
+</p>
+<!--
+...... subsection Activator-inhibitor and activator-substrate systems ......
+-->
+<h5 id="autosec-11"><span class="sectionnumber">5.2.2&#x2003;</span>Activator-inhibitor and activator-substrate systems</h5>
+<a id="SpatInstab-autopage-11"></a>
+
+
+<p>
+In the previous subsection, we saw that the Turing conditions for a spatial instability in a reaction-diffusion system of the form (<a href="SpatInstab.html#fullu">5.22</a>-<a href="SpatInstab.html#fullv">5.23</a>)
+includes the condition that \(f_u\) and \(g_v\) (the partial derivatives of \(f\) and \(g\), respectively, evaluated at the homogenous steady state) must be of opposite sign. If, for example, \(g_v &lt; 0 &lt; f_u\), then we can
+think of the chemical \(u\) as an “activator” since \(f_u &gt;0\) implies that a small increase in \(u\) drives a further increase. Since \(g_v &lt;0\), the chemical \(v\) has the opposing effect and as such is called an inhibitor (or
+substrate). Such systems with relevance to biology are called activator-inhibitor or activator-substrate systems. We consider an explicit example:
+</p>
+<span class="hidden"> \(\seteqnumber{0}{}{35}\)</span>
+
+
+<!--
+
+
+                                                                                                      ∂u
+                                                                                                         = (a − u + u2 v) + ∇ · (Du ∇u)
+                                                                                                      ∂t
+                                                                                                      ∂v
+                                                                                                         = (b − u2 v) + +∇ · (Dv ∇v),
+                                                                                                      ∂t
+
+
+-->
+
+
+<p>
+
+\begin{align*}
+\frac {\partial u}{\partial t} &amp;= (a- u +u^2v) + \nabla \cdot ( D_u\nabla u) \\ \frac {\partial v}{\partial t} &amp;= (b- u^2v) + + \nabla \cdot ( D_v\nabla v),
+\end{align*}
+with \(a,b \geq 0\). The homogenous steady state is given by solving the algebraic system
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{35}\)</span>
+
+<!--
+
+
+                                                                                                           a − u + u2 v = b − u2 v = 0,                                                                                              (5.36)
+
+-->
+
+<p>
+
+\begin{equation}
+a - u + u^2v = b - u^2v = 0 ,
+\end{equation}
+
+</p>
+
+<p>
+which is achieved by substituting \(v = b/u^2\) to give
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{36}\)</span>
+
+<!--
+
+                                                                                                                                          b
+                                                                                                           u0 = a + b,         v0 =             .                                                                                    (5.37)
+                                                                                                                                       (a + b)2
+
+-->
+
+<p>
+
+\begin{equation}
+u_0 = a + b, \quad v_0 = \frac {b}{(a+b)^2} .
+\end{equation}
+
+</p>
+
+<p>
+We can then calculate the partial derivatives evaluated at the steady state:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{37}\)</span>
+
+<!--
+
+                                                                                          ∂                                                    2b   b−a
+                                                                                   fu =      (a − u + u2 v)           = (−1 + 2u0 v0 ) = −1 +     =                                                                                  (5.38)
+                                                                                          ∂u                (u0 ,v0 )                         a+b   a+b
+
+-->
+
+<p>
+
+\begin{equation}
+f_u=\left .\frac {\partial }{\partial u}(a-u+u^2v) \right |_{(u_0,v_0)} =(-1 +2u_0v_0) = -1 +\frac {2b}{a+b} = \frac {b-a}{a+b}
+\end{equation}
+
+</p>
+
+<p>
+and
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{38}\)</span>
+
+<!--
+
+                                                                                                      ∂
+                                                                                               fv =      (a − u + u2 v)           = u20 = (a + b)2                                                                                   (5.39)
+                                                                                                      ∂v                (u0 ,v0 )
+
+
+-->
+
+<p>
+
+\begin{equation}
+f_v=\left .\frac {\partial }{\partial v}(a-u+u^2v) \right |_{(u_0,v_0)} =u^2_0= (a+b)^2
+\end{equation}
+
+</p>
+
+<p>
+and
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{39}\)</span>
+
+<!--
+
+                                                                                                      ∂                                       2b
+                                                                                               gu =      (b − u2 v)           = −2u0 v0 = −                                                                                          (5.40)
+                                                                                                      ∂u            (u0 ,v0 )               a +b
+
+-->
+
+<p>
+
+\begin{equation}
+g_u=\left .\frac {\partial }{\partial u}(b - u^2 v) \right |_{(u_0,v_0)} =-2u_0v_0 = -\frac {2b}{a+b}
+\end{equation}
+
+</p>
+
+<p>
+and
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{40}\)</span>
+
+<!--
+
+                                                                                                      ∂
+                                                                                               gv =      (b − u2 v)           = −u20 = −(a + b)2 .                                                                                   (5.41)
+                                                                                                      ∂v            (u0 ,v0 )
+
+
+-->
+
+<p>
+
+\begin{equation}
+g_v=\left .\frac {\partial }{\partial v}(b - u^2 v) \right |_{(u_0,v_0)} = - u^2_0 = -(a+b)^2 .
+\end{equation}
+
+</p>
+
+<p>
+Since we know that \(f_u\) and \(g_v\) must have opposite signs if we are to have an instability, we see that \(b &gt; a\) is required and we can simplify the model considerably by setting \(a = 0\) so that
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{41}\)</span>
+
+<!--
+
+
+                                                                                                 fu = 1,     f v = b2 ,        gu = −2,           gv = −b2 .                                                                         (5.42)
+
+-->
+
+<p>
+
+\begin{equation}
+f_u = 1, \quad f_v = b^2, \quad g_u = -2, \quad g_v = -b^2 .
+\end{equation}
+
+</p>
+
+<p>
+The Turing conditions are then given by
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{42}\)</span>
+
+<!--
+
+
+                                                                                                              fu + gv = 1 − b2 < 0                                                                                                   (5.43)
+
+-->
+
+<p>
+
+\begin{equation}
+f_u + g_v = 1-b^2 &lt; 0
+\end{equation}
+
+</p>
+
+<p>
+and
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{43}\)</span>
+
+<!--
+
+
+                                                                                                      fu gv − fv gu = −b2 + 2b2 = b2 > 0                                                                                             (5.44)
+
+-->
+
+<p>
+
+\begin{equation}
+f_ug_v - f_vg_u = -b^2 + 2b^2= b^2 &gt; 0
+\end{equation}
+
+</p>
+
+<p>
+and
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{44}\)</span>
+
+<!--
+
+
+                                                                                                      Du gv + Dv fu = −Du b2 + Dv > 0                                                                                                (5.45)
+
+-->
+
+<p>
+
+\begin{equation}
+D_ug_v+D_vf_u = -D_ub^2+D_v &gt; 0
+\end{equation}
+
+</p>
+
+<p>
+and
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{45}\)</span>
+
+<!--
+
+                                                                                          (Du gv + Dv fu )2   (−Du b2 + Dv )2
+                                                                                                            =                 > b2 = fu gv − fv gu .                                                                                 (5.46)
+                                                                                              4Du Dv             4Du Dv
+
+-->
+
+<p>
+
+\begin{equation}
+\frac {(D_ug_v+D_vf_u)^2}{4D_uD_v} = \frac {(-D_ub^2+D_v)^2}{4D_uD_v} &gt; b^2 = f_ug_v - f_vg_u .
+\end{equation}
+
+</p>
+
+<p>
+The first condition is satisfied if we take \(b &gt; 1\), and the second is already satisfied since we set \(a = 0\). Let’s use \(d = D_v/D_u\) to denote the ratio of diffusion coefficients, so that the third condition becomes \(d &gt;
+b^2\). Since we have seen that we must have \(b &gt; 1\), this also says that the ratio of diffusion coefficients must be greater than one. We could take, for example, \(D_u = 1\) and \(D_v = d &gt; b^2\). Substituting these
+values and rearranging the final condition we have
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{46}\)</span>
+
+<!--
+
+
+                                                                                                             (−b2 + d)2 − 4b2 d > 0                                                                                                  (5.47)
+
+-->
+
+<p>
+
+\begin{equation}
+(-b^2 + d)^2 -4b^2d &gt; 0
+\end{equation}
+
+</p>
+
+<p>
+which in expanded form gives
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{47}\)</span>
+
+<!--
+
+                                                                                                                              2                
+                                                                                                 4     2       2          d                  d
+                                                                                                b + d − 6b d =                      −6                + 1 > 0.                                                                       (5.48)
+                                                                                                                          b2                 b2
+
+-->
+
+<p>
+
+\begin{equation}
+b^4 +d^2 - 6b^2d = \left ( \frac {d}{b^2} \right )^2 - 6\left ( \frac {d}{b^2} \right ) +1 &gt; 0 .
+\end{equation}
+
+</p>
+
+<p>
+This final condition is satisfied provided that \(d/b^2\) remains greater than the largest root of the quadratic
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{48}\)</span>
+
+<!--
+
+
+                                                                                                                   z 2 − 6z + 1,                                                                                                     (5.49)
+
+-->
+
+<p>
+
+\begin{equation}
+z^2 - 6 z + 1 ,
+\end{equation}
+
+</p>
+
+<p>
+which is given by
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{49}\)</span>
+
+<!--
+
+                                                                                                               √          √
+                                                                                                      −(−6) + 62 − 4   6 + 32    √
+                                                                                               z+ =                  =        =3+ 8                                                                                                  (5.50)
+                                                                                                             2            2
+
+-->
+
+<p>
+
+\begin{equation}
+z_+ = \frac {-(-6) + \sqrt {6^2 - 4}}{2} = \frac {6 + \sqrt {32}}{2} = 3 + \sqrt {8}
+\end{equation}
+
+</p>
+
+<p>
+and therefore
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{50}\)</span>
+
+<!--
+
+                                                                                                                          √
+                                                                                                            d > (3 +          8)b2 ,    b > 1.                                                                                       (5.51)
+
+-->
+
+<p>
+
+\begin{equation}
+d &gt; (3 + \sqrt {8})b^2 , \quad b &gt; 1 .
+\end{equation}
+
+</p>
+
+<p>
+The last inequalities define a domain in \((b,d)\) parameter space called the Turing space (instead of setting \(a=0\) we could have derived a more general Turing space), within which the homogenous steady state solution is
+unstable to certain spatial perturbations of given wavenumbers. In the next subsection, we will look into these wavenumbers in more detail.
+</p>
+<!--
+...... subsection Wavenumbers, stripes and spots ......
+-->
+<h5 id="autosec-12"><span class="sectionnumber">5.2.3&#x2003;</span>Wavenumbers, stripes and spots</h5>
+<a id="SpatInstab-autopage-12"></a>
+
+
+<p>
+We now turn to investigate the types of patterning that can emerge after perturbations generate a spatial instability. Recall that we previously assumed perturbations on a one-dimensional spatial domain parameterised by \(x\) to
+be proportional to \(\cos (k x)\), for some wavenumber \(k\). This form of perturbation and the corresponding wavenumbers in fact depend on the specific boundary conditions. Generally, let the full reaction-diffusion system
+(<a href="SpatInstab.html#fullu">5.22</a>-<a href="SpatInstab.html#fullv">5.23</a>) be defined on some domain \(B\) with closed boundary \(\partial B\) and impose zero flux boundary conditions
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{51}\)</span>
+
+<!--
+
+                                                                                                                                    
+                                                                                                                                    u
+                                                                                                                           (n · ∇)       =0                                                                                     (5.52)
+                                                                                                                                    v ∂B
+
+-->
+
+<p>
+
+\begin{equation}
+({\bf n} \cdot \nabla ) \left .         \begin{pmatrix} u \\ v \end {pmatrix} \right |_{\partial B}= 0
+\end{equation}
+
+</p>
+
+<p>
+where \({\bf n} \) is the unit outward normal to \(\partial B\). Zero flux boundary conditions imply that there are no external sources or sinks of morphogens. Let \(W({\bf x})\) be the time-independent solution to the
+spatial eigenvalue problem
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{52}\)</span>
+
+<!--
+
+
+                                                                                                        ∇ · ∇W + k 2 W = 0,                  (n · ∇)W |∂B = 0,                                                                  (5.53)
+
+-->
+
+<p>
+
+\begin{equation}
+\nabla \cdot \nabla W + k^2 W = 0, \quad ({\bf n} \cdot \nabla ) W|_{\partial B} = 0 ,
+\end{equation}
+
+</p>
+
+<p>
+where \(k\) is the eigenvalue. We will then linearise the system around the homogenous steady state such that, for \(|{\bf w}|\) small,
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{53}\)</span>
+
+<!--
+
+                                                                                                                                                
+                                                                                                                                   u(x, t) − u0
+                                                                                                                      w(x, t) =                                                                                                 (5.54)
+                                                                                                                                    v(x, t) − v0
+
+-->
+
+<p>
+
+\begin{equation}
+{\bf w}({\bf x},t) = \begin{pmatrix} u ({\bf x},t)- u_0 \\ v ({\bf x},t)- v_0 \end {pmatrix}
+\end{equation}
+
+</p>
+
+<p>
+obeys
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{54}\)</span>
+
+<!--
+
+                                                                                                                                                    
+                                                                                                     ∂w            fu       fv        Du            0
+                                                                                                        =                        w+                      ∇ · ∇w.                                                                (5.55)
+                                                                                                     ∂t             gu      gv         0            Dv
+
+-->
+
+<p>
+
+\begin{equation}
+\frac {\partial {\bf w}}{\partial t} = \begin{pmatrix} f_u &amp; f_v \\ g_u &amp; g_v \end {pmatrix} {\bf w} + \begin{pmatrix} D_u &amp; 0 \\ 0 &amp; D_v \end {pmatrix} \nabla \cdot \nabla
+{\bf w}.
+\end{equation}
+
+</p>
+
+<p>
+We substitute the ansatz
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{55}\)</span>
+
+<!--
+
+                                                                         X ûk (t)
+                                                                    w=                   Wk (x),                                                                           (5.56)                   --><a id="solution"></a><!--
+                                                                              v̂k (t)
+                                                                          k
+
+
+-->
+
+<p>
+
+\begin{equation}
+\label {solution} {\bf w} = \sum _k \begin{pmatrix} \hat {u}_k(t) \\ \hat {v}_k(t) \end {pmatrix} W_k({\bf x}) ,
+\end{equation}
+
+</p>
+
+<p>
+where the sum is over all eigenvalues, to obtain (for each \(k\))
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{56}\)</span>
+
+<!--
+
+
+                                                                                                                           fu − k 2 Du
+                                                                                                                                                               
+                                                                                                   d        ûk                                  fv                ûk
+                                                                                                                      =                                                ,                                                        (5.57)
+                                                                                                   dt       v̂k                gu            gv − k 2 Dv           v̂k
+
+-->
+
+<p>
+
+\begin{equation}
+\frac {d }{d t} \begin{pmatrix} \hat {u}_k \\ \hat {v}_k \end {pmatrix} = \begin{pmatrix} f_u-k^2D_u &amp; f_v \\ g_u &amp; g_v- k^2 D_v \end {pmatrix} \begin{pmatrix} \hat {u}_k \\ \hat {v}_k
+\end {pmatrix} ,
+\end{equation}
+
+</p>
+
+<p>
+which we recognise as the linear system we obtained earlier. In particular, since each \(W_k\) also satisfies the zero flux boundary conditions, the solution (<a href="SpatInstab.html#solution">5.56</a>) must satisfy the
+boundary conditions also.
+</p>
+
+<p>
+We saw previously that satisfying the Turing conditions implies that the quadratic function \(Q\) defined in (<a href="SpatInstab.html#quadq">5.29</a>) achieves its minimum value \(Q^*\) below zero. However, this does not
+necessarily guarantee instability of the homogenous steady state. Now we know where the wavenumbers come from it is clear that, even though \(Q^* &lt; 0\), we still may not have any \(k\) within the range such that \(Q(k^2)
+&lt; 0\). For example, in eigenvalue problems on finite domains we will have a discrete set of wavenumbers that could all lie outside that range. Thankfully, we can determine the limits of that range as given by the roots of \(Q\)
+and then compare those with the known values of \(k\). The quadratic formula gives us the following roots for \(Q\):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{57}\)</span>
+
+<!--
+
+                                                                                                                           p
+                                                                                               (Du gv + Dv fu ) ±           (Du gv + Dv fu )2 − 4Du Dv (fu gv − fv gu )
+                                                                                        z± =                                                                                                                                    (5.58)
+                                                                                                                                  2Du Dv
+
+-->
+
+<p>
+
+\begin{equation}
+z_{\pm } = \frac {(D_ug_v + D_vf_u)\pm \sqrt {(D_ug_v + D_vf_u)^2 - 4D_uD_v (f_ug_v - f_vg_u)}}{2D_uD_v}
+\end{equation}
+
+</p>
+
+<p>
+and therefore for \(Q(k^2) &lt; 0\) we must have that \(k^2\) falls within the range
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{58}\)</span>
+
+<!--
+
+
+                                                                                                                             z− < k 2 < z+ .                                                                                    (5.59)
+
+-->
+
+<p>
+
+\begin{equation}
+z_- &lt; k^2 &lt; z_+ .
+\end{equation}
+
+</p>
+
+<p>
+The eigenfunctions corresponding to wavenumbers that fall within this range are therefore the ones that will grow exponentially in time while all others tend to zero. To make things even more concrete, return to the example and
+the end of the previous subsection where \(D_u =1, D_v =d\) and \(f_u =1, f_v = b^2, g_u = -2, g_v = -b^2\). The roots in this case take the form
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{59}\)</span>
+
+<!--
+
+                                                                                                                                     p
+                                                                                                                          d − b2 ±       (d − b2 )2 − 4db2
+                                                                                                             z± =                                                                                                               (5.60)
+                                                                                                                                          2d
+
+-->
+
+<p>
+
+\begin{equation}
+z_{\pm } = \frac {d-b^2 \pm \sqrt {(d-b^2)^2 - 4db^2}}{2d}
+\end{equation}
+
+</p>
+
+<p>
+and we have already seen that \((d-b^2)^2 - 4db^2 &gt; 0\), meaning both are real. Moreover, both are positive since \(d &gt; (3+\sqrt {8})b^2 &gt; b^2\) (recall that this condition implied the first). We take as our
+spatial domain the one-dimensional interval parameterised by \(x \in [0,L]\) so that the zero flux eigenvalue problem is
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{60}\)</span>
+
+<!--
+
+                                                                                                     d2 W                            dW       dW
+                                                                                                          + k 2 W = 0,                  (0) =    (L) = 0.                                                                       (5.61)
+                                                                                                     dx2                             dx       dx
+
+-->
+
+<p>
+
+\begin{equation}
+\frac {d^2 W}{d x^2} + k^2 W = 0 , \quad \frac {d W}{d x}(0) = \frac {d W}{d x}(L) = 0 .
+\end{equation}
+
+</p>
+
+<p>
+Eigenfunctions are then given by \(W_n (x) \propto \cos (n \pi x/L)\) and wavenumbers take on discrete values \(k_n = n \pi /L\) with \(n = \pm 1, \pm 2 ,...\). The unstable eigenfunctions are then those with
+associated wavenumbers \(k_n\) that lie within the range
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{61}\)</span>
+
+<!--
+
+                                                                                                                                      nπ 2
+                                                                                                                      z− < kn2 =                   < z+ .                                                                       (5.62)
+                                                                                                                                         L
+
+-->
+
+<p>
+
+\begin{equation}
+z_- &lt; k_n^2 = \left ( \frac {n \pi }{L}\right )^2 &lt; z_+ .
+\end{equation}
+
+</p>
+
+<p>
+Finally, moving on to a two-dimensional domain parameterised by \((x,y) \in [0,L_x] \times [0,L_y]\), the eigenfunctions for the zero flux boundary problem are
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{62}\)</span>
+
+<!--
+
+                                                                                                                                                                
+                                                                                                                                         nπx                 mπy
+                                                                                                        Wn,m (x, y) ∝ cos                          cos                 ,                                                        (5.63)
+                                                                                                                                         Lx                  Ly
+
+-->
+
+<p>
+
+\begin{equation}
+W_{n,m}(x,y) \propto \cos \left ( \frac {n \pi x}{L_x}\right ) \cos \left ( \frac {m \pi y}{L_y}\right ) ,
+\end{equation}
+
+</p>
+
+<p>
+with associated wavenumbers
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{63}\)</span>
+
+<!--
+
+                                                                                                                                         n2   m2
+                                                                                                                                                        
+                                                                                                                       2
+                                                                                                                      kn,m = π2             +                .                                                                  (5.64)
+                                                                                                                                         Lx   Ly
+
+-->
+
+<p>
+
+\begin{equation}
+k_{n,m}^2 = \pi ^2 \left ( \frac {n^2}{L_x} + \frac {m^2}{L_y}\right ) .
+\end{equation}
+
+</p>
+
+<p>
+Again, we have that the only modes that will be unstable are those for which
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{64}\)</span>
+
+<!--
+
+                                                                                                                                  2
+                                                                                                                            z− < kn,m < z+ .                                                                                    (5.65)
+
+-->
+
+<p>
+
+\begin{equation}
+z_- &lt; k_{n,m}^2 &lt; z_+ .
+\end{equation}
+
+</p>
+
+<p>
+Consider now a scenario where the domain is very small in one spatial direction, say \(L_y &lt;&lt; L_x\). In that case, the range of possible \(k_{n,m}^2\) values is constrained to those with \(m = 0\) and therefore the only
+unstable modes propagate in the \(x\)-direction, leading to a one-dimensional “striped” pattern arrangement (imagine the long, thin striped tail of a cat). On the other hand, if \(L_x,L_y\) are comparably large, there could be
+several possible \(k^2_{n,m}\) (with \(n,m \neq 0\)) values that fall within the range, and therefore unstable modes will propagate in both spatial directions and generate a two-dimensional “spotted” pattern (imagine the spotted
+coat of a cat). We see how the range of Turing patterns it is possible to generate just from the simplest models is immense.
+</p>
+<div class="theoremcontents">
+
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+<span class="theoremlabel">Exercise 5.1 </span> Consider the following activator-inhibitor system
+</p>
+<span class="hidden"> \(\seteqnumber{0}{}{65}\)</span>
+
+
+<!--
+
+
+
+                                                                                                    ∂.u      u
+                                                                                                        = α − u2 + ∇ · (Du ∇u)
+                                                                                                    ∂t       v
+                                                                                                     ∂v         v
+                                                                                                        = v 2 − 2 + ∇ · (Dv ∇v)
+                                                                                                     ∂t        u
+
+
+
+-->
+
+
+<p>
+
+
+\begin{align*}
+\frac {\partial .     u}{\partial t} &amp;= \alpha \frac {u}{v}- u^2 + \nabla \cdot (D_u \nabla u) \\ \frac {\partial v}{\partial t} &amp;= v^2 - \frac {v}{u^2} + \nabla \cdot (D_v \nabla v)
+\end{align*}
+where \(\alpha \) is a real parameter and \(D_u,D_v \geq 0\) are the diffusion coefficients.
+</p>
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+(a) Find the Jacobian matrix of the reaction system (i.e., when \(D_u=D_v=0\)) evaluated at the non-trivial homogenous steady state \((u_0,v_0) = \mbox {const.} \neq 0\):
+</p>
+<p>
+\[ {\bf J}(u_0,v_0) = \begin {pmatrix} f_u &amp; f_v \\ g_u &amp; g_v \end {pmatrix} .                  \]
+</p>
+</li>
+<li>
+
+
+<p>
+(b) Find the range of \(\alpha \) values that imply \((u_0,v_0)\) is a stable steady state of the reaction system, using the first two Turing conditions
+</p>
+<p>
+\[ f_u + g_v &lt; 0 , \quad f_ug_v -f_vg_u &gt; 0 .\]
+</p>
+</li>
+<li>
+
+
+<p>
+(c) Use the remaining Turing conditions
+</p>
+<p>
+\[ D_ug_v+D_vf_u &gt; 0, \quad \frac {(D_ug_v + D_vf_u)^2}{4D_uD_v} &gt; f_ug_v - f_vg_u \]
+</p>
+<p>
+to obtain an upper bound (involving \(\alpha \)) on the ratio of diffusion coefficients \(d \equiv D_v/D_u\) that is necessary for diffusion-driven instability of \((u_0,v_0)\) when \(D_u, D_v \neq 0\).
+</p>
+<p>
+
+
+</p>
+</li>
+</ul>
+
+</li>
+
+</ul>
+
+</div>
+<div class="theoremcontents">
+
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+<span class="theoremlabel">Exercise 5.2 </span> Consider the Keller-Segel chemotaxis model on a bounded, one-dimensional domain parameterised by \(x \in [0,L]\). We impose zero flux boundary conditions
+</p>
+
+<p>
+\[ \frac {\partial c}{\partial x}(0) =\frac {\partial c}{\partial x}(L) = \frac {\partial \phi }{\partial x}(0) =\frac {\partial \phi }{\partial x}(L) = 0 ,\]
+</p>
+
+<p>
+which implies that there is no external source or sink of amoeba or cAMP.
+</p>
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+(a) Show that a family of solutions to the linearised model
+</p>
+<span class="hidden"> \(\seteqnumber{0}{}{65}\)</span>
+
+
+<!--
+
+
+                                                                                                 ∂C     ∂2C  χγ ∂ 2 Φ
+                                                                                                    = Dc 2 −          − δC
+                                                                                                 ∂t     ∂x    δ ∂x2
+                                                                                                 ∂Φ     ∂2Φ
+                                                                                                    = Dϕ 2 + αC − βΦ
+                                                                                                 ∂t     ∂x
+
+
+-->
+
+
+<p>
+
+
+\begin{align*}
+\frac {\partial C}{\partial t} &amp;= D_c \frac {\partial ^2 C}{\partial x^2} - \frac {\chi \gamma }{\delta }\frac {\partial ^2 \Phi }{\partial x^2} - \delta C \\ \frac {\partial \Phi
+}{\partial t} &amp;= D_\phi \frac {\partial ^2 \Phi }{\partial x^2} + \alpha C - \beta \Phi
+\end{align*}
+with the same boundary conditions is given by
+</p>
+<p>
+\[ \begin {pmatrix} C_k \\ \Phi _k \end {pmatrix} = \begin {pmatrix} \hat {C}_k \\ \hat {\Phi }_k \end {pmatrix} W_k(x) \]
+</p>
+<p>
+where, for each \(k\), \(\hat {C}_k(t),\hat {\Phi }_k(t)\) is a solution of the system of ordinary differential equations (<a href="SpatInstab.html#odesystem1">5.15</a>-<a
+href="SpatInstab.html#odesystem2">5.16</a>) and \(W_k\) is a solution to the eigenvalue problem
+</p>
+<p>
+\[ \frac {d^2 W}{d x^2} + k^2 W = 0 , \quad \frac {d W}{d x}(0) = \frac {d W}{d x}(L) = 0 .                \]
+</p>
+</li>
+<li>
+
+
+<p>
+(b) Solve the boundary value problem from part (a) for the eigenfunctions \(W_k\) and associated wavenumbers \(k\).
+</p>
+</li>
+<li>
+
+
+<p>
+(c) Similarly to the Turing mechanism, on a bounded domain the conditions for instability are not necessarily satisfied by any of the discrete wavenumbers. Set \(\alpha , \beta , \gamma , \delta , D_c , D_\phi = 1\) and
+\(\chi = 6\). Find a condition on \(L\) (via an upper and lower bound on wavenumbers) that guarantees an instability.
+</p>
+</li>
+</ul>
+
+</li>
+
+</ul>
+
+</div>
+
+<a id="SpatInstab-autofile-last"></a>
+</section>
+
+</main>
+
+</div>
+
+</body>
+</html>

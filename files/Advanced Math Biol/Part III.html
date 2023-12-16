@@ -1,0 +1,2059 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<title>BioTransport</title>
+<link rel="stylesheet" type="text/css" href="lwarp.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+     subequations: "0",
+     section: "",
+     loader: {
+          load: ['[tex]/tagformat', '[tex]/textmacros'],
+     },
+     startup: {
+          ready() {
+              //       These would be replaced by import commands if you wanted to make
+              //       a proper extension.
+              const Configuration = MathJax._.input.tex.Configuration.Configuration;
+              const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+              const Macro = MathJax._.input.tex.Symbol.Macro;
+              const TexError = MathJax._.input.tex.TexError.default;
+              const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+              const expandable = MathJax._.util.Options.expandable;
+
+
+              //       Insert the replacement string into the TeX string, and check
+              //       that there haven't been too many maxro substitutions (prevents
+              //       infinite loops).
+              const useArgument = (parser, text) => {
+                   parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+                   parser.i = 0;
+                   if (++parser.macroCount > parser.configuration.options.maxMacros) {
+                        throw new TexError('MaxMacroSub1',
+                        'MathJax maximum macro substitution count exceeded; ' +
+                        'is there a recursive macro call?');
+                   }
+              }
+
+
+              //       Create the command map for:
+              //            \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+              new CommandMap('Lwarp-macros', {
+                   ifstar: 'IfstarFunction',
+                   ifnextchar: 'IfnextcharFunction',
+                   ifblank: 'IfblankFunction',
+                   ifstrequal: 'IfstrequalFunction',
+                   gsubstitute: 'GsubstituteFunction',
+                   seteqnumber: 'SeteqnumberFunction'
+              }, {
+                   //       This function implements an ifstar macro.
+                   IfstarFunction(parser, name) {
+                        const resultstar = parser.GetArgument(name);
+                        const resultnostar = parser.GetArgument(name);
+                        const star = parser.GetStar();                        // true if there is a *
+                        useArgument(parser, star ? resultstar : resultnostar);
+                   },
+
+
+                   //       This function implements an ifnextchar macro.
+                   IfnextcharFunction(parser, name) {
+                        let whichchar = parser.GetArgument(name);
+                        if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+                            // $ syntax highlighting
+                            whichchar = String.fromCodePoint(parseInt(whichchar));
+                        }
+                        const resultnextchar = parser.GetArgument(name);
+                        const resultnotnextchar = parser.GetArgument(name);
+                        const gotchar = (parser.GetNext() === whichchar);
+                        useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+                   },
+
+
+                   // This function implements an ifblank macro.
+                   IfblankFunction(parser, name) {
+                        const blankarg = parser.GetArgument(name);
+                        const resultblank = parser.GetArgument(name);
+                        const resultnotblank = parser.GetArgument(name);
+                        const isblank = (blankarg.trim() == "");
+                        useArgument(parser, isblank ? resultblank : resultnotblank);
+                   },
+
+
+                   // This function implements an ifstrequal macro.
+                   IfstrequalFunction(parser, name) {
+                        const strequalfirst = parser.GetArgument(name);
+                        const strequalsecond = parser.GetArgument(name);
+                        const resultequal = parser.GetArgument(name);
+                        const resultnotequal = parser.GetArgument(name);
+                        const isequal = (strequalfirst == strequalsecond);
+                        useArgument(parser, isequal ? resultequal : resultnotequal);
+                   },
+
+
+                   // This function implements a gsub macro.
+                   GsubstituteFunction(parser, name) {
+                        const gsubfirst = parser.GetArgument(name);
+                        const gsubsecond = parser.GetArgument(name);
+                        const gsubthird = parser.GetArgument(name);
+                        let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+                        useArgument(parser, gsubresult);
+                   },
+
+
+                   //       This function modifies the equation numbers.
+                   SeteqnumberFunction(parser, name) {
+                            //   Get the macro parameters
+                            const star = parser.GetStar();                      // true if there is a *
+                            const optBrackets = parser.GetBrackets(name);        // contents of optional brackets
+                            const newsubequations = parser.GetArgument(name);      // the subequations argument
+                            const neweqsection = parser.GetArgument(name);      // the eq section argument
+                            const neweqnumber = parser.GetArgument(name);        // the eq number argument
+                            MathJax.config.subequations=newsubequations ;       // a string with boolean meaning
+                            MathJax.config.section=neweqsection ;               // a string with numeric meaning
+                            parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+                   }
+
+
+              });
+
+
+              //       Create the Lwarp-macros package
+              Configuration.create('Lwarp-macros', {
+                   handler: {macro: ['Lwarp-macros']}
+              });
+
+
+              MathJax.startup.defaultReady();
+
+
+              // For forward references:
+              MathJax.startup.input[0].preFilters.add(({math}) => {
+                   if (math.inputData.recompile){
+                            MathJax.config.subequations = math.inputData.recompile.subequations;
+                            MathJax.config.section = math.inputData.recompile.section;
+                   }
+              });
+              MathJax.startup.input[0].postFilters.add(({math}) => {
+                   if (math.inputData.recompile){
+                            math.inputData.recompile.subequations = MathJax.config.subequations;
+                            math.inputData.recompile.section = MathJax.config.section;
+                   }
+              });
+
+
+                   // For \left, \right with unicode-math:
+                   const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+                   const {Symbol} = MathJax._.input.tex.Symbol;
+                   const {MapHandler} = MathJax._.input.tex.MapHandler;
+                   const delimiter = MapHandler.getMap('delimiter');
+                   delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+                   delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+                   delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+                   delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+                   delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+                   delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+                   delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+                   delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+                   delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+                   delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+                   delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+                   delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+                   delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+                   delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+                   delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+                   delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+                   delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+                   delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+                   delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+                   delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+                   delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+                   delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+                   delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+                   delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+                   delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+                   delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+                   delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+                   delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+                   delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+                   delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+                   delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+                   delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+                   delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+                   delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+                   delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+                   delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+                   delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+                   delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+                   delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+          }       // ready
+     },           // startup
+
+
+     tex: {
+          packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+          tags: "ams",
+                   tagformat: {
+                            number: function (n) {
+                                 if(MathJax.config.subequations==0)
+                                        return(MathJax.config.section + n);
+                                 else
+                                        return(MathJax.config.section + String.fromCharCode(96+n));
+                            },
+                   },
+     }
+}
+</script>
+
+
+<script
+          id="MathJax-script"
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<div class="bodywithoutsidetoc">
+
+
+<main class="bodycontainer">
+
+
+<section class="textbody">
+
+<a id="BioTransport-autofile-0"></a>
+
+<!--MathJax customizations:-->
+
+
+<div class="hidden">
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+</div>
+
+<a id="BioTransport-autopage-1"></a>
+
+<p>
+
+</p>
+<div class="center">
+
+<p>
+<span
+    class="fbox"
+    style="display:inline-block ; border:1pt solid #000000; padding:3pt ; color:#000000"
+><span
+    class="makebox"
+    style="display:inline-block ; "
+                                 &#x2003;&#x2003;Jan                2024
+> &#x2003;&#x2003;LM Advanced Mathematical Biology 31128 &#x2003;&#x2003;                </span></span>
+</p>
+</div>
+
+<p>
+David S. Tourigny, School of Mathematics, University of Birmingham
+</p>
+
+<p>
+Disclaimer: These notes have not been subjected to the usual scrutiny reserved for formal publications. Please let me know if you identify any errors. The material is based on a similar course previously taught by Tom
+Montenegro-Johnson at the University of Birmingham
+</p>
+<!--
+...... section Part 3: Biological transport models ......
+-->
+<h4 id="autosec-3">Part 3: Biological transport models</h4>
+<a id="BioTransport-autopage-3"></a>
+
+
+<p>
+In this part of the course we will look at several different models of biological transport that are described using special cases of the reaction-advection-diffusion equation.
+</p>
+<!--
+...... section Krogh-Erlang tissue cylinder model ......
+-->
+<h4 id="autosec-4"><span class="sectionnumber">3.1&#x2003;</span>Krogh-Erlang tissue cylinder model</h4>
+<a id="BioTransport-autopage-4"></a>
+
+
+<p>
+In this section, we will consider the Krogh-Erlang model for the diffusion of oxygen through tissue surrounding a capillary. Krogh was awarded the Nobel Prize in Physiology or Medicine for the discovery of the mechanism of
+regulation of the capillaries in skeletal muscle. He mostly worked experimentally, meticulously recording many physiological phenomenon and building up a theory based on these observations. He is also known for developing the
+subsequent model of oxygen transport, which was motivated by his experimental discoveries. This mathematical model is not attributed entirely to him, however. Rather of his time, in the article presenting his model<sup>1</sup>,
+he says: “The mathematician Mr K. Erlang has shown me the kindness to work out such a formula which runs...”, and so we must credit Erlang also.
+</p>
+<div role="note" class="footnotes">
+
+<a id="BioTransport-autopage-5"></a>
+<p>
+<sup>1</sup>&nbsp; The Journal of Physiology Vol. 52, Issue 6. 391-474
+</p>
+
+
+</div>
+<!--
+...... subsection Diffusion through tissue ......
+-->
+<h5 id="autosec-6"><span class="sectionnumber">3.1.1&#x2003;</span>Diffusion through tissue</h5>
+<a id="BioTransport-autopage-6"></a>
+
+
+<p>
+We begin with a slightly simpler model of oxygen diffusion in one dimension through a slab of tissue of length \(L\). Oxygen is assumed to be supplied at \(x=0\) at fixed concentration \(c_0\) and consumed within tissue at a
+constant rate of \(F_0\), which gives rise to the reaction-diffusion equation
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{0}\)</span>
+
+<!--
+
+                                                                                                           ∂c    ∂2c
+                                                                                                              = D 2 − F0                                                                                                       (3.1)
+                                                                                                           ∂t    ∂x
+
+-->
+
+<p>
+
+\begin{equation}
+\frac {\partial c}{\partial t} = D \frac {\partial ^2 c}{\partial x^2} - F_0
+\end{equation}
+
+</p>
+
+<p>
+where \(c(x,t)\) is the concentration of oxygen at \(x\) at time \(t\), and \(D\) is the diffusion coefficient for oxygen in tissue. The general solution at steady state \(\partial c / \partial t = 0\) is
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{1}\)</span>
+
+<!--
+
+                                                                                                                 F0 2
+                                                                                                       c(x) =      x + Ax + B                                                                                                  (3.2)
+                                                                                                                 D
+
+-->
+
+<p>
+
+\begin{equation}
+c(x) = \frac {F_0}{D} x^2 + A x + B
+\end{equation}
+
+</p>
+
+<p>
+since
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{2}\)</span>
+
+<!--
+
+                                                                                           F0   ∂2c   ∂c   F0      F0 2
+                                                                                              =     ⇒    =    x+A⇒   x + Ax + B.                                                                                               (3.3)
+                                                                                           D    ∂x2   ∂x   D       D
+
+-->
+
+<p>
+
+\begin{equation}
+\frac {F_0}{D} = \frac {\partial ^2 c}{\partial x^2} \Rightarrow \frac {\partial c }{\partial x } = \frac {F_0}{D} x + A \Rightarrow \frac {F_0}{D} x^2 + Ax + B .
+\end{equation}
+
+</p>
+
+<p>
+Imposing that there is no flux of oxygen in or out of tissue at \(x = L\), leads to the mixed boundary conditions
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{3}\)</span>
+
+<!--
+
+                                                                                                                         ∂c
+                                                                                                       c(0) = c0 ,          (L) = 0.                                                                                           (3.4)
+                                                                                                                         ∂x
+
+-->
+
+<p>
+
+\begin{equation}
+c(0) = c_0 , \quad \frac {\partial c}{\partial x } (L) = 0 .
+\end{equation}
+
+</p>
+
+<p>
+From these, the values of constants \(A,B\) are determined
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{4}\)</span>
+
+<!--
+
+
+                                                                                                            c0 = c(0) = B                                                                                                      (3.5)
+
+-->
+
+<p>
+
+\begin{equation}
+c_0 = c(0) = B
+\end{equation}
+
+</p>
+
+<p>
+and
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{5}\)</span>
+
+<!--
+
+                                                                                                    ∂c        F0             2F0 L
+                                                                                               0=      (L) = 2 L + A ⇒ A = −                                                                                                   (3.6)
+                                                                                                    ∂x        D               D
+
+-->
+
+<p>
+
+\begin{equation}
+0 = \frac {\partial c}{\partial x}(L) = 2\frac {F_0}{D} L + A \Rightarrow A = - \frac {2 F_0 L}{D}
+\end{equation}
+
+</p>
+
+<p>
+so that
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{6}\)</span>
+
+<!--
+
+                                                                                                                  2     
+                                                                                                            F0    x
+                                                                                                     c(x) =          − Lx + c0 .                                                                                               (3.7)
+                                                                                                            D      2
+
+-->
+
+<p>
+
+\begin{equation}
+c(x) = \frac {F_0}{D} \left ( \frac {x^2}{2} - L x \right )+ c_0 .
+\end{equation}
+
+</p>
+
+<p>
+We can now ask: “given a fixed oxygen uptake rate by the tissue, how far can oxygen travel through it?”. Equivalently, this is the same as determining the largest \(L\) such that \(c(L) \geq 0\) for all \(0 \leq x \leq L\). We
+therefore rearrange the equation
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{7}\)</span>
+
+<!--
+
+                                                                                                               L2                        L2 F0
+                                                                                                                         
+                                                                                                      F0
+                                                                                           0 = c(L) =             − L2        + c0 = −         + c0                                              (3.8)--><a id="tissue"></a><!--
+                                                                                                      D        2                          2D
+
+-->
+
+<p>
+
+\begin{equation}
+\label {tissue} 0 = c(L) = \frac {F_0}{D} \left ( \frac {L^2}{2} - L^2 \right )+ c_0 = - \frac {L^2F_0}{2D} + c_0
+\end{equation}
+
+</p>
+
+<p>
+to obtain
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{8}\)</span>
+
+<!--
+
+                                                                                                                     r
+                                                                                                                         2Dc0
+                                                                                                               L=             ,                                                                                                (3.9)
+                                                                                                                          F0
+
+-->
+
+<p>
+
+\begin{equation}
+L = \sqrt {\frac {2Dc_0}{F_0}},
+\end{equation}
+
+</p>
+
+<p>
+which gives us the largest length \(L\) where the oxygen concentration remains positive throughout the tissue.
+</p>
+<!--
+...... subsection Cylindrical tissue model ......
+-->
+<h5 id="autosec-7"><span class="sectionnumber">3.1.2&#x2003;</span>Cylindrical tissue model</h5>
+<a id="BioTransport-autopage-7"></a>
+
+
+<p>
+Here we assume that tissue is arranged cylindrically around a blood vessel (capillary) and that the system is radially symmetric. In this case, the steady state diffusion equation is given in cylindrical coordinates \(r,z\) (\(\theta
+\) not included due assumption of radial symmetry) by
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{9}\)</span>
+
+<!--
+
+                                                                                                                   ∂2          ∂2
+                                                                                                                                  
+                                                                                                                         1 ∂
+                                                                                                F0 = ∇ · (D∇c) = D     +     +       c(r, z)                                                                                        (3.10)
+                                                                                                                   ∂r2   r ∂r ∂z 2
+
+-->
+
+<p>
+
+\begin{equation}
+F_0= \nabla \cdot ( D \nabla c) = D \left [ \frac {\partial ^2}{\partial r^2} + \frac {1}{r} \frac {\partial }{\partial r} + \frac {\partial ^2}{\partial z^2} \right ] c(r,z)
+\end{equation}
+
+</p>
+
+<p>
+where \(0 \leq z \leq L\), \(R_1 \leq r \leq R_2\) (tissue starts at some radius \(R_1\) and ends at some larger radius \(R_2\), with the tissue-capillary interface at \(r = R_1\)). The boundary conditions on this model are
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{10}\)</span>
+
+<!--
+
+                                                                                                               ∂c          ∂c
+                                                                                                                  (r, 0) =    (r, L) = 0                                                        (3.11)--><a id="conditions"></a><!--
+                                                                                                               ∂z          ∂z
+
+-->
+
+<p>
+
+\begin{equation}
+\label {conditions} \frac {\partial c}{\partial z}(r,0) = \frac {\partial c}{\partial z}(r,L) = 0
+\end{equation}
+
+</p>
+
+<p>
+and
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{11}\)</span>
+
+<!--
+
+                                                                                                                                         ∂c
+                                                                                                         c(R1 , z) = cT (z),                (R2 , z) = 0                                                                            (3.12)
+                                                                                                                                         ∂r
+
+-->
+
+<p>
+
+\begin{equation}
+c(R_1,z) = c_T(z), \quad \frac {\partial c}{\partial r}(R_2,z) = 0
+\end{equation}
+
+</p>
+
+<p>
+where \(c_T(z)\) denotes the concentration of oxygen at position \(z\) of the tissue-capillary interface.
+</p>
+
+<p>
+Oxygen is supplied by blood that flows through the capillary in the centre of the tissue cylinder. We assume the advective flow of oxygen in the capillary implies we can effectively ignore diffusion of oxygen in the axial (\(z\))
+direction. This means that, for every fixed value of \(z\), equation <a href="BioTransport.html#tissue">3.8</a> reduces to
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{12}\)</span>
+
+<!--
+
+                                                                                                                                    
+                                                                                                                 1 d            dc           F0
+                                                                                                                            r            =      ,                                                                                   (3.13)
+                                                                                                                 r dr           dr           D
+
+-->
+
+<p>
+
+\begin{equation}
+\frac {1}{r} \frac {d}{dr}\left (r \frac {dc}{dr} \right ) = \frac {F_0}{D} ,
+\end{equation}
+
+</p>
+
+<p>
+which has general solution
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{13}\)</span>
+
+<!--
+
+                                                                                                                     F0 2
+                                                                                                         c(r, z) =      r + A(z) log r + B(z)                                                                                       (3.14)
+                                                                                                                     4D
+
+-->
+
+<p>
+
+\begin{equation}
+c(r,z) = \frac {F_0}{4D} r^2 + A(z)\log r + B(z)
+\end{equation}
+
+</p>
+
+<p>
+since
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{14}\)</span>
+
+<!--
+
+                                                                                                           
+                                                                                         F0 r   d        dc      dc   F0 2     F0 2
+                                                                                              =        r      ⇒r    =    r +A⇒    r + A log r + B.                                                                                  (3.15)
+                                                                                          D     dr       dr      dr   2D       4D
+
+-->
+
+<p>
+
+\begin{equation}
+\frac {F_0r}{D} = \frac {d}{dr}\left (r \frac {dc}{dr} \right ) \Rightarrow r \frac {dc}{dr} = \frac {F_0}{2D} r^2 + A \Rightarrow \frac {F_0}{4D} r^2 + A\log r + B .
+\end{equation}
+
+</p>
+
+<p>
+Since the boundary conditions <a href="BioTransport.html#conditions">3.11</a> hold for each fixed value of \(z\), we obtain
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{15}\)</span>
+
+<!--
+
+                                                                                               ∂c            F0      A(z)               F0
+                                                                                          0=      (R2 , z) =    R2 +      ⇒ A(z) = −R22    = const.                                                                                 (3.16)
+                                                                                               ∂r            2D       R2                2D
+
+-->
+
+<p>
+
+\begin{equation}
+0 = \frac {\partial c}{\partial r}(R_2,z) = \frac {F_0}{2D}R_2 +\frac {A(z)}{R_2} \Rightarrow A(z) = - R_2^2\frac {F_0}{2D} = \mbox {const.}
+\end{equation}
+
+</p>
+
+<p>
+and
+</p>
+<span class="hidden"> \(\seteqnumber{0}{}{16}\)</span>
+
+
+<!--
+
+
+                                                                                                                     F0 2       F0
+                                                                                               cT (z) = c(R1 , z) =     R − R22    log R1 + B(z)                                                                                    (3.17)
+                                                                                                                    4D 1     2 2D             
+                                                                                                                          F0 R1
+                                                                                                        ⇒ B(z) = cT (z) −         − R22 log R1                                                                                      (3.18)
+                                                                                                                          2D 2
+
+
+-->
+
+
+<p>
+
+\begin{align}
+c_T(z) &amp;= c(R_1,z) = \frac {F_0}{4D}R^2_1 - R^2_2 \frac {F_0}{2D} \log R_1 + B(z) \\ &amp;\Rightarrow B(z) = c_T(z) - \frac {F_0}{2D} \left [\frac {R^2_1}{2} - R^2_2 \log R_1 \right ]
+\end{align}
+so that
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{18}\)</span>
+
+<!--
+
+                                                            F0 (r2 − R12 )
+                                                                                       
+                                                                                     R1
+                                                c(r, z) =                  + R22 log      + cT (z).                                                        (3.19)                                      --><a id="soltissue"></a><!--
+                                                            2D     2                 r
+
+-->
+
+<p>
+
+\begin{equation}
+\label {soltissue} c(r,z) = \frac {F_0}{2D} \left [ \frac {(r^2 - R^2_1)}{2} + R^2_2 \log \frac {R_1}{r}\right ] + c_T(z) .
+\end{equation}
+
+</p>
+<!--
+...... subsection Axial oxygen flow in the capillary ......
+-->
+<h5 id="autosec-8"><span class="sectionnumber">3.1.3&#x2003;</span>Axial oxygen flow in the capillary</h5>
+<a id="BioTransport-autopage-8"></a>
+
+
+<p>
+We now derive a final equation for the flow of oxygen within the capillary. Using both radial and angular symmetry, integrating over a cross-section identifies \(\bar {c}_T(z) = R_1^2 \pi c_T(z)\) with the total concentration
+of oxygen within the capillary at point \(z\). Assuming as before that, compared to diffusion, the flow of blood is the dominant oxygen transport mechanism along \(z\), this implies \(\bar {c}_T(z)\) obeys a one-dimensional
+reaction-advection equation at steady state
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{19}\)</span>
+
+<!--
+
+                                                                                                      ∂c̄T      ∂c̄T         ∂c
+                                                                                               0=          = −v      + 2πR1 D (R1 , z)                                                                                         (3.20)
+                                                                                                       ∂t       ∂z           ∂r
+
+-->
+
+<p>
+
+\begin{equation}
+0 = \frac {\partial \bar {c}_T}{\partial t} = - v \frac {\partial \bar {c}_T}{\partial z} + 2 \pi R_1 D \frac {\partial c}{\partial r} (R_1,z)
+\end{equation}
+
+</p>
+
+<p>
+where \(0 \leq z \leq L\), \(R_1 \leq r \leq R_2\). Here \(v\) is the velocity of blood flow, and the reaction term describes the diffusive flux of oxygen out of the capillary and into tissue at position \(z\) (Fick’s law times
+the circumference of the capillary). Equivalently, for \(c_T(z)\) this gives
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{20}\)</span>
+
+<!--
+
+                                                                                                             ∂cT   2D ∂c
+                                                                                                         v       =       (R1 , z)                                                                                              (3.21)
+                                                                                                             ∂z    R1 ∂r
+
+-->
+
+<p>
+
+\begin{equation}
+v \frac {\partial c_T}{\partial z} = \frac {2 D}{R_1} \frac {\partial c}{\partial r} (R_1,z)
+\end{equation}
+
+</p>
+
+<p>
+with initial condition \(c_T(0) = c_0\).
+</p>
+
+<p>
+To evaluate the reaction term explicitly, we differentiate <a href="BioTransport.html#soltissue">3.19</a> with respect to \(r\) at \(r=R_1\) to obtain
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{21}\)</span>
+
+<!--
+
+                                                                                                                    R22      F0 (R22 − R12 )
+                                                                                                                       
+                                                                                  2D ∂c            2D F0                                           VT
+                                                                                        (R1 , z) =             R1 −       =−                 = −F0                                                                             (3.22)
+                                                                                  R1 ∂r            R1 2D            R1            R12              VC
+
+-->
+
+<p>
+
+\begin{equation}
+\frac {2 D}{R_1} \frac {\partial c}{\partial r} (R_1,z) = \frac {2 D}{R_1} \frac {F_0}{2D}\left ( R_1 - \frac {R^2_2}{R_1}\right ) = - \frac {F_0 (R^2_2-R^2_1)}{R^2_1} = - F_0 \frac {V_T}{V_C}
+\end{equation}
+
+</p>
+
+<p>
+where we have identified \(V_T = \pi (R^2_2-R^2_1) L\) and \(V_C = \pi R^2_1 L\) with the volume of the tissue and capillary, respectively. The equation for \(c_T\) then becomes
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{22}\)</span>
+
+<!--
+
+                                                                                                              dcT    F0 VT
+                                                                                                                  =−       ,                                                                                                   (3.23)
+                                                                                                               dz    v VC
+
+-->
+
+<p>
+
+\begin{equation}
+\frac {d c_T}{d z} = - \frac {F_0 }{v}\frac {V_T}{V_C} ,
+\end{equation}
+
+</p>
+
+<p>
+which has the solution
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{23}\)</span>
+
+<!--
+
+                                                                                                                          F0 VT
+                                                                                                          cT (z) = c0 −         z.                                                                                             (3.24)
+                                                                                                                          v VC
+
+-->
+
+<p>
+
+\begin{equation}
+c_T(z) = c_0 - \frac {F_0 }{v}\frac {V_T}{V_C}z .
+\end{equation}
+
+</p>
+
+<p>
+Substitution for \(c_T(z)\) in <a href="BioTransport.html#soltissue">3.19</a> then gives the complete solution for the concentration of oxygen throughout the tissue
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{24}\)</span>
+
+<!--
+
+                                                                                                   F0 (r2 − R12 )
+                                                                                                                                       
+                                                                                                                            R1   2D VT
+                                                                                       c(r, z) =                  + R22 log    −       z + c0 .                                                                                (3.25)
+                                                                                                   2D     2                 r     v VC
+
+-->
+
+<p>
+
+\begin{equation}
+c(r,z) = \frac {F_0}{2D} \left [ \frac {(r^2 - R^2_1)}{2} + R^2_2 \log \frac {R_1}{r} - \frac {2 D}{v}\frac {V_T}{V_C}z \right ] + c_0 .
+\end{equation}
+
+</p>
+<!--
+...... section Linear reaction terms and boundary conditions ......
+-->
+<h4 id="autosec-9"><span class="sectionnumber">3.2&#x2003;</span>Linear reaction terms and boundary conditions</h4>
+<a id="BioTransport-autopage-9"></a>
+
+
+<p>
+In the Krogh-Erlang tissue cylinder model the reaction term (in that case the rate of oxygen uptake by tissue) was taken to be perhaps the simplest possible: constant in time and space. We also did not consider temporal dynamics,
+working only with the steady state solutions. The next step up would be to take linear dependance in the concentration variable that could correspond, for example, to a spatio-temporal extension of the exponential growth or decay
+model we considered in the introduction. In the simplest model for exponential growth or decay in time and space we have
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{25}\)</span>
+
+<!--
+
+                                                             ∂c
+                                                                = ∇ · (D∇c) ± kc                                                               (3.26)                                                 --><a id="expgro"></a><!--
+                                                             ∂t
+
+-->
+
+<p>
+
+\begin{equation}
+\label {expgro} \frac {\partial c}{\partial t} = \nabla \cdot ( D \nabla c) \pm k c
+\end{equation}
+
+</p>
+
+<p>
+with \(k &gt; 0\) where \(-k c\) corresponds to decay while \(+k c\) to growth, which is a suitable approximation for small populations. We can substitute the ansatz \(c({\bf x},t) = e^{\pm kt}\cdot u({\bf x},t)\) to
+find that \(u\) must satisfy the diffusion equation
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{26}\)</span>
+
+<!--
+
+                                                             ∂u
+                                                                = ∇ · (D∇u).                                                                (3.27)                                                --><a id="diffusion"></a><!--
+                                                             ∂t
+
+-->
+
+<p>
+
+\begin{equation}
+\label {diffusion} \frac {\partial u}{\partial t} = \nabla \cdot ( D \nabla u) .
+\end{equation}
+
+</p>
+
+<p>
+Thus, the solution of the reaction-diffusion system <a href="BioTransport.html#expgro">3.26</a> is entirely determined by the solution to <a href="BioTransport.html#diffusion">3.27</a> with appropriate boundary
+conditions. While this is something the student has likely studied in previous courses on PDEs, we take the time to revisit here for completeness.
+</p>
+<!--
+...... subsection Growth or decay in one spatial dimension ......
+-->
+<h5 id="autosec-10"><span class="sectionnumber">3.2.1&#x2003;</span>Growth or decay in one spatial dimension</h5>
+<a id="BioTransport-autopage-10"></a>
+
+
+<p>
+Taking the diffusion equation <a href="BioTransport.html#diffusion">3.27</a> in one spatial dimension
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{27}\)</span>
+
+<!--
+
+                                                                                                                                   ∂u   ∂2u
+                                                                                                                                      =D 2                                                                                             (3.28)
+                                                                                                                                   ∂t   ∂x
+
+-->
+
+<p>
+
+\begin{equation}
+\frac {\partial u}{\partial t} = D \frac {\partial ^2 u}{\partial x^2}
+\end{equation}
+
+</p>
+
+<p>
+we have a range of boundary conditions that correspond to different physical interpretations. We shall study the solutions associated with these boundary conditions using the method of similarity solutions. That is to say, we first
+make the re-scaling \(x = \epsilon ^{-a} x^*\), \(t = \epsilon ^{-b} t^*\) and \(u= \epsilon ^{-c} u^*\) for some real numbers \(\epsilon , a, b ,c\) to obtain
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{28}\)</span>
+
+<!--
+
+                                                                                                                               ∂u∗           ∂ 2 u∗
+                                                                                                                        ϵb−c     ∗
+                                                                                                                                   = Dϵ2a−c                                                                                            (3.29)
+                                                                                                                               ∂t           ∂(x∗ )2
+
+-->
+
+<p>
+
+\begin{equation}
+\epsilon ^{b-c} \frac {\partial u^*}{\partial t^*} = D \epsilon ^{2a - c} \frac {\partial ^2 u^*}{\partial (x^*)^2}
+\end{equation}
+
+</p>
+
+<p>
+and see that we must have \(b = 2a\) for the PDE to remain unchanged. This implies that, if \(u(x,t)\) was a solution to the diffusion equation, then so is \(\epsilon ^{c}u(\epsilon ^a x , \epsilon ^{b} t)\). In
+particular, since
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{29}\)</span>
+
+<!--
+
+
+                                                                                  u∗ (t∗ )−c/b = uϵc (tϵb )−c/b = ut−c/b                 and x∗ (t∗ )−a/b = xϵ(tϵb )−a/b = xt−a/b                                                      (3.30)
+
+-->
+
+<p>
+
+\begin{equation}
+u^*(t^*)^{-c/b} = u\epsilon ^c(t \epsilon ^b)^{-c/b} = u t^{-c/b} \quad \mbox {and} \quad x^* (t^*)^{-a/b} = x \epsilon (t\epsilon ^b)^{-a/b}= xt^{-a/b}
+\end{equation}
+
+</p>
+
+<p>
+we postulate that a solution that combines these variables would be suitable, which leads to the ansatz
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{30}\)</span>
+
+<!--
+
+
+                                                                                                                          u(x, t) = tc/b f (xt−a/b ).                                                                                  (3.31)
+
+-->
+
+<p>
+
+\begin{equation}
+u(x, t) = t^{c/b} f(x t^{-a/b}) .
+\end{equation}
+
+</p>
+
+<p>
+Using the condition \(b = 2a\) this is
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{31}\)</span>
+
+<!--
+
+                                                                                                                                            x
+                                                                                                                    u = tc/b f (z) with z = √ .                                                                                        (3.32)
+                                                                                                                                             t
+
+-->
+
+<p>
+
+\begin{equation}
+u = t^{c/b} f(z) \quad \mbox {with} \quad z = \frac {x}{\sqrt {t}} .
+\end{equation}
+
+</p>
+
+<p>
+Substituting we have
+</p>
+<span class="hidden"> \(\seteqnumber{0}{}{32}\)</span>
+
+
+<!--
+
+
+                                                                                                       ∂u   ∂               c                 df ∂z
+                                                                                                          = tc/b f (z) = tc/b−1 f (z) + tc/b
+                                                                                                       ∂t  ∂t               b                dz ∂t
+                                                                                                                                              
+                                                                                                           c c/b−1            c/b df    1 x 1
+                                                                                                          = t      f (z) + t          − √
+                                                                                                           b                      dz    2 tt
+                                                                                                                                      
+                                                                                                           c          c           1 df
+                                                                                                          = tc/b−1      f (z) − z
+                                                                                                           b          b           2 dz
+
+
+-->
+
+
+<p>
+
+\begin{align*}
+\frac {\partial u }{\partial t } &amp;= \frac {\partial }{\partial t } t^{c/b} f(z) = \frac {c}{b} t^{c/b - 1} f(z) + t^{c/b} \frac {df}{dz} \frac {\partial z}{\partial t} \\ &amp;= \frac
+{c}{b} t^{c/b - 1} f(z) + t^{c/b} \frac {df}{dz} \left ( - \frac {1}{2} \frac {x}{\sqrt {t}} \frac {1}{t} \right ) \\ &amp;= \frac {c}{b} t^{c/b - 1} \left ( \frac {c}{b} f(z) - \frac {1}{2} z
+\frac {d f}{dz} \right )
+\end{align*}
+and
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{32}\)</span>
+
+<!--
+
+                                                                                                                                                    2
+                                                                                                ∂2u           2
+                                                                                                                                                         d2 f            2
+                                                                                                                                           
+                                                                                                        c/b ∂                                  ∂z                 c/b−1 d f
+                                                                                                    = t         f (z) = tc/b                                  = t
+                                                                                                ∂x2        ∂x2                                 ∂x        dz 2           dz 2
+
+-->
+
+<p>
+
+\begin{equation*}
+\frac {\partial ^2 u}{\partial x^2 } = t^{c/b} \frac {\partial ^2}{\partial x^2} f(z) = t^{c/b} \left ( \frac {\partial z}{\partial x}\right )^2 \frac {d^2 f}{dz^2} = t^{c/b-1} \frac {d^2
+f}{dz^2}
+\end{equation*}
+
+</p>
+
+<p>
+such that
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{32}\)</span>
+
+<!--
+
+                                                                       ∂2u            d2 f
+                                                                            
+                                                       1          ∂u                        1 df  c
+                                                0=                   −D 2        =D      2
+                                                                                           + z   − f (z).                                                                                   (3.33)       --><a id="secondODE"></a><!--
+                                                     tc/b−1       ∂t   ∂x             dz    2 dz  b
+
+-->
+
+<p>
+
+\begin{equation}
+\label {secondODE} 0 = \frac {1}{t^{c/b-1}} \left ( \frac {\partial u }{\partial t } - D \frac {\partial ^2 u}{\partial x^2 } \right ) = D \frac {d^2 f}{dz^2} + \frac {1}{2} z \frac {df}{dz}
+-\frac {c}{b} f(z) .
+\end{equation}
+
+</p>
+
+<p>
+Thus, we have obtained a second-order ODE for \(f\) as a function of \(z\).
+</p>
+
+<p>
+Turning to the set of boundary and initial value conditions we could have originally imposed on \(u\), leads to a restricted set of values for \(c/b\). To see this, let us first consider the diffusion equation defined on the spatial
+domain \(x \in [0,\infty )\) with the following boundary conditions
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{33}\)</span>
+
+<!--
+
+
+                                                                                                       u(0, t) = u0            and u(x, t) → 0 as x → ∞                                                                                (3.34)
+
+-->
+
+<p>
+
+\begin{equation}
+u(0,t) = u_0 \quad \mbox {and} \quad u(x, t ) \to 0 \quad \mbox {as} \quad x \to \infty
+\end{equation}
+
+</p>
+
+<p>
+with initial condition
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{34}\)</span>
+
+<!--
+
+
+                                                                                                                        u(x, 0) = 0 for all x > 0.                                                                                     (3.35)
+
+-->
+
+<p>
+
+\begin{equation}
+u(x, 0 ) = 0 \quad \mbox {for all} \quad x &gt; 0.
+\end{equation}
+
+</p>
+
+<p>
+In terms of the original variable \(c(x,t) = e^{-kt} u(x,t)\) (here for decay), this would correspond to an initial concentration \(c_0 = u_0\) of a species isolated at the point \(x = 0\), which decays exponentially according to
+\(c(0,t) = c_0 e^{-kt}\) while also diffusing outward into regions with \(x &gt; 0\). In terms of the new variables, we have
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{35}\)</span>
+
+<!--
+
+
+                                                                                                  tc/b f (0) = u0              and tc/b f (z) → 0 as z → ∞,                                                                            (3.36)
+
+-->
+
+<p>
+
+\begin{equation}
+t^{c/b} f(0) = u_0 \quad \mbox {and} \quad t^{c/b} f(z) \to 0 \quad \mbox {as} \quad z \to \infty ,
+\end{equation}
+
+</p>
+
+<p>
+which implies that we must have \(c/b = 0\) and \(u = f(z)\) with \(f\) satisfying
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{36}\)</span>
+
+<!--
+
+                                                                                                                                d2 f  1 df
+                                                                                                                            D        + z   = 0.                                                                                        (3.37)
+                                                                                                                                dz 2  2 dz
+
+-->
+
+<p>
+
+\begin{equation}
+D \frac {d^2 f}{dz^2} + \frac {1}{2} z \frac {df}{dz} = 0 .
+\end{equation}
+
+</p>
+
+<p>
+Treating this as a first-order ODE for \(df/dz\) and integrating once we obtain
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{37}\)</span>
+
+<!--
+
+                                                                                                                                  Z
+                                                                                                               df               1                               1 2
+                                                                                                  log                   =−               zdz + C1 = −             z + C1 ,                                                             (3.38)
+                                                                                                               dz              2D                              4D
+
+-->
+
+<p>
+
+\begin{equation}
+\log \left (\frac {df}{dz}\right ) = - \frac {1}{2D} \int z dz + C_1 = - \frac {1}{4D} z^2 + C_1 ,
+\end{equation}
+
+</p>
+
+<p>
+or
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{38}\)</span>
+
+<!--
+
+                                                                                                                                          z2
+                                                                                                                                            
+                                                                                                                         df
+                                                                                                                            (z) = A exp −      ,                                                                                       (3.39)
+                                                                                                                         dz               4D
+
+-->
+
+<p>
+
+\begin{equation}
+\frac {df}{dz}(z) = A \exp \left ( - \frac {z^2}{4D}\right ) ,
+\end{equation}
+
+</p>
+
+<p>
+which we can integrate again to yield the general solution
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{39}\)</span>
+
+<!--
+
+                                                                                                                 z2                                  √
+                                                                                                       Z                                                                        
+                                                                                                                                                                              z
+                                                                                           f (z) = A       exp −                   dz + C2 = A Dπ · erf                       √        + C2 ,                                          (3.40)
+                                                                                                                 4D                                                          2 D
+
+-->
+
+<p>
+
+\begin{equation}
+f(z) = A \int \exp \left ( - \frac {z^2}{4D}\right ) dz + C_2 = A \sqrt {D\pi } \cdot \mbox {erf} \left ( \frac {z}{2 \sqrt {D} }\right ) +C_2 ,
+\end{equation}
+
+</p>
+
+<p>
+where \(\mbox {erf}\) is the Gauss error function. The boundary conditions \(f(0) = u_0\) and \(f(z) \to 0\) as \(z \to \infty \) imply that \(C_2 = u_0\) and \(A = -C_2 = -u_0\) since \(\mbox {erf}(0) = 0\) and
+\(\mbox {erf}(z) \to 1\) as \(z \to \to \infty \). Thus, substituting \(z = x/\sqrt {t}\) we have that
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{40}\)</span>
+
+<!--
+
+                                                                                                                                              
+                                                                                                                                             x
+                                                                                                                    u(x, t) = u0 1 − erf    √                                                                                          (3.41)
+                                                                                                                                           2 Dt
+
+-->
+
+<p>
+
+\begin{equation}
+u(x,t) = u_0 \left [1- \mbox {erf}\left ( \frac {x}{2\sqrt {Dt}}\right ) \right ]
+\end{equation}
+
+</p>
+
+<p>
+and in terms of the original variable
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{41}\)</span>
+
+<!--
+
+                                                                                                                                                       
+                                                                                                                                   −kt                x
+                                                                                                               c(x, t) = c0 e             1 − erf    √      .                                                                          (3.42)
+                                                                                                                                                    2 Dt
+
+-->
+
+<p>
+
+\begin{equation}
+c(x,t) = c_0 e^{-kt} \left [1- \mbox {erf}\left ( \frac {x}{2\sqrt {Dt}}\right ) \right ] .
+\end{equation}
+
+</p>
+
+<p>
+In the above, we took a particular set of boundary conditions on the half-interval \([0, \infty )\). One is perhaps more familiar with the “free-space” boundary and initial conditions on the entire interval \((-\infty ,\infty
+)\). In this case, we have
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{42}\)</span>
+
+<!--
+
+
+                                                                                                  u(x, t) → 0 as x → ±∞ and u(x, 0) = δ(x)                                                                                             (3.43)
+
+-->
+
+<p>
+
+\begin{equation}
+u(x, t ) \to 0 \quad \mbox {as} \quad x \to \pm \infty \quad \mbox {and} \quad u(x, 0 ) = \delta (x)
+\end{equation}
+
+</p>
+
+<p>
+where \(\delta (x)\) is the Dirac delta function (for a point source at \(0\)). In terms of the original variable \(c(x,t) = e^{kt} u(x,t)\) (here for growth), this would correspond to having an initial point source at \(x = 0\)
+and imposing that the solution must decay as we go infinitely far away from it. To determine the value of \(c/b\) in this case, we use the definition of a mollifier<sup>2</sup> as a function \(f\) that satisfies
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{43}\)</span>
+
+<!--
+
+                                                                                                        Z ∞
+                                                                                                                                                 1 x
+                                                                                                                 f (x) = 1          and     lim    f   = δ(x)                                                                          (3.44)
+                                                                                                           −∞                               τ →0 τ   τ
+
+-->
+
+<p>
+
+\begin{equation}
+\int _{-\infty }^{\infty } f(x) = 1 \quad \mbox {and} \quad \lim _{\tau \to 0} \frac {1}{\tau } f\left (\frac {x}{\tau } \right ) = \delta (x)
+\end{equation}
+
+</p>
+
+<p>
+to see that, in terms of the \(f\) we used before, the initial condition
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{44}\)</span>
+
+<!--
+
+                                                                                                                                                                        
+                                                                                                                                                     c/b           x
+                                                                                                               δ(x) = lim u(x, t) = lim t                  f       √                                                                   (3.45)
+                                                                                                                          t→0                  t→0                   t
+
+-->
+
+<p>
+
+\begin{equation}
+\delta (x) = \lim _{t \to 0} u(x,t) = \lim _{t \to 0} t^{c/b} f\left (\frac {x}{\sqrt {t}}\right )
+\end{equation}
+
+</p>
+
+<p>
+will be satisfied if \(f\) is a mollifier and \(c/b = -1/2\). Thus, in terms of \(z\), the corresponding \(f\) must satisfy the second-order ODE
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{45}\)</span>
+
+<!--
+
+                                                                                             d2 f                  d2 f
+                                                                                                                                                                                        
+                                                                                                   1 df  1              1 d           d                                          df  1
+                                                                                       0=D      2
+                                                                                                  + z   + f (z) = D 2 +      zf (z) =                                          D    + zf                                               (3.46)
+                                                                                             dz    2 dz  2         dz   2 dz          dz                                         dz  2
+
+-->
+
+<p>
+
+\begin{equation}
+0 = D \frac {d^2 f}{dz^2} + \frac {1}{2} z \frac {df}{dz} +\frac {1}{2} f(z) = D \frac {d^2 f}{dz^2} + \frac {1}{2} \frac {d}{dz} z f(z) = \frac {d}{dz} \left ( D \frac {d f}{dz} + \frac
+{1}{2}z f \right )
+\end{equation}
+
+</p>
+
+<p>
+or, equivalently,
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{46}\)</span>
+
+<!--
+
+                                                                                                                                   df  1
+                                                                                                                               D      + zf = C1                                                                                        (3.47)
+                                                                                                                                   dz  2
+
+-->
+
+<p>
+
+\begin{equation}
+D \frac {d f}{dz} + \frac {1}{2}z f = C_1
+\end{equation}
+
+</p>
+
+<p>
+for some constant \(C_1\) that we are free to take as \(C_1 = 0\) since we are looking for just one solution. Solving the resulting first-order ODE we have
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{47}\)</span>
+
+<!--
+
+                                                                                                                                                               z2
+                                                                                                                                    Z
+                                                                                                                       1
+                                                                                                        log f (z) = −                    zdz + C2 = −             + C2                                                                 (3.48)
+                                                                                                                      2D                                       4D
+
+-->
+
+<p>
+
+\begin{equation}
+\log f(z) = - \frac {1}{2D}\int z dz +C_2 = - \frac {z^2}{4D} + C_2
+\end{equation}
+
+</p>
+
+<p>
+and therefore
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{48}\)</span>
+
+<!--
+
+                                                                                                                                          z2
+                                                                                                                                            
+                                                                                                                          f (z) = A exp −      .                                                                                       (3.49)
+                                                                                                                                          4D
+
+-->
+
+<p>
+
+\begin{equation}
+f(z) = A \exp \left ( -\frac {z^2}{4D}\right ) .
+\end{equation}
+
+</p>
+
+<p>
+Using
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{49}\)</span>
+
+<!--
+
+                                                                                                           Z ∞
+                                                                                                                           z2
+                                                                                                                                Z ∞√
+                                                                                                                             
+                                                                                                  1=    f (x) =    A exp −      = 2 πDA                                                                                                (3.50)
+                                                                                                     −∞         −∞         4D
+
+-->
+
+<p>
+
+\begin{equation}
+1 = \int _{-\infty }^{\infty } f(x) = \int _{-\infty }^{\infty } A \exp \left ( -\frac {z^2}{4D}\right ) = 2\sqrt {\pi D} A
+\end{equation}
+
+</p>
+
+<p>
+we find that \(A = 1/\sqrt {4 \pi D}\) and from \(u(x,t) = f(x/\sqrt {t}) /\sqrt {t}\) we have the solution
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{50}\)</span>
+
+<!--
+
+                                                                                                                                         x2
+                                                                                                                                           
+                                                                                                                              1
+                                                                                                                 u(x, t) = √      exp −       .                                                                                        (3.51)
+                                                                                                                             4πDt       4Dt
+
+-->
+
+<p>
+
+\begin{equation}
+u(x,t) = \frac {1}{\sqrt {4 \pi D t}} \exp \left ( - \frac {x^2}{4Dt}\right ) .
+\end{equation}
+
+</p>
+
+<p>
+We recognise this as the fundamental solution in dimension \(d=1\) introduced for the corresponding boundary problem previously. The full solution in terms of the original variable is
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{51}\)</span>
+
+<!--
+
+                                                                                                                                                  x2
+                                                                                                                                                    
+                                                                                                                                    1
+                                                                                                               c(x, t) = √              exp kt −       ,                                                                               (3.52)
+                                                                                                                                   4πDt          4Dt
+
+-->
+
+<p>
+
+\begin{equation}
+c(x,t) = \frac {1}{\sqrt {4 \pi D t}} \exp \left (k t- \frac {x^2}{4Dt}\right ) ,
+\end{equation}
+
+</p>
+
+<p>
+which describes exponential growth coupled with diffusion in a one-dimensional environment.
+</p>
+<div role="note" class="footnotes">
+
+<a id="BioTransport-autopage-11"></a>
+<p>
+<sup>2</sup>&nbsp;The mathematical rigour associated with this definition is beyond the scope of what we will do here.
+</p>
+
+
+</div>
+<!--
+...... subsection Absorbing and non-flux spatial boundary conditions ......
+-->
+<h5 id="autosec-12"><span class="sectionnumber">3.2.2&#x2003;</span>Absorbing and non-flux spatial boundary conditions</h5>
+<a id="BioTransport-autopage-12"></a>
+
+
+<p>
+We have derived the fundamental solution over infinite spatial domains and now want to consider spatial domains that are finite. Examples include a constrained spatial domain for growth, i.e. zero resources outside a prescribed
+region of space. We shall consider two types of boundary conditions: perfectly reflecting or perfectly absorbing boundary conditions. Mathematically, given a solution \(c({\bf x},t)\) the perfectly reflecting boundary condition is
+the Neumann condition at boundary \(\partial B\) that
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{52}\)</span>
+
+<!--
+
+
+                                                                                                               ∇c · n|∂B = 0                                                                                                    (3.53)
+
+-->
+
+<p>
+
+\begin{equation}
+\nabla c \cdot {\bf n} |_{\partial B}= 0
+\end{equation}
+
+</p>
+
+<p>
+where \(\bf n\) is the outward normal direction from \(\partial B\). By comparison, the perfectly absorbing boundary condition is the Dirichlet condition
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{53}\)</span>
+
+<!--
+
+
+                                                                                                                    c|∂B = 0.                                                                                                   (3.54)
+
+-->
+
+<p>
+
+\begin{equation}
+c|_{\partial B} = 0 .
+\end{equation}
+
+</p>
+
+<p>
+We can use linear combinations of the fundamental solution over infinite spatial domains to construct specific solutions that satisfy these boundary conditions, the so-called method of images.
+</p>
+
+<p>
+In one spatial dimension, we take \(\psi (x-x_0,t)\) to be our fundamental solution derived in the previous subsection corresponding to a point source at \(x_0 &gt; 0\). That is to say,
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{54}\)</span>
+
+<!--
+
+                                                                                                                                 (x − x0 )2
+                                                                                                                                           
+                                                                                                                    1
+                                                                                               ψ(x − x0 , t) = √        exp kt −              .                                                                                 (3.55)
+                                                                                                                   4πDt             4Dt
+
+-->
+
+<p>
+
+\begin{equation}
+\psi (x-x_0,t) = \frac {1}{\sqrt {4 \pi D t}} \exp \left (k t- \frac {(x-x_0)^2}{4Dt}\right ) .
+\end{equation}
+
+</p>
+
+<p>
+First consider a perfectly reflecting boundary at the point \(x = 0\), which means
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{55}\)</span>
+
+<!--
+
+                                                                                                                   ∂c
+                                                                                                                          = 0.                                                                                                  (3.56)
+                                                                                                                   ∂x x=0
+
+-->
+
+<p>
+
+\begin{equation}
+\left . \frac {\partial c}{\partial x} \right |_{x = 0} = 0 .
+\end{equation}
+
+</p>
+
+<p>
+We can show that \(c(x,t) = \psi (x-x_0,t) + \psi (-x-x_0,t)\) satisfies this boundary condition since
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{56}\)</span>
+
+<!--
+
+                                                                           ∂ψ(x − x0 , t)       ∂ψ(−x − x0 , t)       ∂ψ(z, t)         ∂ψ(z ′ , t)
+                                                                                              +                     =                −                      =0                                                                  (3.57)
+                                                                               ∂x         x=0       ∂x          x=0     ∂z     z=−x0     ∂z ′      z ′ =−x0
+
+
+-->
+
+<p>
+
+\begin{equation}
+\left . \frac {\partial \psi (x-x_0,t)}{\partial x} \right |_{x = 0} + \left . \frac {\partial \psi (-x-x_0,t)}{\partial x}\right |_{x = 0} = \left .                                   \frac {\partial \psi (z,t)}{\partial z}
+\right |_{z = -x_0} - \left . \frac {\partial \psi (z&apos;,t)}{\partial z&apos;}\right |_{z&apos; = -x_0} = 0
+\end{equation}
+
+</p>
+
+<p>
+where we made substitutions \(z = x- x_0\) in the first term and \(z&apos; = -x - x_0\) in the second. Then, since linear superposition returns another solution to a linear differential equation, the linear combination is also
+solution to <a href="BioTransport.html#expgro">3.26</a>
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{57}\)</span>
+
+<!--
+
+                                                                                                                  (x − x0 )2           (x + x0 )2
+                                                                                                                                              
+                                                                                               1
+                                                                                c(x, t) = √        exp(±kt) exp −              + exp −               .                                                                          (3.58)
+                                                                                              4πDt                   4Dt                  4Dt
+
+-->
+
+<p>
+
+\begin{equation}
+c(x,t) = \frac {1}{\sqrt {4 \pi D t}} \exp (\pm kt) \left [ \exp \left (-\frac {(x-x_0)^2}{4Dt}\right ) + \exp \left (- \frac {(x+x_0)^2}{4Dt}\right ) \right ] .
+\end{equation}
+
+</p>
+
+<p>
+For a perfectly absorbing boundary condition at \(x=0\) it is easy to see that \(c(x,t) = \psi (x-x_0,t) - \psi (-x-x_0,t)\) provides a solution since
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{58}\)</span>
+
+<!--
+
+
+                                                                                                    c(0, t) = ψ(−x0 , t) − ψ(−x0 , t) = 0                                                                                       (3.59)
+
+-->
+
+<p>
+
+\begin{equation}
+c(0,t) = \psi (-x_0,t) - \psi (-x_0,t) = 0
+\end{equation}
+
+</p>
+
+<p>
+and therefore
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{59}\)</span>
+
+<!--
+
+                                                                                                                  (x − x0 )2           (x + x0 )2
+                                                                                                                                              
+                                                                                               1
+                                                                                c(x, t) = √        exp(±kt) exp −              − exp −               .                                                                          (3.60)
+                                                                                              4πDt                   4Dt                  4Dt
+
+-->
+
+<p>
+
+\begin{equation}
+c(x,t) = \frac {1}{\sqrt {4 \pi D t}} \exp (\pm kt) \left [ \exp \left (-\frac {(x-x_0)^2}{4Dt}\right ) - \exp \left (- \frac {(x+x_0)^2}{4Dt}\right ) \right ] .
+\end{equation}
+
+</p>
+
+<p>
+When we move to higher dimensions we can use the fundamental solution in dimension \(d\) to perform the same procedure, depending on the layout of boundary conditions. For example, for \(d=2\) the fundamental solution
+corresponding to a point source at \((0,y_0)\) is given by
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{60}\)</span>
+
+<!--
+
+                                                                                                                           x2 + (y − y0 )2
+                                                                                                                                          
+                                                                                                               1
+                                                                                          ψ(x, y − y0 , t) =      exp kt −                   .                                                                                  (3.61)
+                                                                                                             4πDt               4Dt
+
+-->
+
+<p>
+
+\begin{equation}
+\psi (x,y-y_0,t) = \frac {1}{4 \pi D t} \exp \left (k t- \frac {x^2 + (y - y_0)^2}{4Dt}\right ) .
+\end{equation}
+
+</p>
+
+<p>
+If we take a perfectly reflecting boundary at the line \(y = 0\), the corresponding superposition solution corresponds to
+</p>
+<span class="hidden"> \(\seteqnumber{0}{}{61}\)</span>
+
+
+<!--
+
+
+
+                                                                           c(x, y, t) = ψ(x, y − y0 , t) + ψ(x, −y − y0 , t)
+                                                                                                                2
+                                                                                                                   x + (y − y0 )2
+                                                                                                                                          2
+                                                                                                                                            x + (y + y0 )2
+                                                                                                                                                         
+                                                                                          1
+                                                                                      =        exp(±kt) exp −                       + exp −                   .
+                                                                                        4πDt                             4Dt                    4Dt
+
+
+-->
+
+
+<p>
+
+\begin{align*}
+c(x,y,t) &amp;= \psi (x,y-y_0,t) + \psi (x,-y-y_0,t) \\ &amp;= \frac {1}{4 \pi D t} \exp (\pm k t) \left [ \exp \left (- \frac {x^2 + (y - y_0)^2}{4Dt}\right ) + \exp \left (- \frac {x^2 + (y
++ y_0)^2}{4Dt}\right ) \right ] .
+\end{align*}
+From this simple procedure, we can systematically build up a collection of solutions to the problem specified over a range of multi-dimensional domains.
+</p>
+<div class="theoremcontents">
+
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+<span class="theoremlabel">Exercise 3.1 </span> We can approximate a tumour as a spherically-symmetric ball of cells in three dimensions with radius \(R\). Cells within the tumour are supplied with oxygen by diffusion, and
+there is some critical oxygen concentration \(c^*\) below which cells die. Assume oxygen is supplied outside the tumour at fixed concentration \(c_0\) and that living cells consume oxygen at a constant rate \(F_0\).
+</p>
+
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+(a) Solve the spherically-symmetric reaction-diffusion equation for oxygen concentration \(c\) within the tumour at steady state
+</p>
+<p>
+\[ 0 = D \frac {1}{r^2} \left ( r^2 \frac {d c}{dr} \right ) - F_0 \]
+</p>
+<p>
+subject to the boundary conditions
+</p>
+<p>
+\[ \frac {d c}{dr}(0) = 0 , \quad c(R) = c_0.           \]
+</p>
+</li>
+<li>
+
+
+<p>
+(b) Determine the critical radius, \(R^*\), for which any tumour of radius \(R^*\) or larger will contain dead cells.
+</p>
+</li>
+</ul>
+
+</li>
+
+</ul>
+
+</div>
+<div class="theoremcontents">
+
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+<span class="theoremlabel">Exercise 3.2 </span> In this example, instead of taking \(c\) to represent the concentration of oxygen, we use it to describe the “concentration” of tumour cells in three-dimensional space and time.
+The fundamental solution for exponential tumour growth in dimensions \(d = 3\) from a point source centred at the origin is given by
+</p>
+
+<p>
+\[ \phi ( x,y,z,t) = \frac {1}{(4 \pi D t)^{3/2}} \exp \left (kt -\frac {x^2 + y^2 + z^2}{4Dt}\right ) .\]
+</p>
+
+<p>
+Find a solution that describes tumour growth from a point source located at \((x_0,y_0,z_0) &gt; 0\) in the case where no oxygen available for growth (and therefore no cells can exist) below the surface \(z = 0\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<a id="BioTransport-autofile-last"></a>
+</section>
+
+</main>
+
+</div>
+
+</body>
+</html>

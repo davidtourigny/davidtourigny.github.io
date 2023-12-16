@@ -1,0 +1,1671 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<title>Derivation</title>
+<link rel="stylesheet" type="text/css" href="lwarp.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+     subequations: "0",
+     section: "",
+     loader: {
+          load: ['[tex]/tagformat', '[tex]/textmacros'],
+     },
+     startup: {
+          ready() {
+              //       These would be replaced by import commands if you wanted to make
+              //       a proper extension.
+              const Configuration = MathJax._.input.tex.Configuration.Configuration;
+              const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+              const Macro = MathJax._.input.tex.Symbol.Macro;
+              const TexError = MathJax._.input.tex.TexError.default;
+              const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+              const expandable = MathJax._.util.Options.expandable;
+
+
+              //       Insert the replacement string into the TeX string, and check
+              //       that there haven't been too many maxro substitutions (prevents
+              //       infinite loops).
+              const useArgument = (parser, text) => {
+                   parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+                   parser.i = 0;
+                   if (++parser.macroCount > parser.configuration.options.maxMacros) {
+                        throw new TexError('MaxMacroSub1',
+                        'MathJax maximum macro substitution count exceeded; ' +
+                        'is there a recursive macro call?');
+                   }
+              }
+
+
+              //       Create the command map for:
+              //            \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+              new CommandMap('Lwarp-macros', {
+                   ifstar: 'IfstarFunction',
+                   ifnextchar: 'IfnextcharFunction',
+                   ifblank: 'IfblankFunction',
+                   ifstrequal: 'IfstrequalFunction',
+                   gsubstitute: 'GsubstituteFunction',
+                   seteqnumber: 'SeteqnumberFunction'
+              }, {
+                   //       This function implements an ifstar macro.
+                   IfstarFunction(parser, name) {
+                        const resultstar = parser.GetArgument(name);
+                        const resultnostar = parser.GetArgument(name);
+                        const star = parser.GetStar();                        // true if there is a *
+                        useArgument(parser, star ? resultstar : resultnostar);
+                   },
+
+
+                   //       This function implements an ifnextchar macro.
+                   IfnextcharFunction(parser, name) {
+                        let whichchar = parser.GetArgument(name);
+                        if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+                            // $ syntax highlighting
+                            whichchar = String.fromCodePoint(parseInt(whichchar));
+                        }
+                        const resultnextchar = parser.GetArgument(name);
+                        const resultnotnextchar = parser.GetArgument(name);
+                        const gotchar = (parser.GetNext() === whichchar);
+                        useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+                   },
+
+
+                   // This function implements an ifblank macro.
+                   IfblankFunction(parser, name) {
+                        const blankarg = parser.GetArgument(name);
+                        const resultblank = parser.GetArgument(name);
+                        const resultnotblank = parser.GetArgument(name);
+                        const isblank = (blankarg.trim() == "");
+                        useArgument(parser, isblank ? resultblank : resultnotblank);
+                   },
+
+
+                   // This function implements an ifstrequal macro.
+                   IfstrequalFunction(parser, name) {
+                        const strequalfirst = parser.GetArgument(name);
+                        const strequalsecond = parser.GetArgument(name);
+                        const resultequal = parser.GetArgument(name);
+                        const resultnotequal = parser.GetArgument(name);
+                        const isequal = (strequalfirst == strequalsecond);
+                        useArgument(parser, isequal ? resultequal : resultnotequal);
+                   },
+
+
+                   // This function implements a gsub macro.
+                   GsubstituteFunction(parser, name) {
+                        const gsubfirst = parser.GetArgument(name);
+                        const gsubsecond = parser.GetArgument(name);
+                        const gsubthird = parser.GetArgument(name);
+                        let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+                        useArgument(parser, gsubresult);
+                   },
+
+
+                   //       This function modifies the equation numbers.
+                   SeteqnumberFunction(parser, name) {
+                            //   Get the macro parameters
+                            const star = parser.GetStar();                      // true if there is a *
+                            const optBrackets = parser.GetBrackets(name);        // contents of optional brackets
+                            const newsubequations = parser.GetArgument(name);      // the subequations argument
+                            const neweqsection = parser.GetArgument(name);      // the eq section argument
+                            const neweqnumber = parser.GetArgument(name);        // the eq number argument
+                            MathJax.config.subequations=newsubequations ;       // a string with boolean meaning
+                            MathJax.config.section=neweqsection ;               // a string with numeric meaning
+                            parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+                   }
+
+
+              });
+
+
+              //       Create the Lwarp-macros package
+              Configuration.create('Lwarp-macros', {
+                   handler: {macro: ['Lwarp-macros']}
+              });
+
+
+              MathJax.startup.defaultReady();
+
+
+              // For forward references:
+              MathJax.startup.input[0].preFilters.add(({math}) => {
+                   if (math.inputData.recompile){
+                            MathJax.config.subequations = math.inputData.recompile.subequations;
+                            MathJax.config.section = math.inputData.recompile.section;
+                   }
+              });
+              MathJax.startup.input[0].postFilters.add(({math}) => {
+                   if (math.inputData.recompile){
+                            math.inputData.recompile.subequations = MathJax.config.subequations;
+                            math.inputData.recompile.section = MathJax.config.section;
+                   }
+              });
+
+
+                   // For \left, \right with unicode-math:
+                   const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+                   const {Symbol} = MathJax._.input.tex.Symbol;
+                   const {MapHandler} = MathJax._.input.tex.MapHandler;
+                   const delimiter = MapHandler.getMap('delimiter');
+                   delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+                   delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+                   delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+                   delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+                   delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+                   delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+                   delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+                   delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+                   delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+                   delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+                   delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+                   delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+                   delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+                   delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+                   delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+                   delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+                   delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+                   delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+                   delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+                   delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+                   delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+                   delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+                   delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+                   delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+                   delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+                   delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+                   delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+                   delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+                   delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+                   delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+                   delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+                   delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+                   delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+                   delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+                   delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+                   delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+                   delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+                   delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+                   delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+          }       // ready
+     },           // startup
+
+
+     tex: {
+          packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+          tags: "ams",
+                   tagformat: {
+                            number: function (n) {
+                                 if(MathJax.config.subequations==0)
+                                        return(MathJax.config.section + n);
+                                 else
+                                        return(MathJax.config.section + String.fromCharCode(96+n));
+                            },
+                   },
+     }
+}
+</script>
+
+
+<script
+          id="MathJax-script"
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<div class="bodywithoutsidetoc">
+
+
+<main class="bodycontainer">
+
+
+<section class="textbody">
+
+<a id="Derivation-autofile-0"></a>
+
+<!--MathJax customizations:-->
+
+
+<div class="hidden">
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+</div>
+
+<a id="Derivation-autopage-1"></a>
+
+<p>
+
+</p>
+<div class="center">
+
+<p>
+<span
+    class="fbox"
+    style="display:inline-block ; border:1pt solid #000000; padding:3pt ; color:#000000"
+><span
+    class="makebox"
+    style="display:inline-block ; "
+                                 &#x2003;&#x2003;Jan                2024
+> &#x2003;&#x2003;LM Advanced Mathematical Biology 31128 &#x2003;&#x2003;                </span></span>
+</p>
+</div>
+
+<p>
+David S. Tourigny, School of Mathematics, University of Birmingham
+</p>
+
+<p>
+Disclaimer: These notes have not been subjected to the usual scrutiny reserved for formal publications. Please let me know if you identify any errors. The material is based on a similar course previously taught by Tom
+Montenegro-Johnson at the University of Birmingham
+</p>
+<!--
+...... section Part 2: Reaction-advection-diffusion equation ......
+-->
+<h4 id="autosec-3">Part 2: Reaction-advection-diffusion equation</h4>
+<a id="Derivation-autopage-3"></a>
+
+
+<p>
+In this part of the course we will look at the derivation of the central equation: the reaction-advection-diffusion (RAD) equation. We will also consider several of its basic properties.
+</p>
+<!--
+...... section Derivation of the RAD equation ......
+-->
+<h4 id="autosec-4"><span class="sectionnumber">2.1&#x2003;</span>Derivation of the RAD equation</h4>
+<a id="Derivation-autopage-4"></a>
+<!--
+...... subsection Unbiased random walks in one spatial dimension ......
+-->
+<h5 id="autosec-5"><span class="sectionnumber">2.1.1&#x2003;</span>Unbiased random walks in one spatial dimension</h5>
+<a id="Derivation-autopage-5"></a>
+
+
+<p>
+During the introduction, we saw how developing the theory of Brownian motion involved considering the phenomenon as a probabilistic model applied to calculate statistical properties of molecular populations. Interestingly, it
+appears to be Louis Bachelier<sup>1</sup>, while studying pricing of stocks, who first described the link with what we now call the diffusion equation, independently from Einstein and Smoluchowski’s work on Brownian motion.
+Simultaneously, Karl Pearson and Lord Rayleigh had corresponded over probabilistic models for the movement of mosquitos in a forrest, and arrived at essential the same theory. This theory can be captured by that of random
+walks, which we now describe rather intuitively in one dimension. Due to the fundamental nature of the random walk as a stochastic process, it is no coincidence that the theory has such wide applications: from biology... to
+engineering... to finance.
+</p>
+
+<p>
+Consider the concentration of some particles or molecules, \(c(x,t)\), at time \(t\) and site \(x\) in one-dimensional space. Although here we use \(c\) to denote concentration, bear in mind it can also more generally be used to
+denote a probability density function for an individual particle<sup>2</sup>. At each time step \(\Delta t\), a particle may move from the point \(x\) by a distance of \(\Delta x\) in either direction with a probability of
+\(\lambda _L\) (to the left) or \(\lambda _R\) (to the right), which in the most general case may depend on \(t\), \(x\) or \(c\) itself. Note that here we are making the connection between population and individual behaviour
+more explicit, sweeping some more delicate considerations under the rug. The concentration of particles at time \(t + \Delta t\) is then given by
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{0}\)</span>
+
+<!--
+
+
+                                                                            c(x, t + ∆t) = c(x, t) + λR c(x − ∆x, t) + λL c(x + ∆x, t) − λR c(x, t) − λL c(x, t)                               (2.1)--><a id="entirec"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {entirec} c(x, t + \Delta t) = c(x,t) + \lambda _R c(x - \Delta x,t) + \lambda _L c(x + \Delta x,t) - \lambda _R c(x ,t) - \lambda _L c(x ,t)
+\end{equation}
+
+</p>
+
+<p>
+where the first term on the right-hand side denotes particles that have remained at \(x\), the second and third terms denote those arriving from neighbouring sites (possible \(t,x,c\)-dependency in \(\lambda _{L,R}\) assumed
+implicitly), and the last two terms denote those leaving.
+</p>
+
+<p>
+We Taylor expand \(c(x,t)\) about the point \((x,t)\):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{1}\)</span>
+
+<!--
+
+                                                                                                                           ∂c (∆t)2 ∂ 2 c
+                                                                                             c(x, t + ∆t) = c(x, t) + ∆t      +           + ...                                                  (2.2)--><a id="deltax"></a><!--
+                                                                                                                           ∂t   2 ∂t2
+
+-->
+
+<p>
+
+\begin{equation}
+\label {deltax} c(x, t + \Delta t) = c(x,t) + \Delta t \frac {\partial c}{\partial t} + \frac {(\Delta t)^2}{2} \frac {\partial ^2 c}{\partial t^2} + ...
+\end{equation}
+
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{2}\)</span>
+
+<!--
+
+                                                                                                                           ∂c   (∆x)2 ∂ 2 c
+                                                                                            c(x ± ∆x, t) = c(x, t) ± ∆x       +             + ...                                                (2.3)--><a id="deltat"></a><!--
+                                                                                                                           ∂x     2 ∂x2
+
+-->
+
+<p>
+
+\begin{equation}
+\label {deltat} c(x\pm \Delta x, t ) = c(x,t) \pm \Delta x \frac {\partial c}{\partial x} + \frac {(\Delta x)^2}{2} \frac {\partial ^2 c}{\partial x^2} + ...
+\end{equation}
+
+</p>
+
+<p>
+and the procedure will then be to substitute these into <a href="Derivation.html#entirec">2.1</a> to obtain a differential equation for \(c\). However, the form of the resulting differential equation will depend entirely on how
+the probabilities \(\lambda _{L,R}\) vary with \(t,x,c\). In the simplest possible case, we first assume the probabilities are entirely unbiased, i.e. \(\lambda _{R} = \lambda _{L} = 1/2\). In this case, substitution for \(c(x,
+t + \Delta t)\) and \(c(x\pm \Delta x, t )\) in <a href="Derivation.html#entirec">2.1</a> yields (abbreviating \(c(x,t)\) as just \(c\))
+</p>
+<span class="hidden"> \(\seteqnumber{0}{}{3}\)</span>
+
+
+<!--
+
+
+                                                                           ∂c (∆t)2 ∂ 2 c
+                                                                       c + ∆t +             + ...
+                                                                           ∂t  2 ∂t2
+                                                                                               (∆x)2 ∂ 2 c                         (∆x)2 ∂ 2 c
+                                                                                                                                                  
+                                                                            1           ∂c                         1          ∂c                      1   1
+                                                                        =c+    c − ∆x      +             2
+                                                                                                           + ... +     c + ∆x    +           2
+                                                                                                                                               + ... − c − c
+                                                                            2           ∂x        2 ∂x             2          ∂x     2 ∂x             2   2
+                                                                            (∆x)2 ∂ 2 c
+                                                                        =c+             + ...,
+                                                                              2 ∂x2
+
+
+-->
+
+
+<p>
+
+\begin{align*}
+c &amp;+ \Delta t \frac {\partial c}{\partial t} + \frac {(\Delta t)^2}{2} \frac {\partial ^2 c}{\partial t^2} + ... \\ &amp;= c + \frac {1}{2} \left ( c - \Delta x \frac {\partial
+c}{\partial x} + \frac {(\Delta x)^2}{2} \frac {\partial ^2 c}{\partial x^2} + ... \right ) + \frac {1}{2} \left ( c + \Delta x \frac {\partial c}{\partial x} + \frac {(\Delta x)^2}{2} \frac
+{\partial ^2 c}{\partial x^2} + ... \right ) - \frac {1}{2} c - \frac {1}{2} c \\ &amp;= c + \frac {(\Delta x)^2}{2} \frac {\partial ^2 c}{\partial x^2} + ... ,
+\end{align*}
+which to leading order in \(\Delta t\), \(\Delta x\) gives the relationship
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{3}\)</span>
+
+<!--
+
+                                             ∂c   ∂2c
+                                                =D 2                                                   (2.4)                                                                                      --><a id="diffusion"></a><!--
+                                             ∂t   ∂x
+
+-->
+
+<p>
+
+\begin{equation}
+\label {diffusion} \frac {\partial c}{\partial t} = D \frac {\partial ^2 c}{\partial x^2}
+\end{equation}
+
+</p>
+
+<p>
+where
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{4}\)</span>
+
+<!--
+
+                                                                                                           (∆x)2
+                                                                                                       lim       = constant ≡ D.                                                                                               (2.5)
+                                                                                                    ∆x,∆t→0 2∆t
+
+
+-->
+
+<p>
+
+\begin{equation}
+\lim _{\Delta x, \Delta t \to 0} \frac {(\Delta x)^2}{2 \Delta t} = \mbox {constant} \equiv D.
+\end{equation}
+
+</p>
+
+<p>
+Thus, we have arrived at the diffusion equation in one spatial dimension, where we see that it describes an unbiased random walk of particles without any sources, sinks or interaction.
+</p>
+<div role="note" class="footnotes">
+
+<a id="Derivation-autopage-6"></a>
+<p>
+<sup>1</sup>&nbsp;In his PhD thesis, La The&#x0301;orie de la Spe&#x0301;culation, published in 1900
+</p>
+
+<p>
+<sup>2</sup>&nbsp;To be precise, \(c\) is proportional to the number density for molecules, which can be obtained by averaging over the probability of finding a particle at position \(x\) at time \(t\) under conditions of the
+ergodic hypothesis.
+</p>
+
+
+</div>
+<!--
+...... subsection One-dimensional spatially-biased random walks ......
+-->
+<h5 id="autosec-7"><span class="sectionnumber">2.1.2&#x2003;</span>One-dimensional spatially-biased random walks</h5>
+<a id="Derivation-autopage-7"></a>
+
+
+<p>
+We have seen that an unbiased, one-dimensional random walk (probabilities of molecules or particles moving in either direction is the same at any site, \(\lambda _L = \lambda _R = 1/2\)) yields the diffusion equation, and now
+want to generalise this to a model where the probabilities \(\lambda _L, \lambda _R\) may not be the same and can furthermore depend on space. For example, this may be due to a preference of bacteria to move towards
+increasing levels of an external signal, or movement of particles with the flow of surrounding fluid in a given direction. To model this scenario, we allow \(\lambda _L, \lambda _R\) to depend on \(x\) such that
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{5}\)</span>
+
+<!--
+
+                                                                                                      1                               1
+                                                                                           λR (x) =     + λ(x) = 1 − λL (x) ⇒ λL (x) = − λ(x)                                                                                      (2.6)
+                                                                                                      2                               2
+
+-->
+
+<p>
+
+\begin{equation}
+\lambda _R(x) = \frac {1}{2} + \lambda (x) = 1- \lambda _L(x) \Rightarrow \lambda _L(x) = \frac {1}{2} - \lambda (x)
+\end{equation}
+
+</p>
+
+<p>
+where \(- 1/2 \leq \lambda (x) \leq 1/2\) is function that can also be constant. Substituting into equation <a href="Derivation.html#entirec">2.1</a>, we have that
+</p>
+<span class="hidden"> \(\seteqnumber{0}{}{6}\)</span>
+
+
+<!--
+
+
+
+                                                                                          c(x, t + ∆t) = c(x, t) + (1/2 + λ(x − ∆x))c(x − ∆x, t)
+                                                                                                        + (1/2 − λ(x + ∆x))c(x + ∆x, t)
+                                                                                                        − (1/2 + λ(x))c(x, t) − (1/2 − λ(x))c(x, t)
+
+
+
+-->
+
+
+<p>
+
+\begin{align*}
+c(x, t + \Delta t) &amp;= c(x,t) + (1/2 + \lambda (x - \Delta x) ) c(x-\Delta x,t) \\ &amp;+ (1/2 - \lambda (x +\Delta x) ) c(x+ \Delta x,t) \\ &amp;- (1/2 + \lambda (x)) c(x,t) - (1/2 -
+\lambda (x)) c(x,t)
+\end{align*}
+and we also Taylor expand \(\lambda (x)\) about \(x\) as
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{6}\)</span>
+
+<!--
+
+                                                                      dλ (∆x)2 d2 λ
+                                              λ(x ± ∆x) = λ(x) ± ∆x      +          + ...       .                                                   (2.7)                                             --><a id="lambda"></a><!--
+                                                                      dx   2 dx2
+
+-->
+
+<p>
+
+\begin{equation}
+\label {lambda} \lambda (x \pm \Delta x) = \lambda (x) \pm \Delta x \frac {d \lambda }{dx} + \frac {(\Delta x)^2}{2} \frac {d^2 \lambda }{dx^2} + ...                              \quad .
+\end{equation}
+
+</p>
+
+<p>
+Substitution of <a href="Derivation.html#deltax">2.2</a>, <a href="Derivation.html#deltat">2.3</a> and <a href="Derivation.html#lambda">2.7</a> into the new expression for \(c(x, t+ \Delta t)\) and
+expanding yields
+</p>
+<span class="hidden"> \(\seteqnumber{0}{}{7}\)</span>
+
+
+<!--
+
+
+                                                                          ∂c (∆t)2 ∂ 2 c
+                                                                 c + ∆t +                + ...
+                                                                      ∂t        2 ∂t2
+                                                                                    dλ (∆x)2 d2 λ                           (∆x)2 ∂ 2 c
+                                                                                                                                            
+                                                                         1                                             ∂c
+                                                                   =       + λ − ∆x    +              + ...    c − ∆x     +             + ...
+                                                                         2          dx       2 dx2                     ∂x       2 ∂x2
+                                                                                    dλ (∆x)2 d2 λ                           (∆x)2 ∂ 2 c
+                                                                                                                                          
+                                                                         1                                             ∂c
+                                                                   +       − λ − ∆x    −              + ...    c + ∆x     +             + ...
+                                                                         2          dx      2 dx2                      ∂x      2 ∂x2
+                                                                      c ∆x ∂c        (∆x)2 ∂ 2 c              ∂c      (∆x)2 ∂ 2 c       dλ           dλ ∂c     (∆x)2 d2 λ
+                                                                   = −            +            2
+                                                                                                 + λc − λ∆x       +λ            2
+                                                                                                                                  − c∆x     + (∆x)2        +c
+                                                                      2      2 ∂x      4 ∂x                   ∂x         2 ∂x           dx           dx ∂x       2 dx2
+                                                                                         2 2                              2 2
+                                                                      c ∆x ∂c        (∆x) ∂ c                 ∂c      (∆x) ∂ c          dλ         2 dλ ∂c     (∆x)2 d2 λ
+                                                                   + +            +              − cλ − λ∆x       − λ             − c∆x     −  (∆x)        − c
+                                                                     2      2 ∂x       4 ∂x2                  ∂x        2 ∂x2           dx           dx ∂x       2   dx
+                                                                   + ...
+
+
+
+-->
+
+
+<p>
+
+\begin{align*}
+c &amp;+ \Delta t \frac {\partial c}{\partial t} + \frac {(\Delta t)^2}{2} \frac {\partial ^2 c}{\partial t^2} + ... \\ &amp;= \left ( \frac {1}{2} + \lambda - \Delta x \frac {d \lambda }{dx}
++ \frac {(\Delta x)^2}{2} \frac {d^2 \lambda }{dx^2} + ... \right ) \left ( c - \Delta x \frac {\partial c}{\partial x} + \frac {(\Delta x)^2}{2} \frac {\partial ^2 c}{\partial x^2} + ...
+\right ) \\ &amp;+ \left ( \frac {1}{2} - \lambda - \Delta x \frac {d \lambda }{dx} - \frac {(\Delta x)^2}{2} \frac {d^2 \lambda }{dx^2} + ... \right ) \left ( c + \Delta x \frac {\partial
+c}{\partial x} + \frac {(\Delta x)^2}{2} \frac {\partial ^2 c}{\partial x^2} + ... \right ) \\ &amp;=\frac {c}{2} - \frac {\Delta x}{2} \frac {\partial c}{\partial x} + \frac {(\Delta
+x)^2}{4}\frac {\partial ^2 c}{\partial x^2} + \lambda c - \lambda \Delta x \frac {\partial c}{\partial x} + \lambda \frac {(\Delta x)^2}{2} \frac {\partial ^2 c}{\partial x^2} - c \Delta x
+\frac {d \lambda }{dx} + (\Delta x)^2 \frac {d \lambda }{dx} \frac {\partial c}{\partial x} + c \frac {(\Delta x)^2}{2} \frac {d^2 \lambda }{dx^2}\\ &amp;+ \frac {c}{2} + \frac {\Delta x}{2}
+\frac {\partial c}{\partial x} + \frac {(\Delta x)^2}{4} \frac {\partial ^2 c}{\partial x^2} - c \lambda - \lambda \Delta x \frac {\partial c}{\partial x} - \lambda \frac {(\Delta x)^2}{2}
+\frac {\partial ^2 c}{\partial x^2} - c \Delta x \frac {d \lambda }{dx} - (\Delta x)^2 \frac {d \lambda }{dx}\frac {\partial c}{\partial x} - c \frac {(\Delta x)^2}{2} \frac {d^2 \lambda
+}{dx}\\ &amp;+ ...
+\end{align*}
+and after cancelation of terms we arrive at
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{7}\)</span>
+
+<!--
+
+                                                                                       ∂c (∆t)2 ∂ 2 c                                   (∆x)2 ∂ 2 c
+                                                                                                                                   
+                                                                                                                          ∂c     dλ
+                                                                              c + ∆t      +        2
+                                                                                                      + ... = c − 2∆x   λ    + c      +             + ...   .                                                                      (2.8)
+                                                                                       ∂t   2 ∂t                          ∂x     dx       2 ∂x2
+
+-->
+
+<p>
+
+\begin{equation}
+c + \Delta t \frac {\partial c}{\partial t} + \frac {(\Delta t)^2}{2} \frac {\partial ^2 c}{\partial t^2} + ...                              = c - 2 \Delta x \left ( \lambda \frac {\partial c}{\partial x} + c \frac {d
+\lambda }{dx} \right ) + \frac {(\Delta x)^2}{2} \frac {\partial ^2 c}{\partial x^2} + ... \quad .
+\end{equation}
+
+</p>
+
+<p>
+One now must be a bit careful about how to treat terms in the limit \(\Delta x , \Delta t \to 0\) to arrive at a partial differential equation as we did in the previous subsection. Observe that we can equivalently write
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{8}\)</span>
+
+<!--
+
+                                                                                          ∂c (∆t)2 ∂ 2 c                            (∆x)2 ∂c
+                                                                                                                                              
+                                                                                                                 ∂
+                                                                                        ∆t +             + ... =           −2∆xλc +                + ...                                                                           (2.9)
+                                                                                          ∂t   2 ∂t2             ∂x                   2 ∂x
+
+-->
+
+<p>
+
+\begin{equation}
+\Delta t \frac {\partial c}{\partial t} + \frac {(\Delta t)^2}{2} \frac {\partial ^2 c}{\partial t^2} + ...                           = \frac {\partial }{ \partial x} \left ( - 2 \Delta x \lambda c + \frac {(\Delta
+x)^2}{2} \frac {\partial c}{\partial x} \right ) + ...
+\end{equation}
+
+</p>
+
+<p>
+and therefore the form of this equation to leading order depends on the size of \(\lambda \) relative to \(\Delta x \). In general, we have three possible scenarios: 1) \(\lambda \) is of order \((\Delta x)^2\) or higher; 2)
+\(\lambda \) is of order \(\Delta x\); or, 3) \(\lambda \) is of order one. Consider what happens to the expression within parentheses on the right-hand side for each of these scenarios in turn:
+</p>
+<ul style="list-style-type:none">
+
+<li>
+<p>
+1. In this case, the second term dominates and we obtain the diffusion equation <a href="Derivation.html#diffusion">2.4</a>
+</p>
+
+</li>
+<li>
+
+<p>
+2. In this case, both terms are of the same order and we obtain the advection-diffusion equation in one spatial dimension
+</p>
+<span class="hidden"> \(\seteqnumber{0}{}{9}\)</span>
+<!--
+
+                           ∂c   ∂2c  ∂
+                              =D 2 −    (v(x) · c)                              (2.10)                                                                                                  --><a id="advectiondiffusion"></a><!--
+                           ∂t   ∂x   ∂x
+-->
+<p>
+
+\begin{equation}
+\label {advectiondiffusion} \frac {\partial c}{\partial t} = D \frac {\partial ^2 c}{\partial x^2} - \frac {\partial }{\partial x}( v(x) \cdot c)
+\end{equation}
+
+</p>
+<p>
+where
+</p>
+<span class="hidden"> \(\seteqnumber{0}{}{10}\)</span>
+<!--
+
+                                                                                                                  (∆x)2
+                                                                                                             lim        λ ≡ v(x)                                                                                               (2.11)
+                                                                                                           ∆x,∆t→0 2∆t
+
+-->
+<p>
+
+\begin{equation}
+\lim _{\Delta x, \Delta t \to 0} \frac {(\Delta x)^2}{2 \Delta t} \lambda \equiv v(x)
+\end{equation}
+
+</p>
+<p>
+is the velocity of some background flow
+</p>
+
+</li>
+<li>
+
+<p>
+3. In this case, the first term dominates and we obtain the advection equation (equivalent to <a href="Derivation.html#advectiondiffusion">2.10</a> with \(D = 0\))
+</p>
+</li>
+</ul>
+
+<p>
+To obtain the full RAD equation in one spatial dimension, we are free to add to <a href="Derivation.html#advectiondiffusion">2.10</a> any source or sink term (more generally, a reaction term) \(F\) that depends on any
+given values of \(t,x,c\). This yields,
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{11}\)</span>
+
+<!--
+
+                                                                                                    ∂c   ∂2c  ∂
+                                                                                                       =D 2 −    (v(x) · c) + F (t, x, c).                                                                                     (2.12)
+                                                                                                    ∂t   ∂x   ∂x
+
+-->
+
+<p>
+
+\begin{equation}
+\frac {\partial c}{\partial t} = D \frac {\partial ^2 c}{\partial x^2} - \frac {\partial }{\partial x}( v(x) \cdot c) + F(t,x,c) .
+\end{equation}
+
+</p>
+<!--
+...... subsection Multiple spatial dimensions and the continuum ......
+-->
+<h5 id="autosec-8"><span class="sectionnumber">2.1.3&#x2003;</span>Multiple spatial dimensions and the continuum</h5>
+<a id="Derivation-autopage-8"></a>
+
+
+<p>
+In previous subsections, we were slightly sloppy about using \(c\) to denote concentration while at the same time thinking about the movement of individual particles. In one dimension, the number of particles on the interval \([ x
+- \Delta x/2, x + \Delta x/2]\) at time \(t\) can be approximated using \(c(x,t) \Delta x\), which becomes exact for a very large number of particles.
+</p>
+
+<p>
+For a finite number of non-interacting particles undergoing an unbiased random walk starting at \(x(0) = 0\), we can consider the position of the \(i\)th particle after \(T\) time steps:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{12}\)</span>
+
+<!--
+
+
+                                                                                                                  xi (T ) = xi (T − 1) ± ∆x,                                                                                         (2.13)
+
+-->
+
+<p>
+
+\begin{equation}
+x_i(T) = x_i(T - 1) \pm \Delta x ,
+\end{equation}
+
+</p>
+
+<p>
+which captures the fact that particle \(i\) may move by a distance of \(\Delta x\) to either the right or left, with equal probability. We now calculate the mean displacement of particles by averaging over all \(i\):
+</p>
+<span class="hidden"> \(\seteqnumber{0}{}{13}\)</span>
+
+
+<!--
+
+
+                                                                                                                 N               N
+                                                                                                              1 X             1 X
+                                                                                                ⟨x(T )⟩ =           xi (T ) =       (xi (T − 1) ± ∆x)
+                                                                                                              N i=1           N i=1
+                                                                                                                   N
+                                                                                                              1 X
+                                                                                                          ≈         xi (T − 1) = ⟨x(T − 1)⟩,
+                                                                                                              N i=1
+
+
+-->
+
+
+<p>
+
+\begin{align*}
+\langle x(T) \rangle &amp;= \frac {1}{N} \sum _{i=1}^N x_i(T) = \frac {1}{N} \sum _{i=1}^N (x_i(T - 1) \pm \Delta x ) \\ &amp;\approx \frac {1}{N} \sum _{i=1}^N x_i(T - 1) = \langle x(T-1)
+\rangle ,
+\end{align*}
+where, in going from the first to second line we used the fact that, for large \(N\), approximately half of the \(\Delta x\) will come with a positive coefficient and half with a negative coefficient. Thus, we can see recursively that
+\(\langle x(T) \rangle \approx \langle x(0) \rangle = 0\), i.e. the mean displacement of particles is approximately zero. Using the same arguments for the mean-squared displacement, we find that
+</p>
+<span class="hidden"> \(\seteqnumber{0}{}{13}\)</span>
+
+
+<!--
+
+
+                                                                                                   N               N
+                                                                                                1 X 2           1 X 2
+                                                                                  ⟨x2 (T )⟩ =         xi (T ) =      (x (T − 1) ± 2xi (T − 1) · ∆x + (∆x)2 )
+                                                                                                N i=1           N i=1 i
+                                                                                                     N
+                                                                                                1 X 2
+                                                                                           ≈         (x (T − 1) + (∆x)2 ) = ⟨x2 (T − 1)⟩ + (∆x)2 ,
+                                                                                                N i=1 i
+
+
+-->
+
+
+<p>
+
+\begin{align*}
+\langle x^2(T) \rangle &amp;= \frac {1}{N} \sum _{i=1}^N x^2_i(T) = \frac {1}{N} \sum _{i=1}^N (x^2_i(T - 1) \pm 2 x_i(T - 1) \cdot \Delta x + (\Delta x )^2) \\ &amp;\approx \frac {1}{N} \sum
+_{i=1}^N (x^2_i(T - 1) + (\Delta x )^2) = \langle x^2(T-1) \rangle + (\Delta x )^2,
+\end{align*}
+which recursively leads to \(\langle x^2(T) \rangle \approx T \cdot (\Delta x)^2\). To make the connection with the previous subsections, we take time \(t = T \cdot \Delta t\) so that
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{13}\)</span>
+
+<!--
+
+                                                                                                                               (∆x)2
+                                                                                                                  ⟨x2 (t)⟩ ≈         t = 2Dt,                                                                                        (2.14)
+                                                                                                                                ∆t
+
+-->
+
+<p>
+
+\begin{equation}
+\langle x^2(t) \rangle \approx \frac {(\Delta x)^2}{\Delta t} t = 2Dt ,
+\end{equation}
+
+</p>
+
+<p>
+where we have the same definition (without limits this time) for the diffusion coefficient \(D\) as before. For an unbiased random walk in multiple (e.g. three) spatial dimensions, we assume the movements in \(x\), \(y\) and \(z\)
+are statistically independent so that the same argument applies to give \(\langle x^2(t) \rangle , \langle y^2(t) \rangle , \langle z^2(t) \rangle \approx 2Dt\). The mean-squared displacement \(r^2(t) = x^2(t)
++ y^2(t) + z^2(t)\) is then
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{14}\)</span>
+
+<!--
+
+
+                                                                                                          ⟨r2 (t)⟩ ≈ 2Dt + 2Dt + 2Dt = 6Dt                                                                                           (2.15)
+
+-->
+
+<p>
+
+\begin{equation}
+\langle r^2(t) \rangle \approx 2Dt + 2Dt + 2Dt = 6Dt
+\end{equation}
+
+</p>
+
+<p>
+and we see in general it will depend on the number of dimensions \(d\) as \(\langle r^2(t) \rangle \approx 2dDt\).
+</p>
+
+<p>
+We now make use of the continuum limit to derive the full reaction-advection-diffusion equation in multiple spatial dimensions. In this case, integration of the concentration \(c({\bf x},t)\) over an arbitrary compact volume
+\(V\) with boundary \(S\) gives the total material within \(V\). The rate of change of material is equated to the sum of the net flux into \(V\) and the rate of generation or destruction of material within \(V\). In precise terms,
+this implies
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{15}\)</span>
+
+<!--
+
+                                                                                                     Z                    Z                     Z
+                                                                                                ∂
+                                                                                                         c(x, t)dV = −         J(x, t) · dS +       F (x, t)dV,                                                                      (2.16)
+                                                                                                ∂t   V                     S                    V
+
+
+-->
+
+<p>
+
+\begin{equation}
+\frac {\partial }{\partial t} \int _V c({\bf x},t) dV = - \int _S {\bf J}({\bf x},t) \cdot d {\bf S} + \int _V F({\bf x},t) dV ,
+\end{equation}
+
+</p>
+
+<p>
+where \(\bf J\) is the flux vector with sign convention chosen such that the unit normal vector points outward from the surface \(S\). Using the divergence theorem, we find this equation becomes a vanishing integral over the total
+volume
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{16}\)</span>
+
+<!--
+
+                                                                                                              Z                      
+                                                                                                                    ∂c
+                                                                                                                       +∇·J−F             dV = 0,                                                                                    (2.17)
+                                                                                                              V     ∂t
+
+-->
+
+<p>
+
+\begin{equation}
+\int _V \left ( \frac {\partial c}{\partial t} + \nabla \cdot {\bf J} - F \right )dV = 0 ,
+\end{equation}
+
+</p>
+
+<p>
+and, since this must hold for all \(V\), we must have
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{17}\)</span>
+
+<!--
+
+                                                   ∂c
+                                                      + ∇ · J − F = 0.                                                               (2.18)                                                             --><a id="continuum"></a><!--
+                                                   ∂t
+
+-->
+
+<p>
+
+\begin{equation}
+\label {continuum} \frac {\partial c}{\partial t} + \nabla \cdot {\bf J} - F = 0.
+\end{equation}
+
+</p>
+
+<p>
+It is perhaps already apparent that this will yield the reaction-advection-diffusion equation for certain choices of \(\bf J\).
+</p>
+
+<p>
+Fick’s law states that, in the absence of any other forces, the flux of material points in the direction of high concentration to low concentration with a magnitude that is proportional to the concentration gradient. That is,
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{18}\)</span>
+
+<!--
+
+
+                                                                                                                        Jdiff = −D∇c                                                                                                 (2.19)
+
+-->
+
+<p>
+
+\begin{equation}
+{\bf J}_{\text {diff}} = - D \nabla c
+\end{equation}
+
+</p>
+
+<p>
+where the subscript highlights that we have already anticipated that this will describe diffusion (no other forces). Indeed, in this case substitution for \({\bf J} = {\bf J}_{\text {diff}}\) in <a
+href="Derivation.html#continuum">2.18</a> with \(F=0\) yields the diffusion equation in multiple spatial dimensions
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{19}\)</span>
+
+<!--
+
+                                                    ∂c
+                                                       = ∇ · (D∇c).                                                                (2.20)                                                             --><a id="ddiffusion"></a><!--
+                                                    ∂t
+
+-->
+
+<p>
+
+\begin{equation}
+\label {ddiffusion} \frac {\partial c}{\partial t} = \nabla \cdot ( D \nabla c) .
+\end{equation}
+
+</p>
+
+<p>
+We can also consider general advection due to bulk movement with velocity \(\bf v\) and a general reaction term \(F\), in which case the substitution \({\bf J} = {\bf J}_{\text {diff}} + {\bf v} c\) gives rise to the
+multi-dimensional RAD equation we encountered in the introduction
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{20}\)</span>
+
+<!--
+
+                                            ∂c
+                                               = ∇ · (D∇c) − ∇ · (vc) + F.                                                        (2.21)                                                             --><a id="radequation"></a><!--
+                                            ∂t
+
+-->
+
+<p>
+
+\begin{equation}
+\label {radequation} \frac {\partial c}{\partial t} = \nabla \cdot ( D \nabla c) - \nabla \cdot ( {\bf v} c) + F .
+\end{equation}
+
+</p>
+
+<p>
+Observe that this formulation does not necessarily imply \(D\) must be constant: in non-homogeneous diffusion the diffusion coefficient can vary in space, \(D = D({\bf x})\).
+</p>
+<!--
+...... section Properties of the RAD equation ......
+-->
+<h4 id="autosec-9"><span class="sectionnumber">2.2&#x2003;</span>Properties of the RAD equation</h4>
+<a id="Derivation-autopage-9"></a>
+<!--
+...... subsection Properties of diffusion ......
+-->
+<h5 id="autosec-10"><span class="sectionnumber">2.2.1&#x2003;</span>Properties of diffusion</h5>
+<a id="Derivation-autopage-10"></a>
+
+
+<p>
+We have already seen that a particle undergoing a random walk has a mean-squared displacement that depends linearly on time \(t\). To further justify this using the diffusion equation, we can substitute to show that
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{21}\)</span>
+
+<!--
+
+                                                       1         x · x
+                                          c(x, t) = p        exp −                                                      (2.22)                                                                       --><a id="heatkernel"></a><!--
+                                                     (4πDt)d       4Dt
+
+-->
+
+<p>
+
+\begin{equation}
+\label {heatkernel} c({\bf x}, t) = \frac {1}{\sqrt {(4 \pi D t)^d}} \exp \left ( -\frac {{\bf x} \cdot {\bf x} }{4Dt} \right )
+\end{equation}
+
+</p>
+
+<p>
+is a fundamental solution (also called a heat kernel) to <a href="Derivation.html#ddiffusion">2.20</a> for \(t &gt; 0\) in \(d\) dimensions with \(D\) constant. That is to say, the fundamental solution satisfies the initial
+condition that at \(t = 0\) the concentration is infinitely concentrated at the origin (Dirac delta distribution). If we interpret this as the probability of a single particle to be at position \({\bf x}(t)\) at time \(t\), then we
+recover the relationship
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{22}\)</span>
+
+<!--
+
+
+                                                  ⟨r2 (t) = x(t) · x(t)⟩ = 2dDt.                                                 (2.23)                                                                       --><a id="msd"></a><!--
+
+-->
+
+<p>
+
+\begin{equation}
+\label {msd} \langle r^2(t) = {\bf x}(t) \cdot {\bf x} (t)\rangle = 2dDt .
+\end{equation}
+
+</p>
+
+<p>
+Relation <a href="Derivation.html#msd">2.23</a> says that, unlike a particle that moves at constant speed \(v = \Delta x / \Delta t\) where distance traveled would be proportional to time elapsed (\(\Delta x = v
+\cdot \Delta t\)), the distance of a particle moving only under the influence of diffusion is (on average) proportional the square root of time. The proportionality constant is the diffusion coefficient, which depends on the
+migration of a given material in a given media at a given temperature. For a small molecule (e.g. glucose) in water at room temperature, \(D \approx 5 \times 10^{-10} \mbox {m}^2 \cdot \mbox {s}\), which would mean it
+takes about two milliseconds (\(2 \times 10^{-3} \mbox {s}\)) to travel a length of about one bacterium (\(10^{-6} \mbox {m}\)) by diffusion alone. When the length doubles, it takes four times this long. If we increase the
+length by a factor of 10, it takes 100 times as long! This shows that diffusion is a very inefficient way to travel long distances.
+</p>
+
+<p>
+There are certain interesting scenarios in biology where measurements suggest things become even more complicated: this is called anomalous diffusion. Anomalous diffusion is described by a power law \(\langle r^2(t) \rangle
+= K_{\alpha } t^{\alpha }\) where \(\alpha \neq 1\) (\(\alpha &gt; 1\) is called super-diffusion while \(\alpha &lt;1\) sub-diffusion) and \(K_\alpha \) is called the generalised diffusion coefficient (note: this is not the
+same as \(D = D(x)\)). Biological examples of anomalous diffusion in nature have been observed in the cell nucleus, plasma membrane and cytoplasm of cells where it is thought to be explained by molecular crowding.
+</p>
+<!--
+...... subsection Properties of advection ......
+-->
+<h5 id="autosec-11"><span class="sectionnumber">2.2.2&#x2003;</span>Properties of advection</h5>
+<a id="Derivation-autopage-11"></a>
+
+
+<p>
+By setting \(D=F=0\) in <a href="Derivation.html#radequation">2.21</a>, we obtain the advection equation
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{23}\)</span>
+
+<!--
+
+                                            ∂c              ∂c
+                                       0=      + ∇ · (vc) =    + v · ∇c + c∇ · v.                                           (2.24)                                                                        --><a id="dadvection"></a><!--
+                                            ∂t              ∂t
+
+-->
+
+<p>
+
+\begin{equation}
+\label {dadvection} 0 = \frac {\partial c}{\partial t} + \nabla \cdot ( {\bf v} c) = \frac {\partial c}{\partial t} + {\bf v} \cdot \nabla c + c \nabla \cdot {\bf v} .
+\end{equation}
+
+</p>
+
+<p>
+If the vector field \(\bf v\) is divergence free, also called a solenoidal vector field, then the third term on the right-hand side is zero. Notice that a solenoidal vector field is not necessarily constant in space: by the divergence
+theorem we have that the integral of a solenoidal vector field \(\bf v\) over any surface \(S\) that encloses a compact volume must vanish
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{24}\)</span>
+
+<!--
+
+                                                                                                                 Z
+                                                                                                                      v · dS = 0,                                                                                                            (2.25)
+                                                                                                                  S
+
+
+-->
+
+<p>
+
+\begin{equation}
+\int _S {\bf v} \cdot d {\bf S} = 0 ,
+\end{equation}
+
+</p>
+
+<p>
+which can be interpreted as saying that the flow described by \(\bf v\) has no sources or sinks. In particular, in this case the advection equation says that the total time derivative of \(c\) is constant along the path \({\bf
+x}(t)\) with velocity equal to \(\bf v\)
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{25}\)</span>
+
+<!--
+
+                                                                                                d               ∂c dx          ∂c
+                                                                                                   c(x(t), t) =    +    · ∇c =    + v · ∇c = 0                                                                                               (2.26)
+                                                                                                dt              ∂t   dt        ∂t
+
+-->
+
+<p>
+
+\begin{equation}
+\frac {d}{dt} c({\bf x}(t), t) = \frac {\partial c}{\partial t} + \frac {d {\bf x}}{d t} \cdot \nabla c = \frac {\partial c}{\partial t} + {\bf v} \cdot \nabla c = 0
+\end{equation}
+
+</p>
+
+<p>
+where the final equality follows from the advection equation with a solenoidal vector field.
+</p>
+
+<p>
+Another special case of the advection equation arises when the vector field \(\bf v\) can be written as the gradient, \({\bf v} = \pm \nabla \phi \), of some scalar function \(\phi :               \mathbb {R}^3 \to \mathbb {R}\). In
+this case \(\bf v\) is called a conservative vector field. The advection equation then becomes
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{26}\)</span>
+
+<!--
+
+                                                                                                               ∂c
+                                                                                                                  = ∇ · (∓c∇ϕ)                                                                                                               (2.27)
+                                                                                                               ∂t
+
+-->
+
+<p>
+
+\begin{equation}
+\frac {\partial c}{\partial t} = \nabla \cdot \left ( \mp c \nabla \phi \right )
+\end{equation}
+
+</p>
+
+<p>
+where we have explicitly denoted that \(\bf v\) can come as a gradient multiplied by either sign. Importantly, considering that in this case the advective flux \({\bf v}c\) is proportional to the gradient of some (possibly a
+concentration) field, the advection equation says that \(c\) will tend to increase or decrease in the direction of increasing \(\phi \). This is one way to model, for example, the phenomenon of taxis: movement of particles governed
+by the concentration gradient of another substance. One could imagine the movement of bacteria towards regions of increasing nutrient concentrations.
+</p>
+
+<p>
+From a purely mathematical perspective, observe that these two special cases combine to capture the general case, provided conditions of the Helmholtz decomposition theorem apply: any sufficiently smooth, rapidly decaying vector
+field in three dimensions can be decomposed into the sum of a conservative vector field and a solenoidal vector field. This can have several important implications for numerical solutions of the advection equation, which are beyond
+the scope of this course.
+</p>
+<!--
+...... subsection Timescales of advection and diffusion ......
+-->
+<h5 id="autosec-12"><span class="sectionnumber">2.2.3&#x2003;</span>Timescales of advection and diffusion</h5>
+<a id="Derivation-autopage-12"></a>
+
+
+<p>
+We have already seen that diffusion has a timescale that scales with distance squared, and it is quite straightforward to confirm that the timescale of advection is instead on the order of distance (same as velocity). To do this in a
+side-by-side comparison with diffusion, we can first perform non-dimensionalisation on the diffusion and advection equations individually. For the diffusion equation <a href="Derivation.html#ddiffusion">2.20</a>, we
+substitute \(c = c_0 c^*\), \(\nabla = \nabla ^* /L\) and \(t = T_D t^*\) where we assume we know scaling factors \(c_0,L\) for concentration and length, respectively, and would like to determine the diffusion timescale,
+\(T_D\). This yields
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{27}\)</span>
+
+<!--
+
+                                                                                                                     ∂c∗
+                                                                                                                                               
+                                                                                                                                       TD D ∗ ∗
+                                                                                                                         = ∇∗ ·            ∇ c ,                                                                                    (2.28)
+                                                                                                                     ∂t∗                L2
+
+-->
+
+<p>
+
+\begin{equation}
+\frac {\partial c^*}{\partial t^*} = \nabla ^* \cdot \left ( \frac {T_D D}{L^2} \nabla ^* c^* \right ) ,
+\end{equation}
+
+</p>
+
+<p>
+which means that for both sides to have the same dimensions we must have
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{28}\)</span>
+
+<!--
+
+                                                                                                                                       L2
+                                                                                                                               TD ∼       .                                                                                         (2.29)
+                                                                                                                                       D
+
+-->
+
+<p>
+
+\begin{equation}
+T_D \sim \frac {L^2}{D} .
+\end{equation}
+
+</p>
+
+<p>
+This recovers our known result about the diffusive timescale. For the advection equation <a href="Derivation.html#dadvection">2.24</a>, we take the same \(c_0\), \(L\), but this time also substitute \({\bf v} = v_0 {\bf
+v}^*\) and \(t = T_A t^*\) where \(v_0\) is a known scaling factor for velocity and \(T_A\) the unknown advection timescale. Repeating the argument implies that
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{29}\)</span>
+
+<!--
+
+                                                                                                                                       L
+                                                                                                                               TA ∼       ,                                                                                         (2.30)
+                                                                                                                                       v0
+
+-->
+
+<p>
+
+\begin{equation}
+T_A \sim \frac {L}{v_0} ,
+\end{equation}
+
+</p>
+
+<p>
+showing that the timescale of advection is the same as velocity.
+</p>
+
+<p>
+When moving to consider the combined advection-diffusion equation (<a href="Derivation.html#radequation">2.21</a> with \(F= 0\)), we have two different choices of timescales: \(T_A\) or \(T_D\). We begin by defining the
+dimensionless Pe&#x0301;clet number as the ratio of these timescales or, equivalently, the ratio of the advective transport rate (\(1/T_A\)) and the diffusive transport rate (\(1/T_D\)):
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{30}\)</span>
+
+<!--
+
+                                                                                                               TD   1/TA   advective transport rate
+                                                                                                        Pe =      =      =                          .                                                                               (2.31)
+                                                                                                               TA   1/TD   diffusive transport rate
+
+-->
+
+<p>
+
+\begin{equation}
+\mbox {Pe} = \frac {T_D}{T_A} = \frac {1/T_A}{1/T_D} = \frac {\mbox {advective transport rate}}{\mbox {diffusive transport rate}} .
+\end{equation}
+
+</p>
+
+<p>
+We then make the same substitutions as before, but consider the advection-diffusion equation with either \(T_A\) or \(T_D\) as the timescale, which results in (using the results \(T_A = L/v_0\) and \(T_D = L^2/D\) from above)
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{31}\)</span>
+
+<!--
+
+                       ∂c∗
+                                                  
+                                        TA D ∗ ∗           v0 TA ∗             1
+                           = ∇∗ ·           ∇ c        −        ∇ · (v∗ c∗ ) =    · ∇∗ · (∇∗ c∗ ) − ∇∗ · (v∗ c∗ )                               (2.32)                                                    --><a id="adtime"></a><!--
+                       ∂t∗               L2                  L                 Pe
+
+-->
+
+<p>
+
+\begin{equation}
+\label {adtime} \frac {\partial c^*}{\partial t^*} = \nabla ^* \cdot \left ( \frac {T_A D}{L^2} \nabla ^* c^* \right ) - \frac {v_0 T_A}{L} \nabla ^* \cdot ({\bf v}^* c^*) = \frac {1}{\mbox
+{Pe}} \cdot \nabla ^* \cdot \left ( \nabla ^* c^* \right ) - \nabla ^* \cdot ({\bf v}^* c^*)
+\end{equation}
+
+</p>
+
+<p>
+or
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{32}\)</span>
+
+<!--
+
+                      ∂c∗
+                                                 
+                                       TD D ∗ ∗           v0 TD ∗
+                          = ∇∗ ·           ∇ c        −        ∇ · (v∗ c∗ ) = ∇∗ · (∇∗ c∗ ) − Pe · ∇∗ · (v∗ c∗ )                              (2.33)                                                    --><a id="difftime"></a><!--
+                      ∂t∗               L2                  L
+
+-->
+
+<p>
+
+\begin{equation}
+\label {difftime} \frac {\partial c^*}{\partial t^*} = \nabla ^* \cdot \left ( \frac {T_D D}{L^2} \nabla ^* c^* \right ) - \frac {v_0 T_D}{L} \nabla ^* \cdot ({\bf v}^* c^*) = \nabla ^* \cdot
+\left ( \nabla ^* c^* \right ) - \mbox {Pe} \cdot \nabla ^* \cdot ({\bf v}^* c^*)
+\end{equation}
+
+</p>
+
+<p>
+respectively. Here we have assumed \(D\) is constant. When \(\mbox {Pe}\) is of order one, then both advection rates and diffusion rates balance, meaning that both contribute comparably to the transport process. However, when
+\(\mbox {Pe} &gt;&gt; 1\), then advection dominates as can be seen by reduction of equation <a href="Derivation.html#adtime">2.32</a> to the advection equation and <a href="Derivation.html#difftime">2.33</a> to
+the advection equation at steady state \(\nabla ^* \cdot ({\bf v}^* c^*) =0\) (on the diffusive timescale, temporal fluctuations are negligible). Conversely, when \(\mbox {Pe} &lt;&lt; 1\), then diffusion dominates as can
+be seen by reduction of equation <a href="Derivation.html#difftime">2.33</a> to the diffusion equation and <a href="Derivation.html#adtime">2.32</a> to the diffusion equation at steady state \(\nabla ^* \cdot
+(\nabla ^* c^*) =0\) (on the advection timescale, temporal fluctuations are negligible).
+</p>
+
+<p>
+As a concrete example, we can consider the approximate values of the Pe&#x0301;clet number for oxygen transport in upper and lower regions of the lung. We use
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{33}\)</span>
+
+<!--
+
+                                                                                                                                   TD   vL
+                                                                                                                            Pe =      =                                                                                             (2.34)
+                                                                                                                                   TA   D
+
+-->
+
+<p>
+
+\begin{equation}
+\mbox {Pe} = \frac {T_D}{T_A} = \frac {v L}{D}
+\end{equation}
+
+</p>
+
+<p>
+and take \(D = \mbox {0.2 cm}^2 \cdot \mbox {s}^{-1}\) for the diffusion constant of oxygen in air. We can approximate the diameter of the adult trachea as \(L_t = 2 \mbox {cm}\) and of a single alveolus as \(L_a = 0.02
+\mbox {cm}\). To calculate velocity in the trachea, we approximate that around 500\(\mbox {cm}^3\) of air passes through about 2\(\mbox {cm}^2\) of area in a second, which means an average velocity is \(v_t = 500/2 \mbox
+{cm} \cdot \mbox {s}^{-1} = 250 \mbox {cm} \cdot \mbox {s}^{-1}\) in the trachea, giving a Pe&#x0301;clet number of
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{34}\)</span>
+
+<!--
+
+                                                                                                                           250cm · s−1 · 2cm
+                                                                                                                   Pet =                     = 2500.                                                                                (2.35)
+                                                                                                                             0.2 cm2 · s−1
+
+-->
+
+<p>
+
+\begin{equation}
+\mbox {Pe}_t = \frac {250 \mbox {cm} \cdot \mbox {s}^{-1} \cdot 2 \mbox {cm}}{ \mbox {0.2 cm}^2 \cdot \mbox {s}^{-1} }= 2500 .
+\end{equation}
+
+</p>
+
+<p>
+There are approximately 700 million alveoli in adult lungs with average area per alveolus of around \(L_a^2 = 0.0004\mbox {cm}^2\), giving a total surface area through which gas passes as \(0.0004\mbox {cm}^2 \cdot 700,
+000, 000 = 280, 000 \mbox {cm}^2 \). The average velocity within the alveoli is therefore \(v_a = 500/280, 000 \mbox {cm} \cdot \mbox {s}^{-1} = 0.0018 \mbox {cm} \cdot \mbox {s}^{-1}\) and the
+Pe&#x0301;clet number is therefore
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{35}\)</span>
+
+<!--
+
+                                                                                                                     0.02cm · s−1 · 0.0018cm
+                                                                                                           Pea =                             = 0.00018.                                                                             (2.36)
+                                                                                                                          0.2 cm2 · s−1
+
+-->
+
+<p>
+
+\begin{equation}
+\mbox {Pe}_a = \frac {0.02 \mbox {cm} \cdot \mbox {s}^{-1} \cdot 0.0018 \mbox {cm}}{ \mbox {0.2 cm}^2 \cdot \mbox {s}^{-1} }= 0.00018 .
+\end{equation}
+
+</p>
+
+<p>
+Thus, at the top of the lungs \(\mbox {Pe}_t &gt;&gt; 1\) meaning that advection dominates, while \(\mbox {Pe}_a &lt;&lt; 1\) at the bottom where diffusion dominates instead.
+</p>
+<div class="theoremcontents">
+
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+<span class="theoremlabel">Exercise 2.1 </span> Consider the diffusion equation with constant \(D\) in the standard coordinate frame for \(\mathbb {R}^d\)
+</p>
+
+<p>
+\[ \frac {\partial c}{\partial t} = D \sum _{i=1}^d \frac {\partial ^2 c}{\partial x_i^2} .                   \]
+</p>
+
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+(a) Show by substitution that the heat kernel
+</p>
+<p>
+\[ c(x_1,...,x_d,t) =\frac {1}{\sqrt {(4\pi D t)^d}} \exp \left ( -\frac {\sum _{i=1}^d x^2_i }{4Dt} \right ) \]
+</p>
+<p>
+is a solution to the above equation
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+(b) Interpreting the heat kernel \(c(x_1,...,x_d,t)\) as the probability density function for finding a particle at point \((x_1,...,x_d)\) at time \(t\), use the definition for the expectation value
+</p>
+<p>
+\[ \langle f(x_1,...,x_d) \rangle \equiv \int _{-\infty }^\infty \cdots \int _{-\infty }^\infty f(x_1,...,x_d) c(x_1,...,x_d,t)dx_1 \cdots dx_d \]
+</p>
+<p>
+of any function \(f\) to show that
+</p>
+<p>
+\[ \langle r^2 = x^2_1 + ...          + x^2_d \rangle = 2dDt .    \]
+</p>
+<p>
+Hint: use the one-dimensional Gaussian integral identities
+</p>
+<p>
+\[ \quad \sqrt {\frac {a}{\pi }}\int _{-\infty }^\infty e^{-ax^2}dx = 1 \quad \mbox {{\em and}} \quad \sqrt {\frac {a}{\pi }}\int _{-\infty }^\infty x^2 e^{-ax^2}dx = \frac {1}{2a} .\]
+</p>
+<p>
+
+
+</p>
+</li>
+</ul>
+
+</li>
+
+</ul>
+
+</div>
+<div class="theoremcontents">
+
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+<span class="theoremlabel">Exercise 2.2 </span> Consider a scenario where the diffusion coefficient of a nutrient is \(D= 10^{-9}\mbox {m}^2 \cdot \mbox {s}^{-1}\) and the average velocity of a bacterium is \(v = 30
+\mu \mbox {m} \cdot \mbox {s}^{-1}\).
+</p>
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+(a) Given a nutrient at a distance of \(L = 1 \mu \mbox {m}\) from the bacterium, will it reach the bacterium faster by diffusion or by the bacterium swimming towards it?
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+(b) What is the minimum distance (in \(\mu \mbox {m}\)) that the bacterium needs to swim to outpace nutrient diffusion?
+</p>
+</li>
+</ul>
+
+</li>
+
+</ul>
+
+</div>
+
+<a id="Derivation-autofile-last"></a>
+</section>
+
+</main>
+
+</div>
+
+</body>
+</html>

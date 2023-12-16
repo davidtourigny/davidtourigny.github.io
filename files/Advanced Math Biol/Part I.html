@@ -1,0 +1,1481 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8" />
+<meta name="generator" content="LaTeX Lwarp package" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<title>Introduction</title>
+<link rel="stylesheet" type="text/css" href="lwarp.css" />
+
+<script>
+// Lwarp MathJax emulation code
+//
+// Based on code by Davide P. Cervone.
+// Equation numbering: https://github.com/mathjax/MathJax/issues/2427
+// Starred and ifnextchar macros: https://github.com/mathjax/MathJax/issues/2428
+// \left, \right delimiters: https://github.com/mathjax/MathJax/issues/2535
+//
+// Modified by Brian Dunn to adjust equation numbering and add subequations.
+//
+// LaTeX can use \seteqnumber{subequations?}{section}{number} before each equation.
+// subequations? is 0 usually, 1 if inside subequations.
+// section is a string printed as-is, or empty.
+// number is auto-incremented by MathJax between equations.
+//
+MathJax = {
+     subequations: "0",
+     section: "",
+     loader: {
+          load: ['[tex]/tagformat', '[tex]/textmacros'],
+     },
+     startup: {
+          ready() {
+              //       These would be replaced by import commands if you wanted to make
+              //       a proper extension.
+              const Configuration = MathJax._.input.tex.Configuration.Configuration;
+              const CommandMap = MathJax._.input.tex.SymbolMap.CommandMap;
+              const Macro = MathJax._.input.tex.Symbol.Macro;
+              const TexError = MathJax._.input.tex.TexError.default;
+              const ParseUtil = MathJax._.input.tex.ParseUtil.default;
+              const expandable = MathJax._.util.Options.expandable;
+
+
+              //       Insert the replacement string into the TeX string, and check
+              //       that there haven't been too many maxro substitutions (prevents
+              //       infinite loops).
+              const useArgument = (parser, text) => {
+                   parser.string = ParseUtil.addArgs(parser, text, parser.string.slice(parser.i));
+                   parser.i = 0;
+                   if (++parser.macroCount > parser.configuration.options.maxMacros) {
+                        throw new TexError('MaxMacroSub1',
+                        'MathJax maximum macro substitution count exceeded; ' +
+                        'is there a recursive macro call?');
+                   }
+              }
+
+
+              //       Create the command map for:
+              //            \ifstar, \ifnextchar, \ifblank, \ifstrequal, \gsub, \seteqnumber
+              new CommandMap('Lwarp-macros', {
+                   ifstar: 'IfstarFunction',
+                   ifnextchar: 'IfnextcharFunction',
+                   ifblank: 'IfblankFunction',
+                   ifstrequal: 'IfstrequalFunction',
+                   gsubstitute: 'GsubstituteFunction',
+                   seteqnumber: 'SeteqnumberFunction'
+              }, {
+                   //       This function implements an ifstar macro.
+                   IfstarFunction(parser, name) {
+                        const resultstar = parser.GetArgument(name);
+                        const resultnostar = parser.GetArgument(name);
+                        const star = parser.GetStar();                        // true if there is a *
+                        useArgument(parser, star ? resultstar : resultnostar);
+                   },
+
+
+                   //       This function implements an ifnextchar macro.
+                   IfnextcharFunction(parser, name) {
+                        let whichchar = parser.GetArgument(name);
+                        if (whichchar.match(/^(?:0x[0-9A-F]+|[0-9]+)$/i)) {
+                            // $ syntax highlighting
+                            whichchar = String.fromCodePoint(parseInt(whichchar));
+                        }
+                        const resultnextchar = parser.GetArgument(name);
+                        const resultnotnextchar = parser.GetArgument(name);
+                        const gotchar = (parser.GetNext() === whichchar);
+                        useArgument(parser, gotchar ? resultnextchar : resultnotnextchar);
+                   },
+
+
+                   // This function implements an ifblank macro.
+                   IfblankFunction(parser, name) {
+                        const blankarg = parser.GetArgument(name);
+                        const resultblank = parser.GetArgument(name);
+                        const resultnotblank = parser.GetArgument(name);
+                        const isblank = (blankarg.trim() == "");
+                        useArgument(parser, isblank ? resultblank : resultnotblank);
+                   },
+
+
+                   // This function implements an ifstrequal macro.
+                   IfstrequalFunction(parser, name) {
+                        const strequalfirst = parser.GetArgument(name);
+                        const strequalsecond = parser.GetArgument(name);
+                        const resultequal = parser.GetArgument(name);
+                        const resultnotequal = parser.GetArgument(name);
+                        const isequal = (strequalfirst == strequalsecond);
+                        useArgument(parser, isequal ? resultequal : resultnotequal);
+                   },
+
+
+                   // This function implements a gsub macro.
+                   GsubstituteFunction(parser, name) {
+                        const gsubfirst = parser.GetArgument(name);
+                        const gsubsecond = parser.GetArgument(name);
+                        const gsubthird = parser.GetArgument(name);
+                        let gsubresult=gsubfirst.replace(gsubsecond, gsubthird);
+                        useArgument(parser, gsubresult);
+                   },
+
+
+                   //       This function modifies the equation numbers.
+                   SeteqnumberFunction(parser, name) {
+                            //   Get the macro parameters
+                            const star = parser.GetStar();                      // true if there is a *
+                            const optBrackets = parser.GetBrackets(name);        // contents of optional brackets
+                            const newsubequations = parser.GetArgument(name);      // the subequations argument
+                            const neweqsection = parser.GetArgument(name);      // the eq section argument
+                            const neweqnumber = parser.GetArgument(name);        // the eq number argument
+                            MathJax.config.subequations=newsubequations ;       // a string with boolean meaning
+                            MathJax.config.section=neweqsection ;               // a string with numeric meaning
+                            parser.tags.counter = parser.tags.allCounter = neweqnumber ;
+                   }
+
+
+              });
+
+
+              //       Create the Lwarp-macros package
+              Configuration.create('Lwarp-macros', {
+                   handler: {macro: ['Lwarp-macros']}
+              });
+
+
+              MathJax.startup.defaultReady();
+
+
+              // For forward references:
+              MathJax.startup.input[0].preFilters.add(({math}) => {
+                   if (math.inputData.recompile){
+                            MathJax.config.subequations = math.inputData.recompile.subequations;
+                            MathJax.config.section = math.inputData.recompile.section;
+                   }
+              });
+              MathJax.startup.input[0].postFilters.add(({math}) => {
+                   if (math.inputData.recompile){
+                            math.inputData.recompile.subequations = MathJax.config.subequations;
+                            math.inputData.recompile.section = MathJax.config.section;
+                   }
+              });
+
+
+                   // For \left, \right with unicode-math:
+                   const {DelimiterMap} = MathJax._.input.tex.SymbolMap;
+                   const {Symbol} = MathJax._.input.tex.Symbol;
+                   const {MapHandler} = MathJax._.input.tex.MapHandler;
+                   const delimiter = MapHandler.getMap('delimiter');
+                   delimiter.add('\\lBrack', new Symbol('\\lBrack', '\u27E6'));
+                   delimiter.add('\\rBrack', new Symbol('\\rBrack', '\u27E7'));
+                   delimiter.add('\\lAngle', new Symbol('\\lAngle', '\u27EA'));
+                   delimiter.add('\\rAngle', new Symbol('\\rAngle', '\u27EB'));
+                   delimiter.add('\\lbrbrak', new Symbol('\\lbrbrak', '\u2772'));
+                   delimiter.add('\\rbrbrak', new Symbol('\\rbrbrak', '\u2773'));
+                   delimiter.add('\\lbag', new Symbol('\\lbag', '\u27C5'));
+                   delimiter.add('\\rbag', new Symbol('\\rbag', '\u27C6'));
+                   delimiter.add('\\llparenthesis', new Symbol('\\llparenthesis', '\u2987'));
+                   delimiter.add('\\rrparenthesis', new Symbol('\\rrparenthesis', '\u2988'));
+                   delimiter.add('\\llangle', new Symbol('\\llangle', '\u2989'));
+                   delimiter.add('\\rrangle', new Symbol('\\rrangle', '\u298A'));
+                   delimiter.add('\\Lbrbrak', new Symbol('\\Lbrbrak', '\u27EC'));
+                   delimiter.add('\\Rbrbrak', new Symbol('\\Rbrbrak', '\u27ED'));
+                   delimiter.add('\\lBrace', new Symbol('\\lBrace', '\u2983'));
+                   delimiter.add('\\rBrace', new Symbol('\\rBrace', '\u2984'));
+                   delimiter.add('\\lParen', new Symbol('\\lParen', '\u2985'));
+                   delimiter.add('\\rParen', new Symbol('\\rParen', '\u2986'));
+                   delimiter.add('\\lbrackubar', new Symbol('\\lbrackubar', '\u298B'));
+                   delimiter.add('\\rbrackubar', new Symbol('\\rbrackubar', '\u298C'));
+                   delimiter.add('\\lbrackultick', new Symbol('\\lbrackultick', '\u298D'));
+                   delimiter.add('\\rbracklrtick', new Symbol('\\rbracklrtick', '\u298E'));
+                   delimiter.add('\\lbracklltick', new Symbol('\\lbracklltick', '\u298F'));
+                   delimiter.add('\\rbrackurtick', new Symbol('\\rbrackurtick', '\u2990'));
+                   delimiter.add('\\langledot', new Symbol('\\langledot', '\u2991'));
+                   delimiter.add('\\rangledot', new Symbol('\\rangledot', '\u2992'));
+                   delimiter.add('\\lparenless', new Symbol('\\lparenless', '\u2993'));
+                   delimiter.add('\\rparengtr', new Symbol('\\rparengtr', '\u2994'));
+                   delimiter.add('\\Lparengtr', new Symbol('\\Lparengtr', '\u2995'));
+                   delimiter.add('\\Rparenless', new Symbol('\\Rparenless', '\u2996'));
+                   delimiter.add('\\lblkbrbrak', new Symbol('\\lblkbrbrak', '\u2997'));
+                   delimiter.add('\\rblkbrbrak', new Symbol('\\rblkbrbrak', '\u2998'));
+                   delimiter.add('\\lvzigzag', new Symbol('\\lvzigzag', '\u29D8'));
+                   delimiter.add('\\rvzigzag', new Symbol('\\rvzigzag', '\u29D9'));
+                   delimiter.add('\\Lvzigzag', new Symbol('\\Lvzigzag', '\u29DA'));
+                   delimiter.add('\\Rvzigzag', new Symbol('\\Rvzigzag', '\u29DB'));
+                   delimiter.add('\\lcurvyangle', new Symbol('\\lcurvyangle', '\u29FC'));
+                   delimiter.add('\\rcurvyangle', new Symbol('\\rcurvyangle', '\u29FD'));
+                   delimiter.add('\\Vvert', new Symbol('\\Vvert', '\u2980'));
+          }       // ready
+     },           // startup
+
+
+     tex: {
+          packages: {'[+]': ['tagformat', 'Lwarp-macros', 'textmacros']},
+          tags: "ams",
+                   tagformat: {
+                            number: function (n) {
+                                 if(MathJax.config.subequations==0)
+                                        return(MathJax.config.section + n);
+                                 else
+                                        return(MathJax.config.section + String.fromCharCode(96+n));
+                            },
+                   },
+     }
+}
+</script>
+
+
+<script
+          id="MathJax-script"
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+></script>
+
+</head>
+<body>
+
+
+<div class="bodywithoutsidetoc">
+
+
+<main class="bodycontainer">
+
+
+<section class="textbody">
+
+<a id="Introduction-autofile-0"></a>
+
+<!--MathJax customizations:-->
+
+
+<div class="hidden">
+
+\(\newcommand{\footnotename}{footnote}\)
+
+\(\def \LWRfootnote {1}\)
+
+\(\newcommand {\footnote }[2][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\newcommand {\footnotemark }[1][\LWRfootnote ]{{}^{\mathrm {#1}}}\)
+
+\(\let \LWRorighspace \hspace \)
+
+\(\renewcommand {\hspace }{\ifstar \LWRorighspace \LWRorighspace }\)
+
+\(\newcommand {\mathnormal }[1]{{#1}}\)
+
+\(\newcommand \ensuremath [1]{#1}\)
+
+\(\newcommand {\LWRframebox }[2][]{\fbox {#2}} \newcommand {\framebox }[1][]{\LWRframebox } \)
+
+\(\newcommand {\setlength }[2]{}\)
+
+\(\newcommand {\addtolength }[2]{}\)
+
+\(\newcommand {\setcounter }[2]{}\)
+
+\(\newcommand {\addtocounter }[2]{}\)
+
+\(\newcommand {\arabic }[1]{}\)
+
+\(\newcommand {\number }[1]{}\)
+
+\(\newcommand {\noalign }[1]{\text {#1}\notag \\}\)
+
+\(\newcommand {\cline }[1]{}\)
+
+\(\newcommand {\directlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\luatexdirectlua }[1]{\text {(directlua)}}\)
+
+\(\newcommand {\protect }{}\)
+
+\(\def \LWRabsorbnumber #1 {}\)
+
+\(\def \LWRabsorbquotenumber &quot;#1 {}\)
+
+\(\newcommand {\LWRabsorboption }[1][]{}\)
+
+\(\newcommand {\LWRabsorbtwooptions }[1][]{\LWRabsorboption }\)
+
+\(\def \mathchar {\ifnextchar &quot;\LWRabsorbquotenumber \LWRabsorbnumber }\)
+
+\(\def \mathcode #1={\mathchar }\)
+
+\(\let \delcode \mathcode \)
+
+\(\let \delimiter \mathchar \)
+
+\(\def \oe {\unicode {x0153}}\)
+
+\(\def \OE {\unicode {x0152}}\)
+
+\(\def \ae {\unicode {x00E6}}\)
+
+\(\def \AE {\unicode {x00C6}}\)
+
+\(\def \aa {\unicode {x00E5}}\)
+
+\(\def \AA {\unicode {x00C5}}\)
+
+\(\def \o {\unicode {x00F8}}\)
+
+\(\def \O {\unicode {x00D8}}\)
+
+\(\def \l {\unicode {x0142}}\)
+
+\(\def \L {\unicode {x0141}}\)
+
+\(\def \ss {\unicode {x00DF}}\)
+
+\(\def \SS {\unicode {x1E9E}}\)
+
+\(\def \dag {\unicode {x2020}}\)
+
+\(\def \ddag {\unicode {x2021}}\)
+
+\(\def \P {\unicode {x00B6}}\)
+
+\(\def \copyright {\unicode {x00A9}}\)
+
+\(\def \pounds {\unicode {x00A3}}\)
+
+\(\let \LWRref \ref \)
+
+\(\renewcommand {\ref }{\ifstar \LWRref \LWRref }\)
+
+\( \newcommand {\multicolumn }[3]{#3}\)
+
+\(\require {textcomp}\)
+
+\(\newcommand {\intertext }[1]{\text {#1}\notag \\}\)
+
+\(\let \Hat \hat \)
+
+\(\let \Check \check \)
+
+\(\let \Tilde \tilde \)
+
+\(\let \Acute \acute \)
+
+\(\let \Grave \grave \)
+
+\(\let \Dot \dot \)
+
+\(\let \Ddot \ddot \)
+
+\(\let \Breve \breve \)
+
+\(\let \Bar \bar \)
+
+\(\let \Vec \vec \)
+
+</div>
+
+<a id="Introduction-autopage-1"></a>
+
+<p>
+
+</p>
+<div class="center">
+
+<p>
+<span
+    class="fbox"
+    style="display:inline-block ; border:1pt solid #000000; padding:3pt ; color:#000000"
+><span
+    class="makebox"
+    style="display:inline-block ; "
+                                 &#x2003;&#x2003;Jan                2024
+> &#x2003;&#x2003;LM Advanced Mathematical Biology 31128 &#x2003;&#x2003;                </span></span>
+</p>
+</div>
+
+<p>
+David S. Tourigny, School of Mathematics, University of Birmingham
+</p>
+
+<p>
+Disclaimer: These notes have not been subjected to the usual scrutiny reserved for formal publications. Please let me know if you identify any errors. The material is based on a similar course previously taught by Tom
+Montenegro-Johnson at the University of Birmingham
+</p>
+<!--
+...... section Part 1: Introduction and revision ......
+-->
+<h4 id="autosec-3">Part 1: Introduction and revision</h4>
+<a id="Introduction-autopage-3"></a>
+
+
+<p>
+Mathematical biology is a broadly defined subject that has fuzzy overlaps with a range of others, including but not limited to: computational biology, bioinformatics, theoretical biophysics and systems biology. Since there are no
+absolute distinctions between these fields, different researchers have different views and preferences for each term, and can often use them interchangeably depending on context or methodology employed to study a particular
+biological problem at hand. Key to all, however, is the use of theoretical (i.e., computational and/or mathematical) approaches to advance our understand of phenomena in biology, which has traditionally been viewed as an
+experimental science (i.e., predictions and hypotheses being tested empirically in a laboratory or field study). There is also a blur between experiment and theory in biology, which has existed since at least the 13th Century when
+Fibonacci series were used to describe the growth of rabbit populations<sup>1</sup>. This blur has become even more pronounced in the last few decades with the advent of next generation sequencing and biological imaging
+methods, which has driven applications of data science and machine learning. Thus, some researchers may like to further separate the application of theory into two distinct categories: 1) model-based, which is loosely concerned
+with building mathematical and/or computational biological models to guide the construction of hypotheses and predictions; and, 2) methodology-based, which is loosely concerned with the development of mathematical and/or
+computational tools for processing and analysing biological data. Of course, it is not very hard to come up with examples where this division is unclear or the example spans both categories. Since it therefore appears somewhat
+hopeless to provide a precise definition of mathematical biology in entire generality, we will restrict ourselves to outlining the contents of this course in the introductory section below. If pushed, one might be tempted to categorise
+the course material as falling entirely within the model-based sector of mathematical biology, but it turns out the same mathematical models serve a methodological role within various algorithms and software packages. It is best
+not to push around terminology too much. After going through the background and overview for this course, we will also provide a brief revision of the prerequisite mathematical material.
+</p>
+
+<p>
+Some fantastic textbooks to accompany and expand upon this course are the following:
+</p>
+
+<ul style="list-style-type:none">
+
+<li>
+<p>
+• Murray, J. D. Mathematical Biology I: An Introduction, 3rd Ed. Springer (2002)
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• Murray, J. D. Mathematical Biology II: Spatial Models and Biomedical Applications, 3rd Ed. Springer (2003)
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+• Beard, D.A. and Qian, H. Chemical Biophysics: Quantitative Analysis of Cellular Systems, Cambridge University Press (2008)
+</p>
+</li>
+</ul>
+<div role="note" class="footnotes">
+
+<a id="Introduction-autopage-4"></a>
+<p>
+<sup>1</sup>&nbsp;Fibonacci described the sequence in Liber Abaci in 1202, but it dates back even further to ancient India where the Fibonacci sequence was already understood to appear in a variety of natural phenomena
+</p>
+
+
+</div>
+<!--
+...... section Introduction ......
+-->
+<h4 id="autosec-5"><span class="sectionnumber">1.1&#x2003;</span>Introduction</h4>
+<a id="Introduction-autopage-5"></a>
+<!--
+...... subsection Ordinary differential equations in biology ......
+-->
+<h5 id="autosec-6"><span class="sectionnumber">1.1.1&#x2003;</span>Ordinary differential equations in biology</h5>
+<a id="Introduction-autopage-6"></a>
+
+
+<p>
+In some sense, the entire content of this course will boil down to studying different instances, applications and realisations of just one key equation. Before introducing that equation, we first discuss certain simplistic biological
+models that the student may have come across before. To begin with, consider the ordinary differential equation (ODE) that describes the exponential growth of a population:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{0}\)</span>
+
+<!--
+
+                                                                                                             dP
+                                                                                                                = kP,          P (0) = P0                                                            (1.1)--><a id="expgrowth"></a><!--
+                                                                                                             dt
+
+-->
+
+<p>
+
+\begin{equation}
+\label {expgrowth} \frac {d P}{dt} = k P , \quad P(0) = P_0
+\end{equation}
+
+</p>
+
+<p>
+where \(P\) is the population size, \(k\) is the population growth rate, \(t\) is time, and \(P_0\) is the initial population size at time \(t=0\). It assumes that the population is not limited by food supply (or resources, more
+generally) and that there is a constant growth rate \(k = b - d\) given by the difference between birth rate \(b\) and death rate \(d\). If \(b &gt; d\) the population increases exponentially in time according to \(P(t) = P_0
+e^{kt}\), while if \(b &lt; d\) the population decreases exponentially in time, eventually reaching zero. We may typically think of a population to mean a collection of organisms (e.g. bacteria, rabbits), but if \(P\) represents
+instead the concentration of some chemical substance (\(P\) might be replaced with \([P]\) for “concentration”) then this same equation describes the rate of change of \([P]\) according to first-order reaction kinetics \(P \to
+\star \) with reaction rate coefficient \(k &lt; 0\).
+</p>
+
+<p>
+When the population size is small, then <a href="Introduction.html#expgrowth">1.1</a> remains a good approximation for the dynamics of growth. This is especially true for microbial (e.g. bacterial) species growing in a
+laboratory setting on a growth media supplied with all the resources required for cell proliferation. Unless more nutrients are supplied in a continuous fashion, however, eventually consumption of resources by the growing population
+will start to lead to their depletion, or there might simply be a limiting constraint or “carrying capacity” on the largest size the population can reach (think of rabbits in a field of a given size). The logistic equation captures this
+limitation:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{1}\)</span>
+
+<!--
+
+                                                                                                                              
+                                                                                                      dP                   P
+                                                                                                         = kP        1−            ,   P (0) = P0                                                    (1.2)--><a id="loggrowth"></a><!--
+                                                                                                      dt                   R
+
+-->
+
+<p>
+
+\begin{equation}
+\label {loggrowth} \frac {d P}{dt} = k P\left ( 1- \frac {P}{R}\right ) , \quad P(0) = P_0
+\end{equation}
+
+</p>
+
+<p>
+where \(k\) is again the growth rate and \(R&gt;0\) is the carrying capacity (maximum size the population can grow). The solution to this equation is given by
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{2}\)</span>
+
+<!--
+
+
+                                                                                                             RP0 ekt               R
+                                                                                                P (t) =                    =                                                                                                              (1.3)
+                                                                                                          R + P0 (ekt − 1)   1+   R−P0
+                                                                                                                                         e−kt P0
+
+
+-->
+
+<p>
+
+\begin{equation}
+P(t) = \frac {RP_0 e^{kt}}{R+P_0(e^{kt} - 1)} = \frac {R}{1 + \left ( \frac {R-P_0}{P_0} \right )e^{-kt}}
+\end{equation}
+
+</p>
+
+<p>
+where in the second form it is straightforward to see that
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{3}\)</span>
+
+<!--
+
+
+                                                                                                                 lim P (t) = R.                                                                                                             (1.4)
+                                                                                                                t→∞
+
+
+-->
+
+<p>
+
+\begin{equation}
+\lim _{t \to \infty } P(t) = R.
+\end{equation}
+
+</p>
+
+<p>
+To extend this very simple model to two interacting species (note that species is used both in the context of interacting animal or bacterial species and interacting chemical species) we can write down a system of two coupled ODEs.
+A classic example is the Lotka-Volterra system
+</p>
+<span class="hidden"> \(\seteqnumber{0}{}{4}\)</span>
+
+
+<!--
+
+
+                                                                                                              dP1
+                                                                                                                  = αP1 − βP1 P2                                                 (1.5)                     --><a id="2coupled"></a><!--
+                                                                                                               dt
+                                                                                                              dP2
+                                                                                                                  = δP1 P2 − γP2                                                                                                            (1.6)
+                                                                                                               dt
+
+
+-->
+
+
+<p>
+
+\begin{align}
+\label {2coupled} \frac {d P_1}{dt} &amp;= \alpha P_1 - \beta P_1 P_2 \\ \frac {d P_2}{dt} &amp;=\delta P_1P_2 - \gamma P_2
+\end{align}
+where, for example, \(\alpha \) is the exponential growth rate of the prey (with population size \(P_1\)) in the absence of predation and \(\gamma \) is the predator (with population size \(P_2\)) death rate. Here the coupling
+terms \(\beta P_1 P_2 \) and \(\delta P_1P_2\) describe the rate of decrease and increase of prey and predator populations, respectively, as a result of predation. If \(\alpha = \gamma = 0\) and \(\beta = - \delta = k\),
+the system would also represent the interaction of two chemical species \(P_1\) and \(P_2\) according to second-order reaction kinetics \(P_1 + P_2 \to \star \) with reaction rate coefficient \(k\).
+</p>
+
+<p>
+The Lotka-Volterra system can be generalised in many ways, for example to model \(n\) species interacting and competing under resource-limited (logistic) growth regimes
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{6}\)</span>
+
+<!--
+
+                                                                                                                         
+                                                                                                                n
+                                                                                                dPi            X
+                                                                                                    = Pi ki +     Aij Pj  ,             i = 1, 2, ..., n.                                                                                 (1.7)
+                                                                                                 dt            j=1
+
+
+-->
+
+<p>
+
+\begin{equation}
+\frac {dP_i}{dt} = P_i \left (k_i + \sum _{j=1}^n A_{ij} P_j \right ), \quad i = 1,2,...,n .
+\end{equation}
+
+</p>
+
+<p>
+A nice overview of the generalised Lotka-Volterra system can be found here <a href="https://stefanoallesina.github.io/Sao_Paulo_School/index.html" target="_blank"
+>https://stefanoallesina.github.io/Sao_Paulo_School/index.html</a>. Similarly, the rates of change of a collection of \(n\) chemical species interacting through \(m\) reactions according to the Law of Mass Action (the proposition
+that the rate of the chemical reaction is directly proportional to the product of the concentrations of the reactants raised to powers of their stoichiometric coefficients \(s_{ij}\)) can be modelled according to
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{7}\)</span>
+
+<!--
+
+                                                                                                          m         n
+                                                                                                   dci   X          Y  s
+                                                                                                       =     sij kj   cl lj ,          i = 1, 2, ..., n.                                                                                    (1.8)
+                                                                                                   dt    j=1         l=1
+
+
+-->
+
+<p>
+
+\begin{equation}
+\frac {dc_i}{dt} = \sum _{j = 1}^m s_{ij} k_j \prod _{l=1}^n c_l^{s_{lj}}, \quad i = 1,2,...,n .
+\end{equation}
+
+</p>
+
+<p>
+The above equations can be further and further generalised, to include (e.g.) general interactions between populations and non-elementary reaction rate formulations. The latter are particularly relevant when it comes to
+understanding the kinetics of enzymes, which serve as molecular catalysts in biology. We therefore see how many instances of mathematical biology can involve applications of ODEs to a wide range of biological phenomena: from
+describing the kinetics of molecules within a cell, all the way up to modelling the dynamics of entire ecosystems. Consequently, systems of ODEs have been used widely by researchers. Biology is famous for its incredible complexity
+however, and so depending on each particular application many assumptions must be made in order to reduce a model to one that can be represented by such a system. We turn to these assumptions in the next subsection, and then
+discuss where they are no longer appropriate.
+</p>
+<!--
+...... subsection Assumptions and limitations of ODEs models ......
+-->
+<h5 id="autosec-7"><span class="sectionnumber">1.1.2&#x2003;</span>Assumptions and limitations of ODEs models</h5>
+<a id="Introduction-autopage-7"></a>
+
+
+<p>
+We begin by outlining some of the assumptions behind the Lotka-Volterra and chemical reaction ODE models described in the previous subsection. In some sense these assumptions must be justified by considering the mechanics of
+either system individually, while mathematically they are essentially equivalent. We will consider the assumptions behind the chemical reaction model, and leave it as an exercise to consider those underlying Lotka-Volterra.
+</p>
+
+<p>
+From chemistry, we know that the concentration of a species is the abundance of the species divided by the total volume of a mixture. Typically, in three dimensions one uses standard units of molar concentration \(\mbox
+{mol}\cdot \mbox {m}^{-3}\) or \(\mbox {mol} \cdot L^{-1}\) where concentration is given by \(c = \eta /V\), which is the number of molecules \(\eta \) (in moles) divided by volume \(V\) measured in meters cubed or
+litres (recall \(\eta = N/N_A\) where \(N\) is the total number of molecules and \(N_A\) the Avogadro constant). This molecular definition of concentration reveals that, at a certain level, \(c\) should in fact be a discrete variable.
+It is only when \(N\) becomes very large that a continuous variable becomes a reasonable approximation for \(c\) and, hence, we see the first assumption required to model its dynamics using an ODE such as Eq. <a
+href="Introduction.html#expgrowth">1.1</a>: the number of molecules in the system must be very large.
+</p>
+
+<p>
+The Law of Mass Action also relies on the assumption that the number of molecules in the system is large. In a mixture, individual molecules are moving around at incredible rates and reactions only occur when two or more
+independently collide so that their chemistry can be realised. On the level of individual molecules, this appears random. However, if there is a very large number of molecules in the mixture then the probability of collision and
+reaction is very well approximated by the concentrations of the reactants. In this way, by assuming the number of molecules in the system is large, the Law of Mass Action proposes that the rate of the chemical reaction is directly
+proportional to the product of the concentrations of the reactants. This also implies the reaction kinetics are very well approximated by a deterministic set of equations, e.g. ODEs. At some stage this first approximation breaks
+down when the number of molecules becomes too small. As we have already seen, \(c\) should then be captured by a variable that can only take on finitely many discrete values. However, in this case there is more: the role of
+random fluctuations also becomes very important so the deterministic nature of an ODE framework is also no longer appropriate. It must instead be replaced by a stochastic model. Thus, the second assumption is that: the
+observables of the system are approximately deterministic.
+</p>
+
+<p>
+There is a third fundamental assumption to an ODE-based model that also becomes clear when considering the collision of individual molecules as a basis for chemical reaction. In the case of two reacting species captured by Eq. <a
+href="Introduction.html#2coupled">1.5</a>, it should now be apparent that they are considered to be well-mixed. This means that, if the number of molecules of \(P_1\) is exactly the same as \(P_2\), an individual molecule
+of \(P_1\) should have exactly the same probability of colliding with a molecule of \(P_2\) as with a molecule of \(P_1\). The terminology “well-mixed” is intuitive for a liquid mixture held in a container: molecules of both species
+should be well enough distributed throughout the container. If molecules of type \(P_1\) are biased toward the top of the container, and molecules of type \(P_2\) towards the bottom, this would clearly not hold true. More
+precisely, this third assumption amounts to the statement that: the system does not have any spatial variation that contributes to the dynamics.
+</p>
+
+<p>
+Naturally, the breakdown of these assumptions under many biological scenarios and the way to deal with that breakdown will provide the main motivation for this course. Although we have outlined these assumptions for chemical
+reaction systems, which in their own right form a central cornerstone of the field, we shall encounter many other examples where they also (fail to) apply. It should be pointed out that, while including “space” and “spatial variation”
+will often be taken literally (i.e., by considering one-, two- or three-dimensional physical space), there are many other settings where generalised notions (e.g., state space) follow exactly the same arguments. These will turn out to
+yield equally valid and relevant models, depending on the type of biological phenomena they are designed to represent.
+</p>
+<!--
+...... subsection The partial differential equation behind this course ......
+-->
+<h5 id="autosec-8"><span class="sectionnumber">1.1.3&#x2003;</span>The partial differential equation behind this course</h5>
+<a id="Introduction-autopage-8"></a>
+
+
+<p>
+In 1827, the botanist (plant biologist) Robert Brown was using a microscope to study pollen grains suspended in water and observed that, rather than staying still or following a straight trajectory, pollen released by the grains
+moved about in a “jittery” motion through the water. This phenomenon was reproduced using non-organic matter, such as coal dust, and was termed Brownian motion<sup>2</sup>. Important theoretical contributions from Albert
+Einstein and Marian Smoluchowski, together with experimental work by Jean Baptiste Perrin, set the basis for explaining Brownian motion from the perspective molecular collisions as described in the previous subsection (in this
+case between the pollen and water molecules, which do not react chemically but instead simply alter the velocity and direction upon collision). This not only served as indirect evidence for the existence of atoms and molecules, but
+also provided the mathematical foundation for what we now know as the theory of molecular diffusion. The key insight was to model, not the complicated classical mechanics describing individual collisions (roughly \(10^{14}\) per
+molecule per second), but the rate of change of the concentration of a species at a given point in space assuming some probability for particles to move in a given direction. We will make this more concrete when we derive the
+diffusion equation ourselves.
+</p>
+
+<p>
+The diffusion equation is a second-order partial differential equation that describes the rate of change in concentration (or more generally, the density of the diffusing material: could be population density, temperature, etc.) under
+the sole impact of diffusion (e.g., Brownian motion). Qualitatively, it looks like:
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{8}\)</span>
+
+<!--
+
+                                                                                                              ∂c(x, t)
+                                                                                                                       = diffusion                                                                                                    (1.9)
+                                                                                                                ∂t
+
+-->
+
+<p>
+
+\begin{equation}
+\frac {\partial c ({\bf x},t)}{\partial t} = \mbox {diffusion}
+\end{equation}
+
+</p>
+
+<p>
+where, in \(d\) dimensions, the concentration \(c ({\bf x},t)\) now depends on the spatial coordinate vector \({\bf x} = (x_1, x_2, ..., x_d)^T \in \mathbb {R}^d\). This is in contrast to the ODE formulation for the
+rate of change of \(c\) in time, which ignored spatial variation. If we do want to include some of the reaction terms described in the previous subsection (e.g., consider the simple exponential growth model <a
+href="Introduction.html#expgrowth">1.1</a>), we assume that the mixture is effectively well-mixed in an infinitely small neighbourhood around \(\bf x\) to obtain an equation that qualitatively takes the form
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{9}\)</span>
+
+<!--
+
+                                                                                                     ∂c(x, t)
+                                                                                                              = diffusion + reaction at x.                                                                                           (1.10)
+                                                                                                       ∂t
+
+-->
+
+<p>
+
+\begin{equation}
+\frac {\partial c ({\bf x},t)}{\partial t} = \mbox {diffusion} + \mbox {reaction at {\bf x}} .
+\end{equation}
+
+</p>
+
+<p>
+The generalisation to \(n\) species as in the previous subsection follows quite naturally.
+</p>
+
+<p>
+For obvious reasons, the above equation is called the reaction-diffusion equation. As we shall see later in this course, various forms of the reaction-diffusion equation have been used to describe many different biological processes,
+including one of the most famous applications by Alan Turing to chemical morphogenesis (involving \(n=2\) species). However, it still does not fully capture the extent of the biology we would like to represent. To visualise this,
+picture a single virus or bacteria moving through your bloodstream. Known virus particles vary in size between 20-500nm, while bacteria between 1-10\(\mu \)m, both small enough to be subject to Brownian motion in the same
+way that pollen is. However, diffusion is not the only force governing the movement of these particles: your blood is (hopefully) flowing along your vessels at a velocity described by a (both spatially- and temporally-dependent in the
+most general case) vector \({\bf v}({\bf x},t)\), which will therefore carry the particles along with it. This process of transport by bulk motion is called advection. In general, there may be many other such forces acting upon
+particles in this way, such that the general equation for the rate of change in their concentration becomes
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{10}\)</span>
+
+<!--
+
+                                                                                             ∂c(x, t)
+                                                                                                      = diffusion + advection by v + reaction at x.                                                                                  (1.11)
+                                                                                               ∂t
+
+-->
+
+<p>
+
+\begin{equation}
+\frac {\partial c ({\bf x},t)}{\partial t} = \mbox {diffusion} + \mbox {advection by {\bf v}} + \mbox {reaction at {\bf x}} .
+\end{equation}
+
+</p>
+
+<p>
+In precise mathematical terms, this equation takes the form
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{11}\)</span>
+
+<!--
+
+                                                                                                     ∂c(x, t)
+                                                                                                              = ∇ · (D∇c) − ∇ · (vc) + F                                                                                             (1.12)
+                                                                                                       ∂t
+
+-->
+
+<p>
+
+\begin{equation}
+\frac {\partial c ({\bf x},t)}{\partial t} = \nabla \cdot (D \nabla c ) - \nabla \cdot ({\bf v} c ) + F
+\end{equation}
+
+</p>
+
+<p>
+and is called the reaction-advection-diffusion equation. We have therefore descriptively arrived at the partial differential equation behind this course and in the process hopefully conveyed why it is important for modelling many
+biological phenomena. In the next part, we will work towards a rigorous derivation of the reaction-advection-diffusion equation. Before doing that, we will remind ourselves of the mathematical tools necessary for the remainder of
+the course.
+</p>
+<div role="note" class="footnotes">
+
+<a id="Introduction-autopage-9"></a>
+<p>
+<sup>2</sup>&nbsp;Jan Ingenhousz had actually described the irregular motion of coal dust on the surface of alcohol in 1785, but the phenomenon retains the name of Robert Brown
+</p>
+
+
+</div>
+<!--
+...... section Revision ......
+-->
+<h4 id="autosec-10"><span class="sectionnumber">1.2&#x2003;</span>Revision</h4>
+<a id="Introduction-autopage-10"></a>
+<!--
+...... subsection Critical points of ODE systems and their stability ......
+-->
+<h5 id="autosec-11"><span class="sectionnumber">1.2.1&#x2003;</span>Critical points of ODE systems and their stability</h5>
+<a id="Introduction-autopage-11"></a>
+
+
+<p>
+Recall that, in vector notation, an autonomous system of \(n\) ODEs takes the form
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{12}\)</span>
+
+<!--
+
+                                                                     dx
+                                                                        = F(x(t)),   x(0) = x0                                                                (1.13)                  --><a id="autsystem"></a><!--
+                                                                     dt
+
+-->
+
+<p>
+
+\begin{equation}
+\label {autsystem} \frac {d {\bf x}}{d t} = {\bf F}({\bf x}(t)) , \quad {\bf x}(0) = {\bf x}_0
+\end{equation}
+
+</p>
+
+<p>
+where the vectors \({\bf x} = (x_1,x_2,...,x_n)^T\) and \({\bf F}({\bf x}(t)) = (F_1({\bf x}),F_2({\bf x}),...,F_n({\bf x}))^T\) take values in \(n\)-dimensional space \(\mathbb {R}^n\). Each \(F_i\) is a
+function \(F_i : \mathbb {R}^n \to \mathbb {R}\), which describes the rate of change of variable \(x_i\) with respect to time \(t\). This is in contrast to a non-autonomous system where \(F_i : \mathbb {R}^n \times
+\mathbb {R} \to \mathbb {R}\) (i.e., \(F_i\) also depends on time), which we will not consider here. \({\bf x}_0 = (x_1(0),x_2(0)...,x_n(0))^T\) is the vector of initial conditions.
+</p>
+<div class="theoremcontents">
+
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+<span class="theoremlabel">Definition 1.1 </span> A critical point of the autonomous system <a href="Introduction.html#autsystem">1.13</a> is a vector \({\bf x^*} \in \mathbb {R}^n \) such that \({\bf
+F}(x^*) = {\bf 0}\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+You should remember that the terminology “critical point” is often taken to be synonymous with “steady state” or an “equilibrium point” of <a href="Introduction.html#autsystem">1.13</a>, since it a constant (does not change
+with time) solution to the autonomous system. We will use these terms interchangeably throughout the course. There are two concepts of stability of a critical point, but we will only use the stronger:
+</p>
+<div class="theoremcontents">
+
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+<span class="theoremlabel">Definition 1.2 </span> A critical point \(\bf x^*\) of the autonomous system <a href="Introduction.html#autsystem">1.13</a> is asymptotically stable if there is a \(\delta &gt; 0\)
+such that, if \({\bf \Phi }(t)\) is a solution of <a href="Introduction.html#autsystem">1.13</a> satisfying
+</p>
+
+<p>
+\[ \| {\bf \Phi }(0) - {\bf x^*} \| &lt; \delta , \]
+</p>
+
+<p>
+then
+</p>
+
+<p>
+\[ \lim _{t \to \infty } {\bf \Phi }(t) \to {\bf x^*} .                 \]
+</p>
+
+<p>
+
+
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+In words, if \(\bf x^*\) is a stable critical point, then if a solution is sufficiently close to \(\bf x^*\) at \(t=0\), then it must move towards \(\bf x^*\) as time goes to infinity.
+</p>
+
+<p>
+Next, to characterise the stability of a critical point we recall the final definition:
+</p>
+<div class="theoremcontents">
+
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+<span class="theoremlabel">Definition 1.3 </span> A critical point \(\bf x^*\) of the autonomous system <a href="Introduction.html#autsystem">1.13</a> is hyperbolic if all the eigenvalues of the Jacobian matrix
+</p>
+
+<p>
+\[ {\bf J}({\bf x^*}) \equiv \left ( \frac {\partial {\bf F({\bf x^*})}}{\partial x_1} \quad \frac {\partial {\bf F({\bf x^*})}}{\partial x_2} \quad ...                  \quad \frac {\partial {\bf F({\bf
+x^*})}}{\partial x_n} \right ) \]
+</p>
+
+<p>
+have non-zero real part.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+The Hartman-Grobman theorem then determines conditions suitable for asymptotically stability of a hyperbolic critical point:
+</p>
+<div class="theoremcontents">
+
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+<span class="theoremlabel">Theorem 1.4 </span> (corollary of Hartman-Grobman) A hyperbolic critical point \(\bf x^*\) of the autonomous system <a href="Introduction.html#autsystem">1.13</a> is
+asymptotically stable if all eigenvalues of \({\bf J}({\bf x^*})\) have negative real part. If one of the eigenvalues of \({\bf J}({\bf x^*})\) has positive real part, the hyperbolic critical point is unstable.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+We finish this subsection with some revision exercises.
+</p>
+<div class="theoremcontents">
+
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+<span class="theoremlabel">Exercise 1.5 </span> Consider the first-order ODE
+</p>
+
+<p>
+\[ \frac {dy}{dt} = by(a-y) \]
+</p>
+
+<p>
+with constants \(a,b &gt; 0\). Find the critical points of this system and determine their stability.
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="theoremcontents">
+
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+<span class="theoremlabel">Exercise 1.6 </span> Consider the second-order ODE
+</p>
+
+<p>
+\[ \frac {dx^2}{dt^2} + x\frac {dx}{dt} + x(x-1) =0.         \]
+</p>
+
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+(a) Reduce this equation to an autonomous system (hint: set \(y = dx/dt\))
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+(b) Find the critical points of the autonomous system
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+(c) Determine the stability of the critical points.
+</p>
+</li>
+</ul>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection Multivariable (vector) calculus ......
+-->
+<h5 id="autosec-18"><span class="sectionnumber">1.2.2&#x2003;</span>Multivariable (vector) calculus</h5>
+<a id="Introduction-autopage-18"></a>
+
+
+<p>
+Calculus extends to \(d\) dimensions, and the particular case of \(d=3\) is also sometimes referred to as vector calculus. Differentiation and integration of a function of one variable is extended to partial differentiation and multiple
+integration of a function of multiple variables. A new series of vector operators and identities are introduced to generalise results in higher dimension. We first recall the definition of the differential operators, based on the Del or
+\(\nabla \) operator which, in a three-dimensional Cartesian coordinate system with coordinates \((x,y,z)\) and standard basis vectors \(\{ {\bf e}_x, {\bf e}_y, {\bf e}_z \}\), is given by
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{13}\)</span>
+
+<!--
+
+                                                                                     ∂       ∂      ∂
+                                                                            ∇ = ex      + ey    + ez .                                                                               (1.14)                    --><a id="del"></a><!--
+                                                                                     ∂x      ∂y     ∂z
+
+-->
+
+<p>
+
+\begin{equation}
+\label {del} \nabla = {\bf e}_x \frac {\partial }{\partial x} + {\bf e}_y \frac {\partial }{\partial y} + {\bf e}_z \frac {\partial }{\partial z} .
+\end{equation}
+
+</p>
+
+<p>
+We will use the following notation and convention for the symmetric dot (or inner) product of basis vectors
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{14}\)</span>
+
+<!--
+
+
+                                                                                   ex · ex = ey · ey = ez · ez = 0 and ex · ey = ex · ez = ey · ez = 0.                                                                               (1.15)
+
+-->
+
+<p>
+
+\begin{equation}
+{\bf e}_x \cdot {\bf e}_x = {\bf e}_y \cdot {\bf e}_y = {\bf e}_z \cdot {\bf e}_z = 0 \quad \mbox {and} \quad {\bf e}_x \cdot {\bf e}_y = {\bf e}_x \cdot {\bf e}_z = {\bf e}_y \cdot {\bf e}_z
+= 0 .
+\end{equation}
+
+</p>
+
+<p>
+We will use the following notation and convention for the anti-symmetric cross (or exterior) product of basis vectors
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{15}\)</span>
+
+<!--
+
+
+                                                                                            ex × ey = ez ,   ey × ez = ex   and ez × ex = ey .                                                                                        (1.16)
+
+-->
+
+<p>
+
+\begin{equation}
+{\bf e}_x \times {\bf e}_y = {\bf e}_z, \quad {\bf e}_y \times \bf {\bf e}_z = {\bf e}_x \quad \mbox {and} \quad {\bf e}_z \times \bf {\bf e}_x = {\bf e}_y .
+\end{equation}
+
+</p>
+
+<p>
+Remember that (anti-)symmetry means \({\bf e}_i \cdot {\bf e}_j = {\bf e}_j \cdot {\bf e}_i \) and \({\bf e}_i \times {\bf e}_j = - {\bf e}_j \times {\bf e}_i \) for \(i,j = x,y,z\), implying that
+\({\bf e}_i \times {\bf e}_i = 0\).
+</p>
+<div class="theoremcontents">
+
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+<span class="theoremlabel">Definition 1.7 </span> Given a scalar function \(f:                     \mathbb {R}^3 \to \mathbb {R}\) and vector field \({\bf F}:                        \mathbb {R}^3 \to \mathbb {R}^3\):
+</p>
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+(a) Gradient is defined as \(\mbox {{\em grad}}(f) = \nabla f\)
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+(b) Divergence is defined as \(\mbox {{\em div}}({\bf F}) = \nabla \cdot {\bf F}\)
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+(c) Curl is defined as \(\mbox {{\em curl}}({\bf F}) = \nabla \times {\bf F}\).
+</p>
+</li>
+</ul>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+Writing \(\bf F\) as \({\bf F}= F_x {\bf e}_x + F_y {\bf e}_y+ F_z {\bf e}_z = (F_x,F_y,F_z)^T\), we can also define the Jacobian of \(\bf F\) as the matrix formed by the gradient of each component of \(\bf F\):
+</p>
+
+<p>
+\[ {\bf J_F} = \begin {pmatrix} \nabla ^T F_x \\ \nabla ^T F_y \\ \nabla ^T F_z \\ \end {pmatrix} \]
+</p>
+
+<p>
+where \(\nabla ^T f \equiv (\nabla f)^T\). It is not hard to see how the Jacobian as defined here relates to that used in the previous subsection. The Jacobian matrix describes how the operator \(\nabla \) changes under a
+coordinate transformation. Given a coordinate system \(x_1,x_2,...,x_d\) for \(\mathbb {R}^d\), a coordinate transformation is a set of functions \(F_j : \mathbb {R}^D \to \mathbb {R}\) (\(j = 1,2,..., d)\) that
+maps \(\mathbb {R}^d \to \mathbb {R}^d\). The coordinate transformation is therefore represented by the vector field \(\bf F\). By application of the chain rule, it can be shown that under this change of coordinates,
+\(\nabla \) transforms according to \(\nabla \to {\bf J_F}^{-T} \cdot \nabla \) (here dot product notation means matrix multiplication).
+</p>
+
+<p>
+There is also a set of integral theorems for integrating functions or vector fields over curves and surfaces in 3-dimensional space. Recall that the line integrals of a function \(f\) or a vector field \(\bf F\) along a piecewise smooth
+curve \(C \subset \mathbb {R}^3\) are
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{16}\)</span>
+
+<!--
+
+                                                                                           Z                Z β                    Z               Z β
+                                                                                                            dr                                                      dr
+                                                                                             f dC =   f (r)    dt and                   F · dC =           F(r) ·      dt,
+                                                                                           C        α       dt                     C                   α            dt
+
+-->
+
+<p>
+
+\begin{equation*}
+\int _C f dC = \int _\alpha ^\beta f({\bf r}) \left | \frac {d {\bf r}}{dt} \right | dt \quad \mbox {and} \quad \int _C {\bf F} \cdot d {\bf C} = \int _\alpha ^\beta {\bf F}({\bf r}) \cdot
+\frac {d {\bf r}}{dt} dt ,
+\end{equation*}
+
+</p>
+
+<p>
+respectively, where \({\bf r} : [\alpha ,\beta ] \to C\) is a bijective parameterisation of \(C\). For an orientable surface \(S \subset \mathbb {R}^3\) with parameterisation \({\bf r} :                                 [\alpha ,\beta ] \times
+[\gamma ,\delta ] \to S\), the respective surface integrals are
+</p>
+
+<span class="hidden"> \(\seteqnumber{0}{}{16}\)</span>
+
+<!--
+
+                                                                        Z             Z βZ δ                                   Z                  Z βZ δ                             
+                                                                                                            ∂r ∂r                                                           ∂r ∂r
+                                                                             f dS =                 f (r)      ×    dsdt and           F · dS =                F(r) ·          ×          dsdt.
+                                                                         S             α       γ            ∂t   ∂s            S                   α       γ                ∂t   ∂s
+
+-->
+
+<p>
+
+\begin{equation*}
+\int _S f dS = \int _\alpha ^\beta \int _\gamma ^\delta f({\bf r}) \left \| \frac {\partial {\bf r}}{ \partial t} \times \frac {\partial {\bf r}}{\partial s} \right \| ds dt \quad \mbox {and}
+\quad \int _S {\bf F} \cdot d {\bf S} = \int _\alpha ^\beta \int _\gamma ^\delta {\bf F}({\bf r}) \cdot \left ( \frac {\partial {\bf r}}{ \partial t} \times \frac {\partial {\bf r}}{\partial
+s} \right ) ds dt .
+\end{equation*}
+
+</p>
+<div class="theoremcontents">
+
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+<span class="theoremlabel">Theorem 1.8 </span> (Divergence theorem) For a compact volume \(V \subset \mathbb {R}^3\) enclosed by a piecewise smooth boundary \(S = \partial V\), if \(\bf F\) is a continuously
+differentiable vector field defined on a neighbourhood of \(V\), then
+</p>
+
+<p>
+\[ \int _V (\nabla \cdot {\bf F} ) dV = \int _{S} {\bf F } \cdot d {\bf S} .       \]
+</p>
+
+<p>
+
+
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="theoremcontents">
+
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+<span class="theoremlabel">Theorem 1.9 </span> (Stokes’ theorem) For a smooth, orientable surface \(S \subset \mathbb {R}^3\) with boundary \(C = \partial S\), if \(\bf F\) is a continuously differentiable vector
+field defined on a neighbourhood of \(S\), then
+</p>
+
+<p>
+\[ \int _S (\nabla \times {\bf F} ) \cdot d {\bf S} = \int _{C} {\bf F } \cdot d {\bf C} .           \]
+</p>
+
+<p>
+
+
+</p>
+
+</li>
+
+</ul>
+
+</div>
+
+<p>
+We finish this subsection with some revision exercises.
+</p>
+<div class="theoremcontents">
+
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+<span class="theoremlabel">Exercise 1.10 </span> Consider the Laplace equation
+</p>
+
+<p>
+\[ \nabla \cdot (\nabla \phi ) = 0 \]
+</p>
+
+<p>
+for a function \(\phi (x,y)\), where \(x,y\) are cartesian coordinates for \(\mathbb {R}^2\).
+</p>
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+(a) Write this equation in polar coordinates \((r,\theta )\), such that \(r^2 = x^2 + y^2\)
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+(b) Assuming radial symmetry, i.e. \(\phi (r, \theta ) = \phi (r)\), find the solution on the interval \(r \in [a,b]\) (finite \(b &gt; a &gt; 0\)) subject to boundary conditions \(\phi (a) = 1,\phi (b) = 0\).
+</p>
+</li>
+</ul>
+
+</li>
+
+</ul>
+
+</div>
+<div class="theoremcontents">
+
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+<span class="theoremlabel">Exercise 1.11 </span> Use the divergence theorem to evaluate the surface integral
+</p>
+
+<p>
+\[ \int _S {\bf F} \cdot d {\bf S} \]
+</p>
+
+<p>
+where \({\bf F} = 2x {\bf e}_x + y^2 {\bf e}_y + z^2{\bf e}_z\) and \(S \subset \mathbb {R}^3\) is the unit sphere defined by \(x^2 + y^2 +z^2 = 1\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<div class="theoremcontents">
+
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+<span class="theoremlabel">Exercise 1.12 </span> Use Stokes’ theorem to evaluate the line integral of the vector field
+</p>
+
+<p>
+\[ {\bf F} = \left ( \sin x - \frac {y^3}{3} \right ) {\bf e}_x + \left ( \cos y + \frac {x^3}{3} \right ) {\bf e}_y + (xyz) {\bf e}_z\]
+</p>
+
+<p>
+along the curve \(C\) given by the intersection of the cone \(z^2 = x^2 +y^2\) with the plane \(z = 1\).
+</p>
+
+</li>
+
+</ul>
+
+</div>
+<!--
+...... subsection Dimensionality analysis and non-dimensionalisation ......
+-->
+<h5 id="autosec-25"><span class="sectionnumber">1.2.3&#x2003;</span>Dimensionality analysis and non-dimensionalisation</h5>
+<a id="Introduction-autopage-25"></a>
+
+
+<p>
+Dimensional analysis is the study of relationships between different physical variables (such as length, mass and time) and their units of measurement (such as metres, grams and seconds). The term dimensional analysis is also used
+to refer to the conversion of units from one dimensional unit to another, using conversion factors (e.g. converting seconds to years). Non-dimensionalisation is a closely related procedure that involves partial or full removal of
+physical dimensions from a set of equations, which can reveal properties of the corresponding system that are independent from the chosen units of measurement. The procedure for non-dimensionalisation of a set of (possibly
+differential) equations is as follows:
+</p>
+<ul style="list-style-type:none">
+
+<li>
+<p>
+1. Rescale each (in)dependent variable by a quantity whose units are to be determined
+</p>
+
+</li>
+<li>
+
+<p>
+2. Divide through by the coefficient of the highest order polynomial or derivative term
+</p>
+
+</li>
+<li>
+
+<p>
+3. Choose the characteristic unit for each new variable (from point 1) so that the coefficient of as many terms as possible is equal to one
+</p>
+</li>
+</ul>
+<div class="theoremcontents">
+
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+<span class="theoremlabel">Exercise 1.13 </span> Consider the partial differential equation
+</p>
+
+<p>
+\[ \frac {\partial c}{\partial t} = D \frac {\partial ^2 c}{\partial x^2} + ac(1-c/b) \]
+</p>
+
+<p>
+where units of time \(t\) are seconds (\(\mbox {s}\)), units of space \(x\) are meters (\(\mbox {m}\)), and units of concentration \(c\) are \(\mbox {mol}\cdot \mbox {m}^{-1}\).
+</p>
+<ul style="list-style-type:none">
+
+
+<li>
+<p>
+(a) Determine the units of constants \(D\), \(a\) and \(b\)
+</p>
+
+
+</li>
+<li>
+
+
+<p>
+(b) Substitue \(t = \alpha \tau \), \(x = \beta y\) and \(c = \gamma c^*\) and find values for \(\alpha , \beta , \gamma \) that result in the dimensionless equation
+</p>
+<p>
+\[ \frac {\partial c^*}{\partial \tau } = \frac {\partial ^2 c^*}{\partial y} + c^*(1-c^*) \]
+</p>
+<p>
+
+
+</p>
+</li>
+</ul>
+
+</li>
+
+</ul>
+
+</div>
+
+<a id="Introduction-autofile-last"></a>
+</section>
+
+</main>
+
+</div>
+
+</body>
+</html>
