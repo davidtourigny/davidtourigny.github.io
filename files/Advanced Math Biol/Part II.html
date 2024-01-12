@@ -407,12 +407,12 @@ Montenegro-Johnson at the University of Birmingham
 
 
 <p>
-In this part of the course we will look at the derivation of the central equation: the reaction-advection-diffusion (RAD) equation. We will also consider several of its basic properties.
+In this part of the course we will look at the derivation of the central equation: the reaction-advection-diffusion equation. We will also consider several of its basic properties.
 </p>
 <!--
-...... section Derivation of the RAD equation ......
+...... section Derivation of the diffusion equation ......
 -->
-<h4 id="autosec-4"><span class="sectionnumber">2.1&#x2003;</span>Derivation of the RAD equation</h4>
+<h4 id="autosec-4"><span class="sectionnumber">2.1&#x2003;</span>Derivation of the diffusion equation</h4>
 <a id="Derivation-autopage-4"></a>
 <!--
 ...... subsection Unbiased random walks in one spatial dimension ......
@@ -541,9 +541,9 @@ which to leading order in \(\Delta t\), \(\Delta x\) gives the relationship
 
 <!--
 
-                                             ∂c   ∂2c
-                                                =D 2                                                   (2.4)                                                                                      --><a id="diffusion"></a><!--
-                                             ∂t   ∂x
+                                              ∂c   ∂2c
+                                                 =D 2                                                  (2.4)                                                                                      --><a id="diffusion"></a><!--
+                                              ∂t   ∂x
 
 -->
 
@@ -556,7 +556,7 @@ which to leading order in \(\Delta t\), \(\Delta x\) gives the relationship
 </p>
 
 <p>
-where
+where we are considering a regime such that
 </p>
 
 <span class="hidden"> \(\seteqnumber{0}{}{4}\)</span>
@@ -837,8 +837,8 @@ is the velocity of some background flow
 </ul>
 
 <p>
-To obtain the full RAD equation in one spatial dimension, we are free to add to <a href="Derivation.html#advectiondiffusion">2.10</a> any source or sink term (more generally, a reaction term) \(F\) that depends on any
-given values of \(t,x,c\). This yields,
+To obtain the full reaction-advection-diffusion equation in one spatial dimension, we are free to add to <a href="Derivation.html#advectiondiffusion">2.10</a> any source or sink term (more generally, a reaction term) \(F\)
+that depends on any given values of \(t,x,c\). This yields,
 </p>
 
 <span class="hidden"> \(\seteqnumber{0}{}{11}\)</span>
@@ -1117,7 +1117,7 @@ href="Derivation.html#continuum">2.18</a> with \(F=0\) yields the diffusion equa
 
 <p>
 We can also consider general advection due to bulk movement with velocity \(\bf v\) and a general reaction term \(F\), in which case the substitution \({\bf J} = {\bf J}_{\text {diff}} + {\bf v} c\) gives rise to the
-multi-dimensional RAD equation we encountered in the introduction
+multi-dimensional reaction-advection-diffusion equation we encountered in the introduction
 </p>
 
 <span class="hidden"> \(\seteqnumber{0}{}{20}\)</span>
@@ -1142,9 +1142,9 @@ multi-dimensional RAD equation we encountered in the introduction
 Observe that this formulation does not necessarily imply \(D\) must be constant: in non-homogeneous diffusion the diffusion coefficient can vary in space, \(D = D({\bf x})\).
 </p>
 <!--
-...... section Properties of the RAD equation ......
+...... section Properties of advection and diffusion ......
 -->
-<h4 id="autosec-9"><span class="sectionnumber">2.2&#x2003;</span>Properties of the RAD equation</h4>
+<h4 id="autosec-9"><span class="sectionnumber">2.2&#x2003;</span>Properties of advection and diffusion</h4>
 <a id="Derivation-autopage-9"></a>
 <!--
 ...... subsection Properties of diffusion ......
@@ -1301,7 +1301,7 @@ this case \(\bf v\) is called a conservative vector field. The advection equatio
 <!--
 
                                                                                                                ∂c
-                                                                                                                  = ∇ · (∓c∇ϕ)                                                                                                               (2.27)
+                                                                                                                  = ∓∇ · (c∇ϕ)                                                                                                               (2.27)
                                                                                                                ∂t
 
 -->
@@ -1309,7 +1309,7 @@ this case \(\bf v\) is called a conservative vector field. The advection equatio
 <p>
 
 \begin{equation}
-\frac {\partial c}{\partial t} = \nabla \cdot \left ( \mp c \nabla \phi \right )
+\frac {\partial c}{\partial t} = \mp \nabla \cdot \left ( c \nabla \phi \right )
 \end{equation}
 
 </p>
@@ -1545,7 +1545,7 @@ Pe&#x0301;clet number is therefore
 
 <!--
 
-                                                                                                                     0.02cm · s−1 · 0.0018cm
+                                                                                                                     0.0018cm · s−1 · 0.02cm
                                                                                                            Pea =                             = 0.00018.                                                                             (2.36)
                                                                                                                           0.2 cm2 · s−1
 
@@ -1554,7 +1554,7 @@ Pe&#x0301;clet number is therefore
 <p>
 
 \begin{equation}
-\mbox {Pe}_a = \frac {0.02 \mbox {cm} \cdot \mbox {s}^{-1} \cdot 0.0018 \mbox {cm}}{ \mbox {0.2 cm}^2 \cdot \mbox {s}^{-1} }= 0.00018 .
+\mbox {Pe}_a = \frac {0.0018 \mbox {cm} \cdot \mbox {s}^{-1} \cdot 0.02 \mbox {cm}}{ \mbox {0.2 cm}^2 \cdot \mbox {s}^{-1} }= 0.00018 .
 \end{equation}
 
 </p>

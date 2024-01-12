@@ -409,7 +409,7 @@ Montenegro-Johnson at the University of Birmingham
 <p>
 Mathematical biology is a broadly defined subject that has fuzzy overlaps with a range of others, including but not limited to: computational biology, bioinformatics, theoretical biophysics and systems biology. Since there are no
 absolute distinctions between these fields, different researchers have different views and preferences for each term, and can often use them interchangeably depending on context or methodology employed to study a particular
-biological problem at hand. Key to all, however, is the use of theoretical (i.e., computational and/or mathematical) approaches to advance our understand of phenomena in biology, which has traditionally been viewed as an
+biological problem at hand. Key to all, however, is the use of theoretical (i.e., computational and/or mathematical) approaches to advance our understanding of phenomena in biology, which has traditionally been viewed as an
 experimental science (i.e., predictions and hypotheses being tested empirically in a laboratory or field study). There is also a blur between experiment and theory in biology, which has existed since at least the 13th Century when
 Fibonacci series were used to describe the growth of rabbit populations<sup>1</sup>. This blur has become even more pronounced in the last few decades with the advent of next generation sequencing and biological imaging
 methods, which has driven applications of data science and machine learning. Thus, some researchers may like to further separate the application of theory into two distinct categories: 1) model-based, which is loosely concerned
@@ -417,11 +417,11 @@ with building mathematical and/or computational biological models to guide the c
 computational tools for processing and analysing biological data. Of course, it is not very hard to come up with examples where this division is unclear or the example spans both categories. Since it therefore appears somewhat
 hopeless to provide a precise definition of mathematical biology in entire generality, we will restrict ourselves to outlining the contents of this course in the introductory section below. If pushed, one might be tempted to categorise
 the course material as falling entirely within the model-based sector of mathematical biology, but it turns out the same mathematical models serve a methodological role within various algorithms and software packages. It is best
-not to push around terminology too much. After going through the background and overview for this course, we will also provide a brief revision of the prerequisite mathematical material.
+not to push around terminology too much. After going through the background and a short overview of what to expect in this course, we will also provide a brief revision of the prerequisite mathematical material.
 </p>
 
 <p>
-Some fantastic textbooks to accompany and expand upon this course are the following:
+Some fantastic textbooks to accompany and expand upon this material are the following:
 </p>
 
 <ul style="list-style-type:none">
@@ -496,10 +496,10 @@ models that the student may have come across before. To begin with, consider the
 
 <p>
 where \(P\) is the population size, \(k\) is the population growth rate, \(t\) is time, and \(P_0\) is the initial population size at time \(t=0\). It assumes that the population is not limited by food supply (or resources, more
-generally) and that there is a constant growth rate \(k = b - d\) given by the difference between birth rate \(b\) and death rate \(d\). If \(b &gt; d\) the population increases exponentially in time according to \(P(t) = P_0
-e^{kt}\), while if \(b &lt; d\) the population decreases exponentially in time, eventually reaching zero. We may typically think of a population to mean a collection of organisms (e.g. bacteria, rabbits), but if \(P\) represents
-instead the concentration of some chemical substance (\(P\) might be replaced with \([P]\) for “concentration”) then this same equation describes the rate of change of \([P]\) according to first-order reaction kinetics \(P \to
-\star \) with reaction rate coefficient \(k &lt; 0\).
+generally) and that there is a constant growth rate \(k = k_b -k_d\) given by the difference between birth rate \(k_b &gt; 0\) and death rate \(k_d &gt; 0\). If \(k_b &gt; k_d\) the population increases exponentially in time
+according to \(P(t) = P_0 e^{kt}\), while if \(k_b &lt; k_d\) the population decreases exponentially in time, eventually reaching zero. We may typically think of a population to mean a collection of organisms (e.g. bacteria,
+rabbits), but if \(P\) represents instead the concentration of some chemical substance (\(P\) might be replaced with \([P]\) for “concentration”) then this same equation describes the rate of change of \([P]\) according to
+first-order reaction kinetics \(P \to \star \) with decay rate constant \(k &lt; 0\).
 </p>
 
 <p>
@@ -615,11 +615,11 @@ The Lotka-Volterra system can be generalised in many ways, for example to model 
 
 <!--
 
-                                                                                                                         
-                                                                                                                n
-                                                                                                dPi            X
-                                                                                                    = Pi ki +     Aij Pj  ,             i = 1, 2, ..., n.                                                                                 (1.7)
-                                                                                                 dt            j=1
+                                                                                                                          
+                                                                                                                 n
+                                                                                               dPi              X
+                                                                                                   = ki Pi 1 +     Aij Pj  ,             i = 1, 2, ..., n.                                                                                (1.7)
+                                                                                                dt              j=1
 
 
 -->
@@ -627,7 +627,7 @@ The Lotka-Volterra system can be generalised in many ways, for example to model 
 <p>
 
 \begin{equation}
-\frac {dP_i}{dt} = P_i \left (k_i + \sum _{j=1}^n A_{ij} P_j \right ), \quad i = 1,2,...,n .
+\frac {dP_i}{dt} = k_i P_i \left ( 1+ \sum _{j=1}^n A_{ij} P_j \right ), \quad i = 1,2,...,n .
 \end{equation}
 
 </p>
@@ -689,10 +689,10 @@ href="Introduction.html#expgrowth">1.1</a>: the number of molecules in the syste
 The Law of Mass Action also relies on the assumption that the number of molecules in the system is large. In a mixture, individual molecules are moving around at incredible rates and reactions only occur when two or more
 independently collide so that their chemistry can be realised. On the level of individual molecules, this appears random. However, if there is a very large number of molecules in the mixture then the probability of collision and
 reaction is very well approximated by the concentrations of the reactants. In this way, by assuming the number of molecules in the system is large, the Law of Mass Action proposes that the rate of the chemical reaction is directly
-proportional to the product of the concentrations of the reactants. This also implies the reaction kinetics are very well approximated by a deterministic set of equations, e.g. ODEs. At some stage this first approximation breaks
-down when the number of molecules becomes too small. As we have already seen, \(c\) should then be captured by a variable that can only take on finitely many discrete values. However, in this case there is more: the role of
-random fluctuations also becomes very important so the deterministic nature of an ODE framework is also no longer appropriate. It must instead be replaced by a stochastic model. Thus, the second assumption is that: the
-observables of the system are approximately deterministic.
+proportional to the product of the concentrations of the reactants. This also implies the reaction kinetics are very well approximated by a deterministic set of equations, e.g. ODEs. At some point, this approximation breaks down
+when the number of molecules becomes too small. As we have already seen, \(c\) should then be captured by a variable that can only take on finitely many discrete values. However, in this case there is more: the role of random
+fluctuations also becomes very important so the deterministic nature of an ODE framework is also no longer appropriate. It must instead be replaced by a stochastic model. Thus, the second assumption is that: the observables of
+the system are approximately deterministic.
 </p>
 
 <p>
@@ -780,10 +780,10 @@ The generalisation to \(n\) species as in the previous subsection follows quite 
 <p>
 For obvious reasons, the above equation is called the reaction-diffusion equation. As we shall see later in this course, various forms of the reaction-diffusion equation have been used to describe many different biological processes,
 including one of the most famous applications by Alan Turing to chemical morphogenesis (involving \(n=2\) species). However, it still does not fully capture the extent of the biology we would like to represent. To visualise this,
-picture a single virus or bacteria moving through your bloodstream. Known virus particles vary in size between 20-500nm, while bacteria between 1-10\(\mu \)m, both small enough to be subject to Brownian motion in the same
-way that pollen is. However, diffusion is not the only force governing the movement of these particles: your blood is (hopefully) flowing along your vessels at a velocity described by a (both spatially- and temporally-dependent in the
-most general case) vector \({\bf v}({\bf x},t)\), which will therefore carry the particles along with it. This process of transport by bulk motion is called advection. In general, there may be many other such forces acting upon
-particles in this way, such that the general equation for the rate of change in their concentration becomes
+picture a single virus or bacterium moving through your bloodstream. Known virus particles vary in size between 20-500nm, while bacteria between 1-10\(\mu \)m, both small enough to be subject to Brownian motion in the same
+way that pollen is. However, diffusion is not the only force governing the movement of these particles: your blood is (hopefully) flowing along your vessels at a velocity described by a field vector \({\bf v}({\bf x},t)\) and will
+therefore carry the particles along with it. This process of transport by bulk motion is called advection. In general, there may be many other such forces acting upon particles in this way, such that the general equation for the rate
+of change in their concentration becomes
 </p>
 
 <span class="hidden"> \(\seteqnumber{0}{}{10}\)</span>
@@ -935,7 +935,7 @@ then
 </div>
 
 <p>
-In words, if \(\bf x^*\) is a stable critical point, then if a solution is sufficiently close to \(\bf x^*\) at \(t=0\), then it must move towards \(\bf x^*\) as time goes to infinity.
+In words, if \(\bf x^*\) is a stable critical point, then if a solution \({\bf \Phi }(t)\) is sufficiently close to \(\bf x^*\) at \(t=0\), then \({\bf \Phi }(t)\) must move towards \(\bf x^*\) as time goes to infinity.
 </p>
 
 <p>
