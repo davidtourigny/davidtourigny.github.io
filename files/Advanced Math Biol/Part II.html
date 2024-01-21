@@ -563,17 +563,16 @@ where we are considering a regime such that
 
 <!--
 
-                                                                                                           (∆x)2
-                                                                                                       lim       = constant ≡ D.                                                                                               (2.5)
-                                                                                                    ∆x,∆t→0 2∆t
-
+                                                                                                         (∆x)2
+                                                                                                               = constant ≡ D.                                                                                                 (2.5)
+                                                                                                          2∆t
 
 -->
 
 <p>
 
 \begin{equation}
-\lim _{\Delta x, \Delta t \to 0} \frac {(\Delta x)^2}{2 \Delta t} = \mbox {constant} \equiv D.
+\frac {(\Delta x)^2}{2 \Delta t} = \mbox {constant} \equiv D.
 \end{equation}
 
 </p>
@@ -613,7 +612,7 @@ increasing levels of an external signal, or movement of particles with the flow 
 <!--
 
                                                                                                       1                               1
-                                                                                           λR (x) =     + λ(x) = 1 − λL (x) ⇒ λL (x) = − λ(x)                                                                                      (2.6)
+                                                                                           λR (x) =     + λ(x) = 1 − λL (x) ⇒ λL (x) = − λ(x)                                                                                  (2.6)
                                                                                                       2                               2
 
 -->
@@ -659,7 +658,7 @@ and we also Taylor expand \(\lambda (x)\) about \(x\) as
 <!--
 
                                                                       dλ (∆x)2 d2 λ
-                                              λ(x ± ∆x) = λ(x) ± ∆x      +          + ...       .                                                   (2.7)                                             --><a id="lambda"></a><!--
+                                              λ(x ± ∆x) = λ(x) ± ∆x      +          + ...       .                                                    (2.7)                                          --><a id="lambda"></a><!--
                                                                       dx   2 dx2
 
 -->
@@ -667,7 +666,7 @@ and we also Taylor expand \(\lambda (x)\) about \(x\) as
 <p>
 
 \begin{equation}
-\label {lambda} \lambda (x \pm \Delta x) = \lambda (x) \pm \Delta x \frac {d \lambda }{dx} + \frac {(\Delta x)^2}{2} \frac {d^2 \lambda }{dx^2} + ...                              \quad .
+\label {lambda} \lambda (x \pm \Delta x) = \lambda (x) \pm \Delta x \frac {d \lambda }{dx} + \frac {(\Delta x)^2}{2} \frac {d^2 \lambda }{dx^2} + ...                             \quad .
 \end{equation}
 
 </p>
@@ -703,7 +702,7 @@ expanding yields
                                                                                          2 2                              2 2
                                                                       c ∆x ∂c        (∆x) ∂ c                 ∂c      (∆x) ∂ c          dλ         2 dλ ∂c     (∆x)2 d2 λ
                                                                    + +            +              − cλ − λ∆x       − λ             − c∆x     −  (∆x)        − c
-                                                                     2      2 ∂x       4 ∂x2                  ∂x        2 ∂x2           dx           dx ∂x       2   dx
+                                                                     2      2 ∂x       4 ∂x2                  ∂x        2 ∂x2           dx           dx ∂x       2 dx2
                                                                    + ...
 
 
@@ -722,7 +721,7 @@ x)^2}{4}\frac {\partial ^2 c}{\partial x^2} + \lambda c - \lambda \Delta x \frac
 \frac {d \lambda }{dx} + (\Delta x)^2 \frac {d \lambda }{dx} \frac {\partial c}{\partial x} + c \frac {(\Delta x)^2}{2} \frac {d^2 \lambda }{dx^2}\\ &amp;+ \frac {c}{2} + \frac {\Delta x}{2}
 \frac {\partial c}{\partial x} + \frac {(\Delta x)^2}{4} \frac {\partial ^2 c}{\partial x^2} - c \lambda - \lambda \Delta x \frac {\partial c}{\partial x} - \lambda \frac {(\Delta x)^2}{2}
 \frac {\partial ^2 c}{\partial x^2} - c \Delta x \frac {d \lambda }{dx} - (\Delta x)^2 \frac {d \lambda }{dx}\frac {\partial c}{\partial x} - c \frac {(\Delta x)^2}{2} \frac {d^2 \lambda
-}{dx}\\ &amp;+ ...
+}{dx^2}\\ &amp;+ ...
 \end{align*}
 and after cancelation of terms we arrive at
 </p>
@@ -735,7 +734,7 @@ and after cancelation of terms we arrive at
                                                                                                                                    
                                                                                                                           ∂c     dλ
                                                                               c + ∆t      +        2
-                                                                                                      + ... = c − 2∆x   λ    + c      +             + ...   .                                                                      (2.8)
+                                                                                                      + ... = c − 2∆x   λ    + c      +             + ...    .                                                                 (2.8)
                                                                                        ∂t   2 ∂t                          ∂x     dx       2 ∂x2
 
 -->
@@ -757,11 +756,11 @@ One now must be a bit careful about how to treat terms in the limit \(\Delta x ,
 
 <!--
 
-                                                                                          ∂c (∆t)2 ∂ 2 c                            (∆x)2 ∂c
-                                                                                                                                              
+                                                                                          ∂c (∆t)2 ∂ 2 c                             (∆x)2 ∂c
+                                                                                                                                               
                                                                                                                  ∂
-                                                                                        ∆t +             + ... =           −2∆xλc +                + ...                                                                           (2.9)
-                                                                                          ∂t   2 ∂t2             ∂x                   2 ∂x
+                                                                                        ∆t +             + ... =            −2∆xλc +                + ...                                                                      (2.9)
+                                                                                          ∂t   2 ∂t2             ∂x                    2 ∂x
 
 -->
 
@@ -775,27 +774,42 @@ x)^2}{2} \frac {\partial c}{\partial x} \right ) + ...
 </p>
 
 <p>
-and therefore the form of this equation to leading order depends on the size of \(\lambda \) relative to \(\Delta x \). In general, we have three possible scenarios: 1) \(\lambda \) is of order \((\Delta x)^2\) or higher; 2)
-\(\lambda \) is of order \(\Delta x\); or, 3) \(\lambda \) is of order one. Consider what happens to the expression within parentheses on the right-hand side for each of these scenarios in turn:
+and therefore the form of this equation to leading order depends on the size of \(\lambda \) relative to \(\Delta x \). In general, we have three possible scenarios:
+</p>
+
+<p>
+1) \(\lambda \) is of order \((\Delta x)^2\) or higher so that \(\Delta x \lambda /\Delta t\) is much smaller than \((\Delta x)^2 /\Delta t\);
+</p>
+
+<p>
+2) \(\lambda \) is of order \(\Delta x\) so that \(\Delta x \lambda /\Delta t\) is similar in size to \((\Delta x)^2 /\Delta t\); or,
+</p>
+
+<p>
+3) \(\lambda \) is of order one so that \(\Delta x \lambda /\Delta t\) is much larger than \((\Delta x)^2 /\Delta t\).
+</p>
+
+<p>
+Consider what happens to the expression within parentheses on the right-hand side for each of these scenarios in turn:
 </p>
 <ul style="list-style-type:none">
 
 <li>
 <p>
-1. In this case, the second term dominates and we obtain the diffusion equation <a href="Derivation.html#diffusion">2.4</a>
+1. In this case, the second term within parentheses dominates and to leading order we obtain the diffusion equation <a href="Derivation.html#diffusion">2.4</a> with \(D=(\Delta x)^2/2 \Delta t\), as described previously
 </p>
 
 </li>
 <li>
 
 <p>
-2. In this case, both terms are of the same order and we obtain the advection-diffusion equation in one spatial dimension
+2. In this case, both terms within parentheses are of the same order and to leading order we obtain the advection-diffusion equation in one spatial dimension
 </p>
 <span class="hidden"> \(\seteqnumber{0}{}{9}\)</span>
 <!--
 
                            ∂c   ∂2c  ∂
-                              =D 2 −    (v(x) · c)                              (2.10)                                                                                                  --><a id="advectiondiffusion"></a><!--
+                              =D 2 −    (v(x) · c)                              (2.10)                                                                                                --><a id="advectiondiffusion"></a><!--
                            ∂t   ∂x   ∂x
 -->
 <p>
@@ -810,28 +824,42 @@ where
 </p>
 <span class="hidden"> \(\seteqnumber{0}{}{10}\)</span>
 <!--
-
-                                                                                                                  (∆x)2
-                                                                                                             lim        λ ≡ v(x)                                                                                               (2.11)
-                                                                                                           ∆x,∆t→0 2∆t
-
+                                                                                                                  ∆x
+                                                                                                              2      λ(x) ≡ v(x)                                                                                              (2.11)
+                                                                                                                  ∆t
 -->
 <p>
 
 \begin{equation}
-\lim _{\Delta x, \Delta t \to 0} \frac {(\Delta x)^2}{2 \Delta t} \lambda \equiv v(x)
+2\frac {\Delta x}{ \Delta t} \lambda (x) \equiv v(x)
 \end{equation}
 
 </p>
 <p>
-is the velocity of some background flow
+is defined as the velocity of some background flow
 </p>
 
 </li>
 <li>
 
 <p>
-3. In this case, the first term dominates and we obtain the advection equation (equivalent to <a href="Derivation.html#advectiondiffusion">2.10</a> with \(D = 0\))
+3. In this case, the first term within parentheses dominates and to leading order we obtain the advection equation (equivalent to <a href="Derivation.html#advectiondiffusion">2.10</a> with \(D = 0\))
+</p>
+<span class="hidden"> \(\seteqnumber{0}{}{11}\)</span>
+<!--
+                                   ∂c    ∂
+                                      = − (v(x) · c).                                        (2.12)                                                                                             --><a id="advection"></a><!--
+                                   ∂t    ∂x
+-->
+<p>
+
+\begin{equation}
+\label {advection} \frac {\partial c}{\partial t} = - \frac {\partial }{\partial x}( v(x) \cdot c) .
+\end{equation}
+
+</p>
+<p>
+
 </p>
 </li>
 </ul>
@@ -841,12 +869,12 @@ To obtain the full reaction-advection-diffusion equation in one spatial dimensio
 that depends on any given values of \(t,x,c\). This yields,
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{11}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{12}\)</span>
 
 <!--
 
                                                                                                     ∂c   ∂2c  ∂
-                                                                                                       =D 2 −    (v(x) · c) + F (t, x, c).                                                                                     (2.12)
+                                                                                                       =D 2 −    (v(x) · c) + F (t, x, c).                                                                                    (2.13)
                                                                                                     ∂t   ∂x   ∂x
 
 -->
@@ -874,12 +902,12 @@ In previous subsections, we were slightly sloppy about using \(c\) to denote con
 For a finite number of non-interacting particles undergoing an unbiased random walk starting at \(x(0) = 0\), we can consider the position of the \(i\)th particle after \(T\) time steps:
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{12}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{13}\)</span>
 
 <!--
 
 
-                                                                                                                  xi (T ) = xi (T − 1) ± ∆x,                                                                                         (2.13)
+                                                                                                                  xi (T ) = xi (T − 1) ± ∆x,                                                                                         (2.14)
 
 -->
 
@@ -894,7 +922,7 @@ x_i(T) = x_i(T - 1) \pm \Delta x ,
 <p>
 which captures the fact that particle \(i\) may move by a distance of \(\Delta x\) to either the right or left, with equal probability. We now calculate the mean displacement of particles by averaging over all \(i\):
 </p>
-<span class="hidden"> \(\seteqnumber{0}{}{13}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{14}\)</span>
 
 
 <!--
@@ -922,7 +950,7 @@ which captures the fact that particle \(i\) may move by a distance of \(\Delta x
 where, in going from the first to second line we used the fact that, for large \(N\), approximately half of the \(\Delta x\) will come with a positive coefficient and half with a negative coefficient. Thus, we can see recursively that
 \(\langle x(T) \rangle \approx \langle x(0) \rangle = 0\), i.e. the mean displacement of particles is approximately zero. Using the same arguments for the mean-squared displacement, we find that
 </p>
-<span class="hidden"> \(\seteqnumber{0}{}{13}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{14}\)</span>
 
 
 <!--
@@ -950,12 +978,12 @@ _{i=1}^N (x^2_i(T - 1) + (\Delta x )^2) = \langle x^2(T-1) \rangle + (\Delta x )
 which recursively leads to \(\langle x^2(T) \rangle \approx T \cdot (\Delta x)^2\). To make the connection with the previous subsections, we take time \(t = T \cdot \Delta t\) so that
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{13}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{14}\)</span>
 
 <!--
 
                                                                                                                                (∆x)2
-                                                                                                                  ⟨x2 (t)⟩ ≈         t = 2Dt,                                                                                        (2.14)
+                                                                                                                  ⟨x2 (t)⟩ ≈         t = 2Dt,                                                                                        (2.15)
                                                                                                                                 ∆t
 
 -->
@@ -974,12 +1002,12 @@ are statistically independent so that the same argument applies to give \(\langl
 + y^2(t) + z^2(t)\) is then
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{14}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{15}\)</span>
 
 <!--
 
 
-                                                                                                          ⟨r2 (t)⟩ ≈ 2Dt + 2Dt + 2Dt = 6Dt                                                                                           (2.15)
+                                                                                                          ⟨r2 (t)⟩ ≈ 2Dt + 2Dt + 2Dt = 6Dt                                                                                           (2.16)
 
 -->
 
@@ -1001,13 +1029,13 @@ We now make use of the continuum limit to derive the full reaction-advection-dif
 this implies
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{15}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{16}\)</span>
 
 <!--
 
                                                                                                      Z                    Z                     Z
                                                                                                 ∂
-                                                                                                         c(x, t)dV = −         J(x, t) · dS +       F (x, t)dV,                                                                      (2.16)
+                                                                                                         c(x, t)dV = −         J(x, t) · dS +       F (x, t)dV,                                                                      (2.17)
                                                                                                 ∂t   V                     S                    V
 
 
@@ -1026,13 +1054,13 @@ where \(\bf J\) is the flux vector with sign convention chosen such that the uni
 volume
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{16}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{17}\)</span>
 
 <!--
 
                                                                                                               Z                      
                                                                                                                     ∂c
-                                                                                                                       +∇·J−F             dV = 0,                                                                                    (2.17)
+                                                                                                                       +∇·J−F             dV = 0,                                                                                    (2.18)
                                                                                                               V     ∂t
 
 -->
@@ -1049,12 +1077,12 @@ volume
 and, since this must hold for all \(V\), we must have
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{17}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{18}\)</span>
 
 <!--
 
                                                    ∂c
-                                                      + ∇ · J − F = 0.                                                               (2.18)                                                             --><a id="continuum"></a><!--
+                                                      + ∇ · J − F = 0.                                                               (2.19)                                                             --><a id="continuum"></a><!--
                                                    ∂t
 
 -->
@@ -1075,12 +1103,12 @@ It is perhaps already apparent that this will yield the reaction-advection-diffu
 Fick’s law states that, in the absence of any other forces, the flux of material points in the direction of high concentration to low concentration with a magnitude that is proportional to the concentration gradient. That is,
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{18}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{19}\)</span>
 
 <!--
 
 
-                                                                                                                        Jdiff = −D∇c                                                                                                 (2.19)
+                                                                                                                        Jdiff = −D∇c                                                                                                 (2.20)
 
 -->
 
@@ -1094,15 +1122,15 @@ Fick’s law states that, in the absence of any other forces, the flux of materi
 
 <p>
 where the subscript highlights that we have already anticipated that this will describe diffusion (no other forces). Indeed, in this case substitution for \({\bf J} = {\bf J}_{\text {diff}}\) in <a
-href="Derivation.html#continuum">2.18</a> with \(F=0\) yields the diffusion equation in multiple spatial dimensions
+href="Derivation.html#continuum">2.19</a> with \(F=0\) yields the diffusion equation in multiple spatial dimensions
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{19}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{20}\)</span>
 
 <!--
 
                                                     ∂c
-                                                       = ∇ · (D∇c).                                                                (2.20)                                                             --><a id="ddiffusion"></a><!--
+                                                       = ∇ · (D∇c).                                                                (2.21)                                                             --><a id="ddiffusion"></a><!--
                                                     ∂t
 
 -->
@@ -1120,12 +1148,12 @@ We can also consider general advection due to bulk movement with velocity \(\bf 
 multi-dimensional reaction-advection-diffusion equation we encountered in the introduction
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{20}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{21}\)</span>
 
 <!--
 
                                             ∂c
-                                               = ∇ · (D∇c) − ∇ · (vc) + F.                                                        (2.21)                                                             --><a id="radequation"></a><!--
+                                               = ∇ · (D∇c) − ∇ · (vc) + F.                                                        (2.22)                                                             --><a id="radequation"></a><!--
                                             ∂t
 
 -->
@@ -1157,12 +1185,12 @@ Observe that this formulation does not necessarily imply \(D\) must be constant:
 We have already seen that a particle undergoing a random walk has a mean-squared displacement that depends linearly on time \(t\). To further justify this using the diffusion equation, we can substitute to show that
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{21}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{22}\)</span>
 
 <!--
 
                                                        1         x · x
-                                          c(x, t) = p        exp −                                                      (2.22)                                                                       --><a id="heatkernel"></a><!--
+                                          c(x, t) = p        exp −                                                      (2.23)                                                                       --><a id="heatkernel"></a><!--
                                                      (4πDt)d       4Dt
 
 -->
@@ -1176,17 +1204,17 @@ We have already seen that a particle undergoing a random walk has a mean-squared
 </p>
 
 <p>
-is a fundamental solution (also called a heat kernel) to <a href="Derivation.html#ddiffusion">2.20</a> for \(t &gt; 0\) in \(d\) dimensions with \(D\) constant. That is to say, the fundamental solution satisfies the initial
+is a fundamental solution (also called a heat kernel) to <a href="Derivation.html#ddiffusion">2.21</a> for \(t &gt; 0\) in \(d\) dimensions with \(D\) constant. That is to say, the fundamental solution satisfies the initial
 condition that at \(t = 0\) the concentration is infinitely concentrated at the origin (Dirac delta distribution). If we interpret this as the probability of a single particle to be at position \({\bf x}(t)\) at time \(t\), then we
 recover the relationship
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{22}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{23}\)</span>
 
 <!--
 
 
-                                                  ⟨r2 (t) = x(t) · x(t)⟩ = 2dDt.                                                 (2.23)                                                                       --><a id="msd"></a><!--
+                                                  ⟨r2 (t) = x(t) · x(t)⟩ = 2dDt.                                                 (2.24)                                                                       --><a id="msd"></a><!--
 
 -->
 
@@ -1199,11 +1227,11 @@ recover the relationship
 </p>
 
 <p>
-Relation <a href="Derivation.html#msd">2.23</a> says that, unlike a particle that moves at constant speed \(v = \Delta x / \Delta t\) where distance traveled would be proportional to time elapsed (\(\Delta x = v
+Relation <a href="Derivation.html#msd">2.24</a> says that, unlike a particle that moves at constant speed \(v = \Delta x / \Delta t\) where distance traveled would be proportional to time elapsed (\(\Delta x = v
 \cdot \Delta t\)), the distance of a particle moving only under the influence of diffusion is (on average) proportional the square root of time. The proportionality constant is the diffusion coefficient, which depends on the
-migration of a given material in a given media at a given temperature. For a small molecule (e.g. glucose) in water at room temperature, \(D \approx 5 \times 10^{-10} \mbox {m}^2 \cdot \mbox {s}\), which would mean it
-takes about two milliseconds (\(2 \times 10^{-3} \mbox {s}\)) to travel a length of about one bacterium (\(10^{-6} \mbox {m}\)) by diffusion alone. When the length doubles, it takes four times this long. If we increase the
-length by a factor of 10, it takes 100 times as long! This shows that diffusion is a very inefficient way to travel long distances.
+migration of a given material in a given media at a given temperature. For a small molecule (e.g. glucose) in water at room temperature, \(D \approx 5 \times 10^{-10} \mbox {m}^2 \cdot \mbox {s}^{-1}\), which would
+mean it takes about two milliseconds (\(2 \times 10^{-3} \mbox {s}\)) to travel a length of about one bacterium (\(10^{-6} \mbox {m}\)) by diffusion alone. When the length doubles, it takes four times this long. If we
+increase the length by a factor of 10, it takes 100 times as long! This shows that diffusion is a very inefficient way to travel long distances.
 </p>
 
 <p>
@@ -1219,15 +1247,15 @@ same as \(D = D(x)\)). Biological examples of anomalous diffusion in nature have
 
 
 <p>
-By setting \(D=F=0\) in <a href="Derivation.html#radequation">2.21</a>, we obtain the advection equation
+By setting \(D=F=0\) in <a href="Derivation.html#radequation">2.22</a>, we obtain the advection equation
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{23}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{24}\)</span>
 
 <!--
 
                                             ∂c              ∂c
-                                       0=      + ∇ · (vc) =    + v · ∇c + c∇ · v.                                           (2.24)                                                                        --><a id="dadvection"></a><!--
+                                       0=      + ∇ · (vc) =    + v · ∇c + c∇ · v.                                           (2.25)                                                                        --><a id="dadvection"></a><!--
                                             ∂t              ∂t
 
 -->
@@ -1245,12 +1273,12 @@ If the vector field \(\bf v\) is divergence free, also called a solenoidal vecto
 theorem we have that the integral of a solenoidal vector field \(\bf v\) over any surface \(S\) that encloses a compact volume must vanish
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{24}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{25}\)</span>
 
 <!--
 
                                                                                                                  Z
-                                                                                                                      v · dS = 0,                                                                                                            (2.25)
+                                                                                                                      v · dS = 0,                                                                                                            (2.26)
                                                                                                                   S
 
 
@@ -1269,12 +1297,12 @@ which can be interpreted as saying that the flow described by \(\bf v\) has no s
 x}(t)\) with velocity equal to \(\bf v\)
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{25}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{26}\)</span>
 
 <!--
 
                                                                                                 d               ∂c dx          ∂c
-                                                                                                   c(x(t), t) =    +    · ∇c =    + v · ∇c = 0                                                                                               (2.26)
+                                                                                                   c(x(t), t) =    +    · ∇c =    + v · ∇c = 0                                                                                               (2.27)
                                                                                                 dt              ∂t   dt        ∂t
 
 -->
@@ -1296,12 +1324,12 @@ Another special case of the advection equation arises when the vector field \(\b
 this case \(\bf v\) is called a conservative vector field. The advection equation then becomes
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{26}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{27}\)</span>
 
 <!--
 
                                                                                                                ∂c
-                                                                                                                  = ∓∇ · (c∇ϕ)                                                                                                               (2.27)
+                                                                                                                  = ∓∇ · (c∇ϕ)                                                                                                               (2.28)
                                                                                                                ∂t
 
 -->
@@ -1334,19 +1362,19 @@ the scope of this course.
 
 <p>
 We have already seen that diffusion has a timescale that scales with distance squared, and it is quite straightforward to confirm that the timescale of advection is instead on the order of distance (same as velocity). To do this in a
-side-by-side comparison with diffusion, we can first perform non-dimensionalisation on the diffusion and advection equations individually. For the diffusion equation <a href="Derivation.html#ddiffusion">2.20</a>, we
+side-by-side comparison with diffusion, we can first perform non-dimensionalisation on the diffusion and advection equations individually. For the diffusion equation <a href="Derivation.html#ddiffusion">2.21</a>, we
 substitute \(c = c_0 c^*\), \(\nabla = \nabla ^* /L\) and \(t = T_D t^*\) where we assume we know scaling factors \(c_0,L\) for concentration and length, respectively, and would like to determine the diffusion timescale,
 \(T_D\). This yields
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{27}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{28}\)</span>
 
 <!--
 
                                                                                                                      ∂c∗
                                                                                                                                                
                                                                                                                                        TD D ∗ ∗
-                                                                                                                         = ∇∗ ·            ∇ c ,                                                                                    (2.28)
+                                                                                                                         = ∇∗ ·            ∇ c ,                                                                                    (2.29)
                                                                                                                      ∂t∗                L2
 
 -->
@@ -1363,12 +1391,12 @@ substitute \(c = c_0 c^*\), \(\nabla = \nabla ^* /L\) and \(t = T_D t^*\) where 
 which means that for both sides to have the same dimensions we must have
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{28}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{29}\)</span>
 
 <!--
 
                                                                                                                                        L2
-                                                                                                                               TD ∼       .                                                                                         (2.29)
+                                                                                                                               TD ∼       .                                                                                         (2.30)
                                                                                                                                        D
 
 -->
@@ -1382,16 +1410,16 @@ T_D \sim \frac {L^2}{D} .
 </p>
 
 <p>
-This recovers our known result about the diffusive timescale. For the advection equation <a href="Derivation.html#dadvection">2.24</a>, we take the same \(c_0\), \(L\), but this time also substitute \({\bf v} = v_0 {\bf
+This recovers our known result about the diffusive timescale. For the advection equation <a href="Derivation.html#dadvection">2.25</a>, we take the same \(c_0\), \(L\), but this time also substitute \({\bf v} = v_0 {\bf
 v}^*\) and \(t = T_A t^*\) where \(v_0\) is a known scaling factor for velocity and \(T_A\) the unknown advection timescale. Repeating the argument implies that
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{29}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{30}\)</span>
 
 <!--
 
                                                                                                                                        L
-                                                                                                                               TA ∼       ,                                                                                         (2.30)
+                                                                                                                               TA ∼       ,                                                                                         (2.31)
                                                                                                                                        v0
 
 -->
@@ -1409,16 +1437,16 @@ showing that the timescale of advection is the same as velocity.
 </p>
 
 <p>
-When moving to consider the combined advection-diffusion equation (<a href="Derivation.html#radequation">2.21</a> with \(F= 0\)), we have two different choices of timescales: \(T_A\) or \(T_D\). We begin by defining the
+When moving to consider the combined advection-diffusion equation (<a href="Derivation.html#radequation">2.22</a> with \(F= 0\)), we have two different choices of timescales: \(T_A\) or \(T_D\). We begin by defining the
 dimensionless Pe&#x0301;clet number as the ratio of these timescales or, equivalently, the ratio of the advective transport rate (\(1/T_A\)) and the diffusive transport rate (\(1/T_D\)):
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{30}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{31}\)</span>
 
 <!--
 
                                                                                                                TD   1/TA   advective transport rate
-                                                                                                        Pe =      =      =                          .                                                                               (2.31)
+                                                                                                        Pe =      =      =                          .                                                                               (2.32)
                                                                                                                TA   1/TD   diffusive transport rate
 
 -->
@@ -1435,14 +1463,14 @@ dimensionless Pe&#x0301;clet number as the ratio of these timescales or, equival
 We then make the same substitutions as before, but consider the advection-diffusion equation with either \(T_A\) or \(T_D\) as the timescale, which results in (using the results \(T_A = L/v_0\) and \(T_D = L^2/D\) from above)
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{31}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{32}\)</span>
 
 <!--
 
                        ∂c∗
                                                   
                                         TA D ∗ ∗           v0 TA ∗             1
-                           = ∇∗ ·           ∇ c        −        ∇ · (v∗ c∗ ) =    · ∇∗ · (∇∗ c∗ ) − ∇∗ · (v∗ c∗ )                               (2.32)                                                    --><a id="adtime"></a><!--
+                           = ∇∗ ·           ∇ c        −        ∇ · (v∗ c∗ ) =    · ∇∗ · (∇∗ c∗ ) − ∇∗ · (v∗ c∗ )                               (2.33)                                                    --><a id="adtime"></a><!--
                        ∂t∗               L2                  L                 Pe
 
 -->
@@ -1460,14 +1488,14 @@ We then make the same substitutions as before, but consider the advection-diffus
 or
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{32}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{33}\)</span>
 
 <!--
 
                       ∂c∗
                                                  
                                        TD D ∗ ∗           v0 TD ∗
-                          = ∇∗ ·           ∇ c        −        ∇ · (v∗ c∗ ) = ∇∗ · (∇∗ c∗ ) − Pe · ∇∗ · (v∗ c∗ )                              (2.33)                                                    --><a id="difftime"></a><!--
+                          = ∇∗ ·           ∇ c        −        ∇ · (v∗ c∗ ) = ∇∗ · (∇∗ c∗ ) − Pe · ∇∗ · (v∗ c∗ )                              (2.34)                                                    --><a id="difftime"></a><!--
                       ∂t∗               L2                  L
 
 -->
@@ -1483,9 +1511,9 @@ or
 
 <p>
 respectively. Here we have assumed \(D\) is constant. When \(\mbox {Pe}\) is of order one, then both advection rates and diffusion rates balance, meaning that both contribute comparably to the transport process. However, when
-\(\mbox {Pe} &gt;&gt; 1\), then advection dominates as can be seen by reduction of equation <a href="Derivation.html#adtime">2.32</a> to the advection equation and <a href="Derivation.html#difftime">2.33</a> to
+\(\mbox {Pe} &gt;&gt; 1\), then advection dominates as can be seen by reduction of equation <a href="Derivation.html#adtime">2.33</a> to the advection equation and <a href="Derivation.html#difftime">2.34</a> to
 the advection equation at steady state \(\nabla ^* \cdot ({\bf v}^* c^*) =0\) (on the diffusive timescale, temporal fluctuations are negligible). Conversely, when \(\mbox {Pe} &lt;&lt; 1\), then diffusion dominates as can
-be seen by reduction of equation <a href="Derivation.html#difftime">2.33</a> to the diffusion equation and <a href="Derivation.html#adtime">2.32</a> to the diffusion equation at steady state \(\nabla ^* \cdot
+be seen by reduction of equation <a href="Derivation.html#difftime">2.34</a> to the diffusion equation and <a href="Derivation.html#adtime">2.33</a> to the diffusion equation at steady state \(\nabla ^* \cdot
 (\nabla ^* c^*) =0\) (on the advection timescale, temporal fluctuations are negligible).
 </p>
 
@@ -1493,12 +1521,12 @@ be seen by reduction of equation <a href="Derivation.html#difftime">2.33</a> to 
 As a concrete example, we can consider the approximate values of the Pe&#x0301;clet number for oxygen transport in upper and lower regions of the lung. We use
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{33}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{34}\)</span>
 
 <!--
 
                                                                                                                                    TD   vL
-                                                                                                                            Pe =      =                                                                                             (2.34)
+                                                                                                                            Pe =      =                                                                                             (2.35)
                                                                                                                                    TA   D
 
 -->
@@ -1517,12 +1545,12 @@ and take \(D = \mbox {0.2 cm}^2 \cdot \mbox {s}^{-1}\) for the diffusion constan
 {cm} \cdot \mbox {s}^{-1} = 250 \mbox {cm} \cdot \mbox {s}^{-1}\) in the trachea, giving a Pe&#x0301;clet number of
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{34}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{35}\)</span>
 
 <!--
 
                                                                                                                            250cm · s−1 · 2cm
-                                                                                                                   Pet =                     = 2500.                                                                                (2.35)
+                                                                                                                   Pet =                     = 2500.                                                                                (2.36)
                                                                                                                              0.2 cm2 · s−1
 
 -->
@@ -1541,12 +1569,12 @@ There are approximately 700 million alveoli in adult lungs with average area per
 Pe&#x0301;clet number is therefore
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{35}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{36}\)</span>
 
 <!--
 
                                                                                                                      0.0018cm · s−1 · 0.02cm
-                                                                                                           Pea =                             = 0.00018.                                                                             (2.36)
+                                                                                                           Pea =                             = 0.00018.                                                                             (2.37)
                                                                                                                           0.2 cm2 · s−1
 
 -->
