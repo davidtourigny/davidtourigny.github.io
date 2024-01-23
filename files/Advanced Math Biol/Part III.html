@@ -470,15 +470,15 @@ where \(c(x,t)\) is the concentration of oxygen at \(x\) at time \(t\), and \(D\
 <!--
 
                                                                                                                  F0 2
-                                                                                                       c(x) =      x + Ax + B                                                                                                  (3.2)
-                                                                                                                 D
+                                                                                                       c(x) =       x + Ax + B                                                                                                 (3.2)
+                                                                                                                 2D
 
 -->
 
 <p>
 
 \begin{equation}
-c(x) = \frac {F_0}{D} x^2 + A x + B
+c(x) = \frac {F_0}{2D} x^2 + A x + B
 \end{equation}
 
 </p>
@@ -491,16 +491,16 @@ since
 
 <!--
 
-                                                                                           F0   ∂2c   ∂c   F0      F0 2
-                                                                                              =     ⇒    =    x+A⇒   x + Ax + B.                                                                                               (3.3)
-                                                                                           D    ∂x2   ∂x   D       D
+                                                                                          F0   ∂2c   ∂c   F0      F0 2
+                                                                                             =     ⇒    =    x+A⇒    x + Ax + B.                                                                                               (3.3)
+                                                                                          D    ∂x2   ∂x   D       2D
 
 -->
 
 <p>
 
 \begin{equation}
-\frac {F_0}{D} = \frac {\partial ^2 c}{\partial x^2} \Rightarrow \frac {\partial c }{\partial x } = \frac {F_0}{D} x + A \Rightarrow \frac {F_0}{D} x^2 + Ax + B .
+\frac {F_0}{D} = \frac {\partial ^2 c}{\partial x^2} \Rightarrow \frac {\partial c }{\partial x } = \frac {F_0}{D} x + A \Rightarrow \frac {F_0}{2D} x^2 + Ax + B .
 \end{equation}
 
 </p>
@@ -556,16 +556,16 @@ and
 
 <!--
 
-                                                                                                    ∂c        F0             2F0 L
-                                                                                               0=      (L) = 2 L + A ⇒ A = −                                                                                                   (3.6)
-                                                                                                    ∂x        D               D
+                                                                                                     ∂c       F0         F0 L
+                                                                                                0=      (L) =    L+A⇒A=−                                                                                                       (3.6)
+                                                                                                     ∂x       D           D
 
 -->
 
 <p>
 
 \begin{equation}
-0 = \frac {\partial c}{\partial x}(L) = 2\frac {F_0}{D} L + A \Rightarrow A = - \frac {2 F_0 L}{D}
+0 = \frac {\partial c}{\partial x}(L) = \frac {F_0}{D} L + A \Rightarrow A = - \frac {F_0 L}{D}
 \end{equation}
 
 </p>
@@ -685,7 +685,7 @@ where \(0 \leq z \leq L\), \(R_1 \leq r \leq R_2\) (tissue starts at some radius
 <!--
 
                                                                                                                ∂c          ∂c
-                                                                                                                  (r, 0) =    (r, L) = 0                                                        (3.11)--><a id="conditions"></a><!--
+                                                                                                                  (r, 0) =    (r, L) = 0                                                                                            (3.11)
                                                                                                                ∂z          ∂z
 
 -->
@@ -693,7 +693,7 @@ where \(0 \leq z \leq L\), \(R_1 \leq r \leq R_2\) (tissue starts at some radius
 <p>
 
 \begin{equation}
-\label {conditions} \frac {\partial c}{\partial z}(r,0) = \frac {\partial c}{\partial z}(r,L) = 0
+\frac {\partial c}{\partial z}(r,0) = \frac {\partial c}{\partial z}(r,L) = 0
 \end{equation}
 
 </p>
@@ -707,7 +707,7 @@ and
 <!--
 
                                                                                                                                          ∂c
-                                                                                                         c(R1 , z) = cT (z),                (R2 , z) = 0                                                                            (3.12)
+                                                                                                         c(R1 , z) = cT (z),                (R2 , z) = 0                                        (3.12)--><a id="conditions"></a><!--
                                                                                                                                          ∂r
 
 -->
@@ -715,7 +715,7 @@ and
 <p>
 
 \begin{equation}
-c(R_1,z) = c_T(z), \quad \frac {\partial c}{\partial r}(R_2,z) = 0
+\label {conditions} c(R_1,z) = c_T(z), \quad \frac {\partial c}{\partial r}(R_2,z) = 0
 \end{equation}
 
 </p>
@@ -794,7 +794,7 @@ since
 </p>
 
 <p>
-Since the boundary conditions <a href="BioTransport.html#conditions">3.11</a> hold for each fixed value of \(z\), we obtain
+Since the boundary conditions <a href="BioTransport.html#conditions">3.12</a> hold for each fixed value of \(z\), we obtain
 </p>
 
 <span class="hidden"> \(\seteqnumber{0}{}{15}\)</span>
@@ -1831,7 +1831,7 @@ First consider a perfectly reflecting boundary at the point \(x = 0\), which mea
 </p>
 
 <p>
-We can show that \(c(x,t) = \psi (x-x_0,t) + \psi (-x-x_0,t)\) satisfies this boundary condition since
+We can show that \(c(x,t) = \psi (x-x_0,t) + \psi (-x-x_0,t)\) satisfies this boundary condition on the interval \([0, \infty )\) since
 </p>
 
 <span class="hidden"> \(\seteqnumber{0}{}{56}\)</span>
@@ -1880,7 +1880,7 @@ c(x,t) = \frac {1}{\sqrt {4 \pi D t}} \exp (\pm kt) \left [ \exp \left (-\frac {
 </p>
 
 <p>
-For a perfectly absorbing boundary condition at \(x=0\) it is easy to see that \(c(x,t) = \psi (x-x_0,t) - \psi (-x-x_0,t)\) provides a solution since
+For a perfectly absorbing boundary condition at \(x=0\) it is easy to see that \(c(x,t) = \psi (x-x_0,t) - \psi (-x-x_0,t)\) provides a solution on the interval \([0, \infty )\) since
 </p>
 
 <span class="hidden"> \(\seteqnumber{0}{}{58}\)</span>
