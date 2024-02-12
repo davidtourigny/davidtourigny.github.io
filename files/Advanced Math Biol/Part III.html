@@ -1084,9 +1084,9 @@ Taking the diffusion equation <a href="BioTransport.html#diffusion">3.27</a> in 
 
 <!--
 
-                                                                                                                                   ∂u   ∂2u
-                                                                                                                                      =D 2                                                                                             (3.28)
-                                                                                                                                   ∂t   ∂x
+                                                                                                                                    ∂u   ∂2u
+                                                                                                                                       =D 2                                                                                            (3.28)
+                                                                                                                                    ∂t   ∂x
 
 -->
 
@@ -1107,10 +1107,10 @@ make the re-scaling \(x = \epsilon ^{-a} x^*\), \(t = \epsilon ^{-b} t^*\) and \
 
 <!--
 
-                                                                                                                               ∂u∗           ∂ 2 u∗
-                                                                                                                        ϵb−c     ∗
-                                                                                                                                   = Dϵ2a−c                                                                                            (3.29)
-                                                                                                                               ∂t           ∂(x∗ )2
+                                                                                                                                ∂u∗           ∂ 2 u∗
+                                                                                                                         ϵb−c     ∗
+                                                                                                                                    = Dϵ2a−c                                                                                           (3.29)
+                                                                                                                                ∂t           ∂(x∗ )2
 
 -->
 
@@ -1132,14 +1132,14 @@ particular, since
 <!--
 
 
-                                                                                  u∗ (t∗ )−c/b = uϵc (tϵb )−c/b = ut−c/b                 and x∗ (t∗ )−a/b = xϵ(tϵb )−a/b = xt−a/b                                                      (3.30)
+                                                                                   u∗ (t∗ )−c/b = uϵc (tϵb )−c/b = ut−c/b                 and x∗ (t∗ )−a/b = xϵa (tϵb )−a/b = xt−a/b                                                   (3.30)
 
 -->
 
 <p>
 
 \begin{equation}
-u^*(t^*)^{-c/b} = u\epsilon ^c(t \epsilon ^b)^{-c/b} = u t^{-c/b} \quad \mbox {and} \quad x^* (t^*)^{-a/b} = x \epsilon (t\epsilon ^b)^{-a/b}= xt^{-a/b}
+u^*(t^*)^{-c/b} = u\epsilon ^c(t \epsilon ^b)^{-c/b} = u t^{-c/b} \quad \mbox {and} \quad x^* (t^*)^{-a/b} = x \epsilon ^a (t\epsilon ^b)^{-a/b}= xt^{-a/b}
 \end{equation}
 
 </p>
@@ -1153,7 +1153,7 @@ we postulate that a solution that combines these variables would be suitable, wh
 <!--
 
 
-                                                                                                                          u(x, t) = tc/b f (xt−a/b ).                                                                                  (3.31)
+                                                                                                                           u(x, t) = tc/b f (xt−a/b ).                                                                                 (3.31)
 
 -->
 
@@ -1173,9 +1173,9 @@ Using the condition \(b = 2a\) this is
 
 <!--
 
-                                                                                                                                            x
-                                                                                                                    u = tc/b f (z) with z = √ .                                                                                        (3.32)
-                                                                                                                                             t
+                                                                                                                                             x
+                                                                                                                     u = tc/b f (z) with z = √ .                                                                                       (3.32)
+                                                                                                                                              t
 
 -->
 
@@ -1196,17 +1196,17 @@ Substituting we have
 <!--
 
 
-                                                                                                       ∂u   ∂               c                 df ∂z
-                                                                                                          = tc/b f (z) = tc/b−1 f (z) + tc/b
-                                                                                                       ∂t  ∂t               b                dz ∂t
-                                                                                                                                              
-                                                                                                           c c/b−1            c/b df    1 x 1
-                                                                                                          = t      f (z) + t          − √
-                                                                                                           b                      dz    2 tt
-                                                                                                                                      
-                                                                                                           c          c           1 df
-                                                                                                          = tc/b−1      f (z) − z
-                                                                                                           b          b           2 dz
+                                                                                                        ∂u    ∂              c                 df ∂z
+                                                                                                           = tc/b f (z) = tc/b−1 f (z) + tc/b
+                                                                                                        ∂t   ∂t              b                dz ∂t
+                                                                                                                                               
+                                                                                                             c c/b−1           c/b df    1 x 1
+                                                                                                           = t       f (z) + t         − √
+                                                                                                             b                     dz    2 tt
+                                                                                                                                      
+                                                                                                                      c          1 df
+                                                                                                           = tc/b−1     f (z) − z
+                                                                                                                      b          2 dz
 
 
 -->
@@ -1216,8 +1216,8 @@ Substituting we have
 
 \begin{align*}
 \frac {\partial u }{\partial t } &amp;= \frac {\partial }{\partial t } t^{c/b} f(z) = \frac {c}{b} t^{c/b - 1} f(z) + t^{c/b} \frac {df}{dz} \frac {\partial z}{\partial t} \\ &amp;= \frac
-{c}{b} t^{c/b - 1} f(z) + t^{c/b} \frac {df}{dz} \left ( - \frac {1}{2} \frac {x}{\sqrt {t}} \frac {1}{t} \right ) \\ &amp;= \frac {c}{b} t^{c/b - 1} \left ( \frac {c}{b} f(z) - \frac {1}{2} z
-\frac {d f}{dz} \right )
+{c}{b} t^{c/b - 1} f(z) + t^{c/b} \frac {df}{dz} \left ( - \frac {1}{2} \frac {x}{\sqrt {t}} \frac {1}{t} \right ) \\ &amp;= t^{c/b - 1} \left ( \frac {c}{b} f(z) - \frac {1}{2} z \frac {d
+f}{dz} \right )
 \end{align*}
 and
 </p>
@@ -1226,21 +1226,21 @@ and
 
 <!--
 
-                                                                                                                                                    2
-                                                                                                ∂2u           2
-                                                                                                                                                         d2 f            2
-                                                                                                                                           
-                                                                                                        c/b ∂                                  ∂z                 c/b−1 d f
-                                                                                                    = t         f (z) = tc/b                                  = t
-                                                                                                ∂x2        ∂x2                                 ∂x        dz 2           dz 2
+                                                                                                                                               2
+                                                                                            ∂2u          2
+                                                                                                                                                    d2 f   ∂ 2 z df           2
+                                                                                                                                     
+                                                                                                   c/b ∂                                  ∂z                           c/b−1 d f
+                                                                                                = t        f (z) = tc/b                                  +          = t
+                                                                                            ∂x2       ∂x2                                 ∂x        dz 2   ∂x2 dz            dz 2
 
 -->
 
 <p>
 
 \begin{equation*}
-\frac {\partial ^2 u}{\partial x^2 } = t^{c/b} \frac {\partial ^2}{\partial x^2} f(z) = t^{c/b} \left ( \frac {\partial z}{\partial x}\right )^2 \frac {d^2 f}{dz^2} = t^{c/b-1} \frac {d^2
-f}{dz^2}
+\frac {\partial ^2 u}{\partial x^2 } = t^{c/b} \frac {\partial ^2}{\partial x^2} f(z) = t^{c/b} \left ( \frac {\partial z}{\partial x}\right )^2 \frac {d^2 f}{dz^2} + \frac {\partial ^2
+z}{\partial x^2} \frac {d f}{dz}= t^{c/b-1} \frac {d^2 f}{dz^2}
 \end{equation*}
 
 </p>
@@ -1253,19 +1253,19 @@ such that
 
 <!--
 
-                                                                       ∂2u            d2 f
-                                                                            
-                                                       1          ∂u                        1 df  c
-                                                0=                   −D 2        =D      2
-                                                                                           + z   − f (z).                                                                                   (3.33)       --><a id="secondODE"></a><!--
-                                                     tc/b−1       ∂t   ∂x             dz    2 dz  b
+                                                                   ∂ 2 u ∂u            d2 f
+                                                                             
+                                                       1                                     1 df  c
+                                                0=                D 2−            =D      2
+                                                                                            + z   − f (z).                                                                                     (3.33)    --><a id="secondODE"></a><!--
+                                                     tc/b−1        ∂x    ∂t            dz    2 dz  b
 
 -->
 
 <p>
 
 \begin{equation}
-\label {secondODE} 0 = \frac {1}{t^{c/b-1}} \left ( \frac {\partial u }{\partial t } - D \frac {\partial ^2 u}{\partial x^2 } \right ) = D \frac {d^2 f}{dz^2} + \frac {1}{2} z \frac {df}{dz}
+\label {secondODE} 0 = \frac {1}{t^{c/b-1}} \left ( D \frac {\partial ^2 u}{\partial x^2 } - \frac {\partial u }{\partial t } \right ) = D \frac {d^2 f}{dz^2} + \frac {1}{2} z \frac {df}{dz}
 -\frac {c}{b} f(z) .
 \end{equation}
 
@@ -1285,7 +1285,7 @@ domain \(x \in [0,\infty )\) with the following boundary conditions
 <!--
 
 
-                                                                                                       u(0, t) = u0            and u(x, t) → 0 as x → ∞                                                                                (3.34)
+                                                                                                        u(0, t) = u0            and u(x, t) → 0 as x → ∞                                                                               (3.34)
 
 -->
 
@@ -1306,7 +1306,7 @@ with initial condition
 <!--
 
 
-                                                                                                                        u(x, 0) = 0 for all x > 0.                                                                                     (3.35)
+                                                                                                                         u(x, 0) = 0 for all x > 0.                                                                                    (3.35)
 
 -->
 
@@ -1319,8 +1319,8 @@ u(x, 0 ) = 0 \quad \mbox {for all} \quad x &gt; 0.
 </p>
 
 <p>
-In terms of the original variable \(c(x,t) = e^{-kt} u(x,t)\) (here for decay), this would correspond to an initial concentration \(c_0 = u_0\) of a species isolated at the point \(x = 0\), which decays exponentially according to
-\(c(0,t) = c_0 e^{-kt}\) while also diffusing outward into regions with \(x &gt; 0\). In terms of the new variables, we have
+In terms of the original variable \(c(x,t) = e^{-kt} u(x,t)\) (here for decay), this would correspond to an initial concentration \(c_0 = u_0\) of a species (e.g., a drug) isolated at the point \(x = 0\), which decays
+exponentially according to \(c(0,t) = c_0 e^{-kt}\) while also diffusing outward into regions with \(x &gt; 0\) (e.g., into a tissue). In terms of the new variables, we have
 </p>
 
 <span class="hidden"> \(\seteqnumber{0}{}{35}\)</span>
@@ -1328,7 +1328,7 @@ In terms of the original variable \(c(x,t) = e^{-kt} u(x,t)\) (here for decay), 
 <!--
 
 
-                                                                                                  tc/b f (0) = u0              and tc/b f (z) → 0 as z → ∞,                                                                            (3.36)
+                                                                                                   tc/b f (0) = u0              and tc/b f (z) → 0 as z → ∞,                                                                           (3.36)
 
 -->
 
@@ -1348,9 +1348,9 @@ which implies that we must have \(c/b = 0\) and \(u = f(z)\) with \(f\) satisfyi
 
 <!--
 
-                                                                                                                                d2 f  1 df
-                                                                                                                            D        + z   = 0.                                                                                        (3.37)
-                                                                                                                                dz 2  2 dz
+                                                                                                                                 d2 f  1 df
+                                                                                                                             D        + z   = 0.                                                                                       (3.37)
+                                                                                                                                 dz 2  2 dz
 
 -->
 
@@ -1370,10 +1370,10 @@ Treating this as a first-order ODE for \(df/dz\) and integrating once we obtain
 
 <!--
 
-                                                                                                                                  Z
-                                                                                                               df               1                               1 2
-                                                                                                  log                   =−               zdz + C1 = −             z + C1 ,                                                             (3.38)
-                                                                                                               dz              2D                              4D
+                                                                                                                                   Z
+                                                                                                                df               1                                 1 2
+                                                                                                   log                   =−               zdz + C1 = −               z + C1 ,                                                          (3.38)
+                                                                                                                dz              2D                                4D
 
 -->
 
@@ -1393,11 +1393,11 @@ or
 
 <!--
 
-                                                                                                                                          z2
-                                                                                                                                            
-                                                                                                                         df
-                                                                                                                            (z) = A exp −      ,                                                                                       (3.39)
-                                                                                                                         dz               4D
+                                                                                                                                           z2
+                                                                                                                                             
+                                                                                                                          df
+                                                                                                                             (z) = A exp −      ,                                                                                      (3.39)
+                                                                                                                          dz               4D
 
 -->
 
@@ -1417,11 +1417,11 @@ which we can integrate again to yield the general solution
 
 <!--
 
-                                                                                                                 z2                                  √
-                                                                                                       Z                                                                        
-                                                                                                                                                                              z
-                                                                                           f (z) = A       exp −                   dz + C2 = A Dπ · erf                       √        + C2 ,                                          (3.40)
-                                                                                                                 4D                                                          2 D
+                                                                                                                  z2                                    √
+                                                                                                        Z                                                                          
+                                                                                                                                                                                 z
+                                                                                            f (z) = A       exp −                   dz + C2 = A Dπ · erf                         √        + C2 ,                                       (3.40)
+                                                                                                                  4D                                                            2 D
 
 -->
 
@@ -1434,18 +1434,18 @@ f(z) = A \int \exp \left ( - \frac {z^2}{4D}\right ) dz + C_2 = A \sqrt {D\pi } 
 </p>
 
 <p>
-where \(\mbox {erf}\) is the Gauss error function. The boundary conditions \(f(0) = u_0\) and \(f(z) \to 0\) as \(z \to \infty \) imply that \(C_2 = u_0\) and \(A = -C_2 = -u_0\) since \(\mbox {erf}(0) = 0\) and
-\(\mbox {erf}(z) \to 1\) as \(z \to \to \infty \). Thus, substituting \(z = x/\sqrt {t}\) we have that
+where \(\mbox {erf}\) is the Gauss error function. The boundary conditions \(f(0) = u_0\) and \(f(z) \to 0\) as \(z \to \infty \) imply that \(C_2 = u_0\) and \(A \sqrt {D\pi }= -C_2 = -u_0\) since \(\mbox
+{erf}(0) = 0\) and \(\mbox {erf}(z) \to 1\) as \(z \to \infty \). Thus, substituting \(z = x/\sqrt {t}\) we have that
 </p>
 
 <span class="hidden"> \(\seteqnumber{0}{}{40}\)</span>
 
 <!--
 
-                                                                                                                                              
-                                                                                                                                             x
-                                                                                                                    u(x, t) = u0 1 − erf    √                                                                                          (3.41)
-                                                                                                                                           2 Dt
+                                                                                                                                               
+                                                                                                                                              x
+                                                                                                                     u(x, t) = u0 1 − erf    √                                                                                         (3.41)
+                                                                                                                                            2 Dt
 
 -->
 
@@ -1465,10 +1465,10 @@ and in terms of the original variable
 
 <!--
 
-                                                                                                                                                       
-                                                                                                                                   −kt                x
-                                                                                                               c(x, t) = c0 e             1 − erf    √      .                                                                          (3.42)
-                                                                                                                                                    2 Dt
+                                                                                                                                                        
+                                                                                                                                    −kt                x
+                                                                                                                c(x, t) = c0 e             1 − erf    √      .                                                                         (3.42)
+                                                                                                                                                     2 Dt
 
 -->
 
@@ -1490,7 +1490,7 @@ In the above, we took a particular set of boundary conditions on the half-interv
 <!--
 
 
-                                                                                                  u(x, t) → 0 as x → ±∞ and u(x, 0) = δ(x)                                                                                             (3.43)
+                                                                                                   u(x, t) → 0 as x → ±∞ and u(x, 0) = δ(x)                                                                                            (3.43)
 
 -->
 
@@ -1511,10 +1511,10 @@ and imposing that the solution must decay as we go infinitely far away from it. 
 
 <!--
 
-                                                                                                       Z ∞
-                                                                                                                                                    1 x
-                                                                                                               f (x)dx = 1 and                 lim    f   = δ(x)                                                                       (3.44)
-                                                                                                        −∞                                     τ →0 τ   τ
+                                                                                                        Z ∞
+                                                                                                                                                     1 x
+                                                                                                                f (x)dx = 1 and                 lim    f   = δ(x)                                                                      (3.44)
+                                                                                                         −∞                                     τ →0 τ   τ
 
 -->
 
@@ -1534,10 +1534,10 @@ to see that, in terms of the \(f\) we used before, the initial condition
 
 <!--
 
-                                                                                                                                                                        
-                                                                                                                                                     c/b           x
-                                                                                                               δ(x) = lim u(x, t) = lim t                  f       √                                                                   (3.45)
-                                                                                                                          t→0                  t→0                   t
+                                                                                                                                                                           
+                                                                                                                                                        c/b           x
+                                                                                                                δ(x) = lim u(x, t) = lim t                    f       √                                                                (3.45)
+                                                                                                                           t→0                  t→0                     t
 
 -->
 
@@ -1557,12 +1557,12 @@ will be satisfied if \(f\) is a mollifier and \(c/b = -1/2\). Thus, in terms of 
 
 <!--
 
-                                                                                             d2 f                  d2 f
-                                                                                                                                                                                        
-                                                                                                   1 df  1              1 d           d                                          df  1
-                                                                                       0=D      2
-                                                                                                  + z   + f (z) = D 2 +      zf (z) =                                          D    + zf                                               (3.46)
-                                                                                             dz    2 dz  2         dz   2 dz          dz                                         dz  2
+                                                                                              d2 f                  d2 f
+                                                                                                                                                                                           
+                                                                                                    1 df  1              1 d           d                                            df  1
+                                                                                        0=D      2
+                                                                                                   + z   + f (z) = D 2 +      zf (z) =                                            D    + zf                                            (3.46)
+                                                                                              dz    2 dz  2         dz   2 dz          dz                                           dz  2
 
 -->
 
@@ -1583,9 +1583,9 @@ or, equivalently,
 
 <!--
 
-                                                                                                                                   df  1
-                                                                                                                               D      + zf = C1                                                                                        (3.47)
-                                                                                                                                   dz  2
+                                                                                                                                    df  1
+                                                                                                                                D      + zf = C1                                                                                       (3.47)
+                                                                                                                                    dz  2
 
 -->
 
@@ -1605,11 +1605,11 @@ for some constant \(C_1\) that we are free to take as \(C_1 = 0\) since we are l
 
 <!--
 
-                                                                                                                                                               z2
-                                                                                                                                    Z
-                                                                                                                       1
-                                                                                                        log f (z) = −                    zdz + C2 = −             + C2                                                                 (3.48)
-                                                                                                                      2D                                       4D
+                                                                                                                                                                  z2
+                                                                                                                                     Z
+                                                                                                                        1
+                                                                                                         log f (z) = −                    zdz + C2 = −               + C2                                                              (3.48)
+                                                                                                                       2D                                         4D
 
 -->
 
@@ -1629,10 +1629,10 @@ and therefore
 
 <!--
 
-                                                                                                                                          z2
-                                                                                                                                            
-                                                                                                                          f (z) = A exp −      .                                                                                       (3.49)
-                                                                                                                                          4D
+                                                                                                                                           z2
+                                                                                                                                             
+                                                                                                                           f (z) = A exp −      .                                                                                      (3.49)
+                                                                                                                                           4D
 
 -->
 
@@ -1652,12 +1652,12 @@ Using
 
 <!--
 
-                                                                                                       Z ∞
-                                                                                                                          z2
-                                                                                                                                Z ∞                                  √
-                                                                                                                                                          
-                                                                                               1=    f (z)dz =    A exp −                                      dz = 2 πDA                                                              (3.50)
-                                                                                                  −∞           −∞         4D
+                                                                                                        Z ∞
+                                                                                                                           z2
+                                                                                                                                 Z ∞                                    √
+                                                                                                                                                             
+                                                                                                1=    f (z)dz =    A exp −                                        dz = 2 πDA                                                           (3.50)
+                                                                                                   −∞           −∞         4D
 
 -->
 
@@ -1677,11 +1677,11 @@ we find that \(A = 1/\sqrt {4 \pi D}\) and from \(u(x,t) = f(x/\sqrt {t}) /\sqrt
 
 <!--
 
-                                                                                                                                         x2
-                                                                                                                                           
-                                                                                                                              1
-                                                                                                                 u(x, t) = √      exp −       .                                                                                        (3.51)
-                                                                                                                             4πDt       4Dt
+                                                                                                                                          x2
+                                                                                                                                            
+                                                                                                                               1
+                                                                                                                  u(x, t) = √      exp −       .                                                                                       (3.51)
+                                                                                                                              4πDt       4Dt
 
 -->
 
@@ -1701,11 +1701,11 @@ We recognise this as the fundamental solution in dimension \(d=1\) introduced fo
 
 <!--
 
-                                                                                                                                                  x2
-                                                                                                                                                    
-                                                                                                                                    1
-                                                                                                               c(x, t) = √              exp kt −       ,                                                                               (3.52)
-                                                                                                                                   4πDt          4Dt
+                                                                                                                                                   x2
+                                                                                                                                                     
+                                                                                                                                     1
+                                                                                                                c(x, t) = √              exp kt −       ,                                                                              (3.52)
+                                                                                                                                    4πDt          4Dt
 
 -->
 
@@ -2000,7 +2000,7 @@ there is some critical oxygen concentration \(c^*\) below which cells die. Assum
 (a) Solve the spherically-symmetric reaction-diffusion equation for oxygen concentration \(c\) within the tumour at steady state
 </p>
 <p>
-\[ 0 = D \frac {1}{r^2} \left ( r^2 \frac {d c}{dr} \right ) - F_0 \]
+\[ 0 = D \frac {1}{r^2} \frac {d}{dr}\left ( r^2 \frac {d c}{dr} \right ) - F_0 \]
 </p>
 <p>
 subject to the boundary conditions

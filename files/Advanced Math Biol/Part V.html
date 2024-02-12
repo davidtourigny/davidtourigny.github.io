@@ -595,9 +595,9 @@ concentration of amoeba \(c\) and synthesis and degradation rate constants \(\al
 
 <!--
 
-                                                                                                                                dϕ
-                                                                                                                                   = αc − βϕ.                                                      (5.7)--><a id="camptime"></a><!--
-                                                                                                                                dt
+                                                                                                                                 dϕ
+                                                                                                                                    = αc − βϕ.                                                     (5.7)--><a id="camptime"></a><!--
+                                                                                                                                 dt
 
 -->
 
@@ -617,9 +617,9 @@ Furthermore, assuming amoebae are produced at some constant rate \(\gamma \) and
 
 <!--
 
-                                                                                                                                    dc
-                                                                                                                                       = γ − δc.                                                (5.8)--><a id="amoebatime"></a><!--
-                                                                                                                                    dt
+                                                                                                                                 dc
+                                                                                                                                    = γ − δc.                                                   (5.8)--><a id="amoebatime"></a><!--
+                                                                                                                                 dt
 
 -->
 
@@ -640,12 +640,12 @@ Allowing for spatial variation including transport by both diffusion and chemota
 <!--
 
 
-                                                                                                                 ∂c
-                                                                                                                    = ∇ · (Dc ∇c − χc∇ϕ) + γ − δc                      (5.9)                              --><a id="amoeba"></a><!--
-                                                                                                                 ∂t
-                                                                                                                 ∂ϕ
-                                                                                                                    = ∇ · (Dϕ ∇ϕ) + αc − βϕ                             (5.10)                              --><a id="camp"></a><!--
-                                                                                                                 ∂t
+                                                                                                                    ∂c
+                                                                                                                       = ∇ · (Dc ∇c − χc∇ϕ) + γ − δc                 (5.9)                                --><a id="amoeba"></a><!--
+                                                                                                                    ∂t
+                                                                                                                    ∂ϕ
+                                                                                                                       = ∇ · (Dϕ ∇ϕ) + αc − βϕ                        (5.10)                                --><a id="camp"></a><!--
+                                                                                                                    ∂t
 
 
 -->
@@ -657,7 +657,7 @@ Allowing for spatial variation including transport by both diffusion and chemota
 \label {amoeba} \frac {\partial c}{\partial t} &amp;= \nabla \cdot ( D_c \nabla c - \chi c \nabla \phi ) + \gamma - \delta c \\ \label {camp} \frac {\partial \phi }{\partial t} &amp;= \nabla
 \cdot ( D_\phi \nabla \phi ) + \alpha c - \beta \phi
 \end{align}
-where we have introduced separate diffusion coefficients for amoeba (\(D_c\)) and cAMP (\(D_\phi \)), both constant. We also take \(\chi &gt; 0\) since cAMP is attracting.
+where we have introduced separate diffusion coefficients for amoeba (\(D_c\)) and cAMP (\(D_\phi \)), both constant. We also take \(\chi \geq 0\) since cAMP is attracting.
 </p>
 
 <p>
@@ -670,9 +670,9 @@ and cAMP are constant in space and time. In particular, this implies that
 
 <!--
 
-                                                                                                                                     γ             αγ
-                                                                                                                              c0 =     ,   ϕ0 =                                                                                     (5.11)
-                                                                                                                                     δ             βδ
+                                                                                                                                   γ            αγ
+                                                                                                                           c0 =      ,   ϕ0 =                                                                                       (5.11)
+                                                                                                                                   δ            βδ
 
 -->
 
@@ -694,7 +694,7 @@ and we see that the Jacobian of the local dynamics described by equations (<a hr
 
                                                                                                       
                                                                                               −δ     0
-                                                                    J ≡ J(c0 , ϕ0 ) =                    ,                                                             (5.12)                              --><a id="Jacob"></a><!--
+                                                                    J ≡ J(c0 , ϕ0 ) =                    ,                                                           (5.12)                                --><a id="Jacob"></a><!--
                                                                                               α     −β
 
 -->
@@ -708,8 +708,8 @@ and we see that the Jacobian of the local dynamics described by equations (<a hr
 </p>
 
 <p>
-which has eigenvalues \(-\delta ,-\beta &lt; 0\) so that \((c_0,\phi _0)\) is stable steady state solution when \(D_c =D_\phi =0\). To trigger aggregation, conditions must be such that a homogenous solution becomes
-unstable to small perturbations when \(D_c,D_\phi \neq 0\). We consider small perturbations of the form
+which has eigenvalues \(-\delta ,-\beta &lt; 0\) so that \((c_0,\phi _0)\) is stable steady state solution when \(D_c =D_\phi = \chi =0\). To trigger aggregation, conditions must be such that a homogenous solution
+becomes unstable to small perturbations when \(D_c,D_\phi \neq 0\). We consider small perturbations of the form
 </p>
 
 <span class="hidden"> \(\seteqnumber{0}{}{12}\)</span>
@@ -717,7 +717,7 @@ unstable to small perturbations when \(D_c,D_\phi \neq 0\). We consider small pe
 <!--
 
 
-                                                                                                         c(x, t) = c0 + C(x, t),           ϕ(x, t) = ϕ0 + Φ(x, t).                                                                  (5.13)
+                                                                                                          c(x, t) = c0 + C(x, t),        ϕ(x, t) = ϕ0 + Φ(x, t).                                                                    (5.13)
 
 -->
 
@@ -738,20 +738,20 @@ Substitution into <a href="SpatInstab.html#amoeba">5.9</a>-<a href="SpatInstab.h
 <!--
 
 
-                                                                                                                                      
-                                                                                                      ∂C   ∂      ∂C               ∂Φ
-                                                                                                         =     Dc     − χ(c0 + C)        − δC
-                                                                                                      ∂t   ∂x     ∂x                ∂x
-                                                                                                             ∂2C                ∂ 2 Φ ∂C ∂Φ
-                                                                                                                                              
-                                                                                                         = Dc 2 − χ (c0 + C) 2 +                 − δC
-                                                                                                             ∂x                 ∂x       ∂x ∂x
-                                                                                                             ∂2C    χγ ∂ 2 Φ
-                                                                                                         ≈ Dc 2 −            − δC
-                                                                                                             ∂x      δ ∂x2
-                                                                                                      ∂Φ     ∂2Φ
-                                                                                                         = Dϕ 2 + αC − βΦ,
-                                                                                                      ∂t     ∂x
+                                                                                                                                        
+                                                                                                        ∂C   ∂      ∂C               ∂Φ
+                                                                                                           =     Dc     − χ(c0 + C)        − δC
+                                                                                                        ∂t   ∂x     ∂x                ∂x
+                                                                                                               ∂2C                ∂ 2 Φ ∂C ∂Φ
+                                                                                                                                                
+                                                                                                           = Dc 2 − χ (c0 + C) 2 +                 − δC
+                                                                                                               ∂x                 ∂x       ∂x ∂x
+                                                                                                               ∂2C    χγ ∂ 2 Φ
+                                                                                                           ≈ Dc 2 −            − δC
+                                                                                                               ∂x      δ ∂x2
+                                                                                                        ∂Φ     ∂2Φ
+                                                                                                           = Dϕ 2 + αC − βΦ,
+                                                                                                        ∂t     ∂x
 
 
 -->
@@ -773,7 +773,7 @@ where, in going from the second to third line, we have neglected second order te
 <!--
 
 
-                                                                                                          C(x, t) = Ĉ(t) cos kx,          Φ(x, t) = Φ̂(t) cos kx,                                                                  (5.14)
+                                                                                                          C(x, t) = Ĉ(t) cos kx,        Φ(x, t) = Φ̂(t) cos kx,                                                                    (5.14)
 
 -->
 
@@ -796,10 +796,10 @@ which (after substituting and dividing through by \(\cos k x\)) gives the follow
 
 
                                                                                                                      dĈ                           χγ
-                                                                                                                         = −δ Ĉ − k 2 Dc Ĉ + k 2 Φ̂                (5.15)                          --><a id="odesystem1"></a><!--
+                                                                                                                         = −δ Ĉ − k 2 Dc Ĉ + k 2 Φ̂              (5.15)                            --><a id="odesystem1"></a><!--
                                                                                                                      dt                             δ
                                                                                                                      dΦ̂
-                                                                                                                         = αĈ − β Φ̂ − k 2 Dϕ Φ̂.                   (5.16)                          --><a id="odesystem2"></a><!--
+                                                                                                                         = αĈ − β Φ̂ − k 2 Dϕ Φ̂.                 (5.16)                            --><a id="odesystem2"></a><!--
                                                                                                                      dt
 
 
@@ -823,17 +823,17 @@ To evaluate the conditions for instability, we first observe that the correspond
 
 <!--
 
-                                                                                                                         
-                                                               −δ     0                  Dc     0               χγ       0   1
-                                                    Jmod =                    − k2                       + k2                   .                                      (5.17)                           --><a id="modJacob"></a><!--
-                                                                α    −β                  0     −Dϕ               δ       0   0
+                                                                                                                      
+                                                                   −δ    0               Dc     0              χγ    0   1
+                                                     Jmod =                      − k2                   + k2                 .                                       (5.17)                             --><a id="modJacob"></a><!--
+                                                                   α    −β                0    Dϕ               δ    0   0
 
 -->
 
 <p>
 
 \begin{equation}
-\label {modJacob} {\bf J}_{\mbox {mod}} = \begin{pmatrix} -\delta &amp; 0 \\ \alpha &amp; -\beta \end {pmatrix} -k^2 \begin{pmatrix} D_c &amp; 0 \\ 0 &amp; -D_\phi \end {pmatrix} + k^2 \frac {
+\label {modJacob} {\bf J}_{\mbox {mod}} = \begin{pmatrix} -\delta &amp; 0 \\ \alpha &amp; -\beta \end {pmatrix} -k^2 \begin{pmatrix} D_c &amp; 0 \\ 0 &amp; D_\phi \end {pmatrix} + k^2 \frac {
 \chi \gamma }{\delta } \begin{pmatrix} 0 &amp; 1 \\ 0 &amp; 0 \end {pmatrix} .
 \end{equation}
 
@@ -868,9 +868,9 @@ which we solve using the quadratic formula to obtain
 
 <!--
 
-                                                                                                             1            q                        
-                                                                                                     λ± =       Tr(Jmod ) ± Tr(Jmod )2 − 4det(Jmod ) .                                                                              (5.19)
-                                                                                                             2
+                                                                                                               1            q                        
+                                                                                                     λ± =         Tr(Jmod ) ± Tr(Jmod )2 − 4det(Jmod ) .                                                                            (5.19)
+                                                                                                               2
 
 -->
 
@@ -892,7 +892,7 @@ From the stability condition \(\mbox {Re}(\lambda _{\pm }) &lt; 0\), we recognis
 <!--
 
 
-                                                                                              Tr(Jmod ) = Tr(J) − k 2 (Dc + Dϕ ) = −(δ + β) − k 2 (Dc + Dϕ ) < 0                                                                    (5.20)
+                                                                                          Tr(Jmod ) = Tr(J) − k 2 (Dc + Dϕ ) = −(δ + β) − k 2 (Dc + Dϕ ) < 0                                                                        (5.20)
 
 -->
 
@@ -941,7 +941,7 @@ the modified Jacobian to be negative is
 <!--
 
                                                 χγα   (δ + k 2 Dc )(β + k 2 Dϕ )
-                                                    >                            .                                                                      (5.21)                                 --><a id="instabcondition"></a><!--
+                                                    >                            .                                                                   (5.21)                                    --><a id="instabcondition"></a><!--
                                                  δ                k2
 
 -->
@@ -2048,18 +2048,18 @@ with associated wavenumbers
 
 <!--
 
-                                                                                                                                         n2   m2
+                                                                                                                                         n2    m2
                                                                                                                                                         
                                                                                                                        2
-                                                                                                                      kn,m = π2             +                .                                                                  (5.64)
-                                                                                                                                         Lx   Ly
+                                                                                                                      kn,m = π2              +               .                                                                  (5.64)
+                                                                                                                                         L2x   L2y
 
 -->
 
 <p>
 
 \begin{equation}
-k_{n,m}^2 = \pi ^2 \left ( \frac {n^2}{L_x} + \frac {m^2}{L_y}\right ) .
+k_{n,m}^2 = \pi ^2 \left ( \frac {n^2}{L_x^2} + \frac {m^2}{L_y^2}\right ) .
 \end{equation}
 
 </p>
