@@ -660,55 +660,34 @@ Here we assume that tissue is arranged cylindrically around a blood vessel (capi
 
 <!--
 
-                                                                                                                   ∂2          ∂2
-                                                                                                                                  
-                                                                                                                         1 ∂
-                                                                                                F0 = ∇ · (D∇c) = D     +     +       c(r, z)                                                                                        (3.10)
-                                                                                                                   ∂r2   r ∂r ∂z 2
+                                                                                                                ∂2          ∂2
+                                                                                                                               
+                                                                                                                      1 ∂
+                                                                                             F0 = ∇ · (D∇c) = D     +     +       c(r, z)                                                           (3.10)--><a id="fullpde"></a><!--
+                                                                                                                ∂r2   r ∂r ∂z 2
 
 -->
 
 <p>
 
 \begin{equation}
-F_0= \nabla \cdot ( D \nabla c) = D \left [ \frac {\partial ^2}{\partial r^2} + \frac {1}{r} \frac {\partial }{\partial r} + \frac {\partial ^2}{\partial z^2} \right ] c(r,z)
+\label {fullpde} F_0= \nabla \cdot ( D \nabla c) = D \left [ \frac {\partial ^2}{\partial r^2} + \frac {1}{r} \frac {\partial }{\partial r} + \frac {\partial ^2}{\partial z^2} \right ] c(r,z)
 \end{equation}
 
 </p>
 
 <p>
-where \(0 \leq z \leq L\), \(R_1 \leq r \leq R_2\) (tissue starts at some radius \(R_1\) and ends at some larger radius \(R_2\), with the tissue-capillary interface at \(r = R_1\)). The boundary conditions on this model are
+where \(0 \leq z \leq L\), \(R_1 \leq r \leq R_2\) (tissue starts at some radius \(R_1\) and ends at some larger radius \(R_2\), with the tissue-capillary interface at \(r = R_1\)). As before, in this model we assume that
+there is no flux of oxygen in or out of tissue at \(r = R_2\), and set mixed boundary conditions
 </p>
 
 <span class="hidden"> \(\seteqnumber{0}{}{10}\)</span>
 
 <!--
 
-                                                                                                               ∂c          ∂c
-                                                                                                                  (r, 0) =    (r, L) = 0                                                                                            (3.11)
-                                                                                                               ∂z          ∂z
-
--->
-
-<p>
-
-\begin{equation}
-\frac {\partial c}{\partial z}(r,0) = \frac {\partial c}{\partial z}(r,L) = 0
-\end{equation}
-
-</p>
-
-<p>
-and
-</p>
-
-<span class="hidden"> \(\seteqnumber{0}{}{11}\)</span>
-
-<!--
-
-                                                                                                                                         ∂c
-                                                                                                         c(R1 , z) = cT (z),                (R2 , z) = 0                                        (3.12)--><a id="conditions"></a><!--
-                                                                                                                                         ∂r
+                                                                                                                                      ∂c
+                                                                                                      c(R1 , z) = cT (z),                (R2 , z) = 0                                           (3.11)--><a id="conditions"></a><!--
+                                                                                                                                      ∂r
 
 -->
 
@@ -721,7 +700,7 @@ and
 </p>
 
 <p>
-where \(c_T(z)\) denotes the concentration of oxygen at position \(z\) of the tissue-capillary interface.
+where \(c_T(z)\) denotes the concentration of oxygen as a function of position \(z\) along the tissue-capillary interface (conditions on \(c\) for the \(z\) direction will be introduced later).
 </p>
 
 <p>
@@ -729,14 +708,14 @@ Oxygen is supplied by blood that flows through the capillary in the centre of th
 direction. This means that, for every fixed value of \(z\), equation <a href="BioTransport.html#tissue">3.8</a> reduces to
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{12}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{11}\)</span>
 
 <!--
 
-                                                                                                                                    
-                                                                                                                 1 d            dc           F0
-                                                                                                                            r            =      ,                                                                                   (3.13)
-                                                                                                                 r dr           dr           D
+                                                                                                                                 
+                                                                                                              1 d            dc           F0
+                                                                                                                         r            =      ,                                                                                      (3.12)
+                                                                                                              r dr           dr           D
 
 -->
 
@@ -752,13 +731,13 @@ direction. This means that, for every fixed value of \(z\), equation <a href="Bi
 which has general solution
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{13}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{12}\)</span>
 
 <!--
 
-                                                                                                                     F0 2
-                                                                                                         c(r, z) =      r + A(z) log r + B(z)                                                                                       (3.14)
-                                                                                                                     4D
+                                                                                                                  F0 2
+                                                                                                      c(r, z) =      r + A(z) log r + B(z)                                                                                          (3.13)
+                                                                                                                  4D
 
 -->
 
@@ -774,14 +753,14 @@ c(r,z) = \frac {F_0}{4D} r^2 + A(z)\log r + B(z)
 since
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{14}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{13}\)</span>
 
 <!--
 
-                                                                                                           
-                                                                                         F0 r   d        dc      dc   F0 2     F0 2
-                                                                                              =        r      ⇒r    =    r +A⇒    r + A log r + B.                                                                                  (3.15)
-                                                                                          D     dr       dr      dr   2D       4D
+                                                                                                        
+                                                                                      F0 r   d        dc      dc   F0 2     F0 2
+                                                                                           =        r      ⇒r    =    r +A⇒    r + A log r + B.                                                                                     (3.14)
+                                                                                       D     dr       dr      dr   2D       4D
 
 -->
 
@@ -794,16 +773,16 @@ since
 </p>
 
 <p>
-Since the boundary conditions <a href="BioTransport.html#conditions">3.12</a> hold for each fixed value of \(z\), we obtain
+Since the boundary conditions <a href="BioTransport.html#conditions">3.11</a> hold for each fixed value of \(z\), we obtain
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{15}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{14}\)</span>
 
 <!--
 
-                                                                                               ∂c            F0      A(z)               F0
-                                                                                          0=      (R2 , z) =    R2 +      ⇒ A(z) = −R22    = const.                                                                                 (3.16)
-                                                                                               ∂r            2D       R2                2D
+                                                                                            ∂c            F0      A(z)               F0
+                                                                                       0=      (R2 , z) =    R2 +      ⇒ A(z) = −R22    = const.                                                                                    (3.15)
+                                                                                            ∂r            2D       R2                2D
 
 -->
 
@@ -818,18 +797,18 @@ Since the boundary conditions <a href="BioTransport.html#conditions">3.12</a> ho
 <p>
 and
 </p>
-<span class="hidden"> \(\seteqnumber{0}{}{16}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{15}\)</span>
 
 
 <!--
 
 
-                                                                                                                     F0 2       F0
-                                                                                               cT (z) = c(R1 , z) =     R − R22    log R1 + B(z)                                                                                    (3.17)
-                                                                                                                    4D 1     2 2D             
-                                                                                                                          F0 R1
-                                                                                                        ⇒ B(z) = cT (z) −         − R22 log R1                                                                                      (3.18)
-                                                                                                                          2D 2
+                                                                                                                  F0 2       F0
+                                                                                            cT (z) = c(R1 , z) =     R − R22    log R1 + B(z)                                                                                       (3.16)
+                                                                                                                 4D 1     2 2D            
+                                                                                                                       F0 R1       2
+                                                                                                     ⇒ B(z) = cT (z) −         − R2 log R1                                                                                          (3.17)
+                                                                                                                       2D 2
 
 
 -->
@@ -843,15 +822,15 @@ c_T(z) &amp;= c(R_1,z) = \frac {F_0}{4D}R^2_1 - R^2_2 \frac {F_0}{2D} \log R_1 +
 so that
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{18}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{17}\)</span>
 
 <!--
 
-                                                            F0 (r2 − R12 )
-                                                                                       
-                                                                                     R1
-                                                c(r, z) =                  + R22 log      + cT (z).                                                        (3.19)                                      --><a id="soltissue"></a><!--
-                                                            2D     2                 r
+                                                          F0 (r2 − R12 )
+                                                                                    
+                                                                            2     R1
+                                                c(r, z) =                + R2 log      + cT (z).                                                        (3.18)                                         --><a id="soltissue"></a><!--
+                                                          2D     2                r
 
 -->
 
@@ -875,12 +854,12 @@ of oxygen within the capillary at point \(z\). Assuming as before that, compared
 reaction-advection equation at steady state
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{19}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{18}\)</span>
 
 <!--
 
                                                                                                       ∂c̄T      ∂c̄T         ∂c
-                                                                                               0=          = −v      + 2πR1 D (R1 , z)                                                                                         (3.20)
+                                                                                               0=          = −v      + 2πR1 D (R1 , z)                                                                                         (3.19)
                                                                                                        ∂t       ∂z           ∂r
 
 -->
@@ -898,12 +877,12 @@ where \(0 \leq z \leq L\), \(R_1 \leq r \leq R_2\). Here \(v\) is the velocity o
 the circumference of the capillary). Equivalently, for \(c_T(z)\) this gives
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{20}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{19}\)</span>
 
 <!--
 
                                                                                                              ∂cT   2D ∂c
-                                                                                                         v       =       (R1 , z)                                                                                              (3.21)
+                                                                                                         v       =       (R1 , z)                                                                                              (3.20)
                                                                                                              ∂z    R1 ∂r
 
 -->
@@ -917,21 +896,21 @@ v \frac {\partial c_T}{\partial z} = \frac {2 D}{R_1} \frac {\partial c}{\partia
 </p>
 
 <p>
-with initial condition \(c_T(0) = c_0\).
+with initial condition \(c_T(0) = c_0\), which corresponds to a fixed concentration of oxygen in the capillary at \(z=0\).
 </p>
 
 <p>
-To evaluate the reaction term explicitly, we differentiate <a href="BioTransport.html#soltissue">3.19</a> with respect to \(r\) at \(r=R_1\) to obtain
+To evaluate the reaction term explicitly, we differentiate <a href="BioTransport.html#soltissue">3.18</a> with respect to \(r\) at \(r=R_1\) to obtain
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{21}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{20}\)</span>
 
 <!--
 
                                                                                                                     R22      F0 (R22 − R12 )
                                                                                                                        
                                                                                   2D ∂c            2D F0                                           VT
-                                                                                        (R1 , z) =             R1 −       =−                 = −F0                                                                             (3.22)
+                                                                                        (R1 , z) =             R1 −       =−                 = −F0                                                                             (3.21)
                                                                                   R1 ∂r            R1 2D            R1            R12              VC
 
 -->
@@ -948,12 +927,12 @@ To evaluate the reaction term explicitly, we differentiate <a href="BioTransport
 where we have identified \(V_T = \pi (R^2_2-R^2_1) L\) and \(V_C = \pi R^2_1 L\) with the volume of the tissue and capillary, respectively. The equation for \(c_T\) then becomes
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{22}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{21}\)</span>
 
 <!--
 
                                                                                                               dcT    F0 VT
-                                                                                                                  =−       ,                                                                                                   (3.23)
+                                                                                                                  =−       ,                                                                                                   (3.22)
                                                                                                                dz    v VC
 
 -->
@@ -970,12 +949,12 @@ where we have identified \(V_T = \pi (R^2_2-R^2_1) L\) and \(V_C = \pi R^2_1 L\)
 which has the solution
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{23}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{22}\)</span>
 
 <!--
 
                                                                                                                           F0 VT
-                                                                                                          cT (z) = c0 −         z.                                                                                             (3.24)
+                                                                                                          cT (z) = c0 −         z.                                                                                             (3.23)
                                                                                                                           v VC
 
 -->
@@ -989,17 +968,17 @@ c_T(z) = c_0 - \frac {F_0 }{v}\frac {V_T}{V_C}z .
 </p>
 
 <p>
-Substitution for \(c_T(z)\) in <a href="BioTransport.html#soltissue">3.19</a> then gives the complete solution for the concentration of oxygen throughout the tissue
+Substitution for \(c_T(z)\) in <a href="BioTransport.html#soltissue">3.18</a> then gives the complete solution for the concentration of oxygen throughout the tissue
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{24}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{23}\)</span>
 
 <!--
 
                                                                                                    F0 (r2 − R12 )
                                                                                                                                        
                                                                                                                             R1   2D VT
-                                                                                       c(r, z) =                  + R22 log    −       z + c0 .                                                                                (3.25)
+                                                                                       c(r, z) =                  + R22 log    −       z + c0 .                                                                                (3.24)
                                                                                                    2D     2                 r     v VC
 
 -->
@@ -1020,16 +999,16 @@ c(r,z) = \frac {F_0}{2D} \left [ \frac {(r^2 - R^2_1)}{2} + R^2_2 \log \frac {R_
 
 <p>
 In the Krogh-Erlang tissue cylinder model the reaction term (in that case the rate of oxygen uptake by tissue) was taken to be perhaps the simplest possible: constant in time and space. We also did not consider temporal dynamics,
-working only with the steady state solutions. The next step up would be to take linear dependance in the concentration variable that could correspond, for example, to a spatio-temporal extension of the exponential growth or decay
+working only with the steady state solutions. The next step up would be to take linear dependence in the concentration variable that could correspond, for example, to a spatio-temporal extension of the exponential growth or decay
 model we considered in the introduction. In the simplest model for exponential growth or decay in time and space we have
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{25}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{24}\)</span>
 
 <!--
 
                                                              ∂c
-                                                                = ∇ · (D∇c) ± kc                                                               (3.26)                                                 --><a id="expgro"></a><!--
+                                                                = ∇ · (D∇c) ± kc                                                               (3.25)                                                 --><a id="expgro"></a><!--
                                                              ∂t
 
 -->
@@ -1047,12 +1026,12 @@ with \(k &gt; 0\) where \(-k c\) corresponds to decay while \(+k c\) to growth, 
 find that \(u\) must satisfy the diffusion equation
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{26}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{25}\)</span>
 
 <!--
 
                                                              ∂u
-                                                                = ∇ · (D∇u).                                                                (3.27)                                                --><a id="diffusion"></a><!--
+                                                                = ∇ · (D∇u).                                                                (3.26)                                                --><a id="diffusion"></a><!--
                                                              ∂t
 
 -->
@@ -1066,7 +1045,7 @@ find that \(u\) must satisfy the diffusion equation
 </p>
 
 <p>
-Thus, the solution of the reaction-diffusion system <a href="BioTransport.html#expgro">3.26</a> is entirely determined by the solution to <a href="BioTransport.html#diffusion">3.27</a> with appropriate boundary
+Thus, the solution of the reaction-diffusion system <a href="BioTransport.html#expgro">3.25</a> is entirely determined by the solution to <a href="BioTransport.html#diffusion">3.26</a> with appropriate boundary
 conditions. While this is something the student has likely studied in previous courses on PDEs, we take the time to revisit here for completeness.
 </p>
 <!--
@@ -1077,15 +1056,15 @@ conditions. While this is something the student has likely studied in previous c
 
 
 <p>
-Taking the diffusion equation <a href="BioTransport.html#diffusion">3.27</a> in one spatial dimension
+Taking the diffusion equation <a href="BioTransport.html#diffusion">3.26</a> in one spatial dimension
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{27}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{26}\)</span>
 
 <!--
 
                                                                                                                                     ∂u   ∂2u
-                                                                                                                                       =D 2                                                                                            (3.28)
+                                                                                                                                       =D 2                                                                                            (3.27)
                                                                                                                                     ∂t   ∂x
 
 -->
@@ -1103,13 +1082,13 @@ we have a range of boundary conditions that correspond to different physical int
 make the re-scaling \(x = \epsilon ^{-a} x^*\), \(t = \epsilon ^{-b} t^*\) and \(u= \epsilon ^{-c} u^*\) for some real numbers \(\epsilon , a, b ,c\) to obtain
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{28}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{27}\)</span>
 
 <!--
 
                                                                                                                                 ∂u∗           ∂ 2 u∗
                                                                                                                          ϵb−c     ∗
-                                                                                                                                    = Dϵ2a−c                                                                                           (3.29)
+                                                                                                                                    = Dϵ2a−c                                                                                           (3.28)
                                                                                                                                 ∂t           ∂(x∗ )2
 
 -->
@@ -1127,12 +1106,12 @@ and see that we must have \(b = 2a\) for the PDE to remain unchanged. This impli
 particular, since
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{29}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{28}\)</span>
 
 <!--
 
 
-                                                                                   u∗ (t∗ )−c/b = uϵc (tϵb )−c/b = ut−c/b                 and x∗ (t∗ )−a/b = xϵa (tϵb )−a/b = xt−a/b                                                   (3.30)
+                                                                                   u∗ (t∗ )−c/b = uϵc (tϵb )−c/b = ut−c/b                 and x∗ (t∗ )−a/b = xϵa (tϵb )−a/b = xt−a/b                                                   (3.29)
 
 -->
 
@@ -1148,12 +1127,12 @@ u^*(t^*)^{-c/b} = u\epsilon ^c(t \epsilon ^b)^{-c/b} = u t^{-c/b} \quad \mbox {a
 we postulate that a solution that combines these variables would be suitable, which leads to the ansatz
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{30}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{29}\)</span>
 
 <!--
 
 
-                                                                                                                           u(x, t) = tc/b f (xt−a/b ).                                                                                 (3.31)
+                                                                                                                           u(x, t) = tc/b f (xt−a/b ).                                                                                 (3.30)
 
 -->
 
@@ -1169,12 +1148,12 @@ u(x, t) = t^{c/b} f(x t^{-a/b}) .
 Using the condition \(b = 2a\) this is
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{31}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{30}\)</span>
 
 <!--
 
                                                                                                                                              x
-                                                                                                                     u = tc/b f (z) with z = √ .                                                                                       (3.32)
+                                                                                                                     u = tc/b f (z) with z = √ .                                                                                       (3.31)
                                                                                                                                               t
 
 -->
@@ -1190,7 +1169,7 @@ u = t^{c/b} f(z) \quad \mbox {with} \quad z = \frac {x}{\sqrt {t}} .
 <p>
 Substituting we have
 </p>
-<span class="hidden"> \(\seteqnumber{0}{}{32}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{31}\)</span>
 
 
 <!--
@@ -1222,7 +1201,7 @@ f}{dz} \right )
 and
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{32}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{31}\)</span>
 
 <!--
 
@@ -1249,7 +1228,7 @@ z}{\partial x^2} \frac {d f}{dz}= t^{c/b-1} \frac {d^2 f}{dz^2}
 such that
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{32}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{31}\)</span>
 
 <!--
 
@@ -1257,7 +1236,7 @@ such that
                                                                              
                                                        1                                     1 df  c
                                                 0=                D 2−            =D      2
-                                                                                            + z   − f (z).                                                                                     (3.33)    --><a id="secondODE"></a><!--
+                                                                                            + z   − f (z).                                                                                     (3.32)    --><a id="secondODE"></a><!--
                                                      tc/b−1        ∂x    ∂t            dz    2 dz  b
 
 -->
@@ -1280,12 +1259,12 @@ Turning to the set of boundary and initial value conditions we could have origin
 domain \(x \in [0,\infty )\) with the following boundary conditions
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{33}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{32}\)</span>
 
 <!--
 
 
-                                                                                                        u(0, t) = u0            and u(x, t) → 0 as x → ∞                                                                               (3.34)
+                                                                                                        u(0, t) = u0            and u(x, t) → 0 as x → ∞                                                                               (3.33)
 
 -->
 
@@ -1301,12 +1280,12 @@ u(0,t) = u_0 \quad \mbox {and} \quad u(x, t ) \to 0 \quad \mbox {as} \quad x \to
 with initial condition
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{34}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{33}\)</span>
 
 <!--
 
 
-                                                                                                                         u(x, 0) = 0 for all x > 0.                                                                                    (3.35)
+                                                                                                                         u(x, 0) = 0 for all x > 0.                                                                                    (3.34)
 
 -->
 
@@ -1323,12 +1302,12 @@ In terms of the original variable \(c(x,t) = e^{-kt} u(x,t)\) (here for decay), 
 exponentially according to \(c(0,t) = c_0 e^{-kt}\) while also diffusing outward into regions with \(x &gt; 0\) (e.g., into a tissue). In terms of the new variables, we have
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{35}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{34}\)</span>
 
 <!--
 
 
-                                                                                                   tc/b f (0) = u0              and tc/b f (z) → 0 as z → ∞,                                                                           (3.36)
+                                                                                                   tc/b f (0) = u0              and tc/b f (z) → 0 as z → ∞,                                                                           (3.35)
 
 -->
 
@@ -1344,12 +1323,12 @@ t^{c/b} f(0) = u_0 \quad \mbox {and} \quad t^{c/b} f(z) \to 0 \quad \mbox {as} \
 which implies that we must have \(c/b = 0\) and \(u = f(z)\) with \(f\) satisfying
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{36}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{35}\)</span>
 
 <!--
 
                                                                                                                                  d2 f  1 df
-                                                                                                                             D        + z   = 0.                                                                                       (3.37)
+                                                                                                                             D        + z   = 0.                                                                                       (3.36)
                                                                                                                                  dz 2  2 dz
 
 -->
@@ -1366,13 +1345,13 @@ D \frac {d^2 f}{dz^2} + \frac {1}{2} z \frac {df}{dz} = 0 .
 Treating this as a first-order ODE for \(df/dz\) and integrating once we obtain
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{37}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{36}\)</span>
 
 <!--
 
                                                                                                                                    Z
                                                                                                                 df               1                                 1 2
-                                                                                                   log                   =−               zdz + C1 = −               z + C1 ,                                                          (3.38)
+                                                                                                   log                   =−               zdz + C1 = −               z + C1 ,                                                          (3.37)
                                                                                                                 dz              2D                                4D
 
 -->
@@ -1389,14 +1368,14 @@ Treating this as a first-order ODE for \(df/dz\) and integrating once we obtain
 or
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{38}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{37}\)</span>
 
 <!--
 
                                                                                                                                            z2
                                                                                                                                              
                                                                                                                           df
-                                                                                                                             (z) = A exp −      ,                                                                                      (3.39)
+                                                                                                                             (z) = A exp −      ,                                                                                      (3.38)
                                                                                                                           dz               4D
 
 -->
@@ -1413,14 +1392,14 @@ or
 which we can integrate again to yield the general solution
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{39}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{38}\)</span>
 
 <!--
 
                                                                                                                   z2                                    √
                                                                                                         Z                                                                          
                                                                                                                                                                                  z
-                                                                                            f (z) = A       exp −                   dz + C2 = A Dπ · erf                         √        + C2 ,                                       (3.40)
+                                                                                            f (z) = A       exp −                   dz + C2 = A Dπ · erf                         √        + C2 ,                                       (3.39)
                                                                                                                   4D                                                            2 D
 
 -->
@@ -1438,13 +1417,13 @@ where \(\mbox {erf}\) is the Gauss error function. The boundary conditions \(f(0
 {erf}(0) = 0\) and \(\mbox {erf}(z) \to 1\) as \(z \to \infty \). Thus, substituting \(z = x/\sqrt {t}\) we have that
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{40}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{39}\)</span>
 
 <!--
 
                                                                                                                                                
                                                                                                                                               x
-                                                                                                                     u(x, t) = u0 1 − erf    √                                                                                         (3.41)
+                                                                                                                     u(x, t) = u0 1 − erf    √                                                                                         (3.40)
                                                                                                                                             2 Dt
 
 -->
@@ -1461,13 +1440,13 @@ u(x,t) = u_0 \left [1- \mbox {erf}\left ( \frac {x}{2\sqrt {Dt}}\right ) \right 
 and in terms of the original variable
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{41}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{40}\)</span>
 
 <!--
 
                                                                                                                                                         
                                                                                                                                     −kt                x
-                                                                                                                c(x, t) = c0 e             1 − erf    √      .                                                                         (3.42)
+                                                                                                                c(x, t) = c0 e             1 − erf    √      .                                                                         (3.41)
                                                                                                                                                      2 Dt
 
 -->
@@ -1485,12 +1464,12 @@ In the above, we took a particular set of boundary conditions on the half-interv
 )\). In this case, we have
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{42}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{41}\)</span>
 
 <!--
 
 
-                                                                                                   u(x, t) → 0 as x → ±∞ and u(x, 0) = δ(x)                                                                                            (3.43)
+                                                                                                   u(x, t) → 0 as x → ±∞ and u(x, 0) = δ(x)                                                                                            (3.42)
 
 -->
 
@@ -1507,13 +1486,13 @@ where \(\delta (x)\) is the Dirac delta function (for a point source at \(0\)). 
 and imposing that the solution must decay as we go infinitely far away from it. To determine the value of \(c/b\) in this case, we use the definition of a mollifier<sup>2</sup> as a function \(f\) that satisfies
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{43}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{42}\)</span>
 
 <!--
 
                                                                                                         Z ∞
                                                                                                                                                      1 x
-                                                                                                                f (x)dx = 1 and                 lim    f   = δ(x)                                                                      (3.44)
+                                                                                                                f (x)dx = 1 and                 lim    f   = δ(x)                                                                      (3.43)
                                                                                                          −∞                                     τ →0 τ   τ
 
 -->
@@ -1530,13 +1509,13 @@ and imposing that the solution must decay as we go infinitely far away from it. 
 to see that, in terms of the \(f\) we used before, the initial condition
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{44}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{43}\)</span>
 
 <!--
 
                                                                                                                                                                            
                                                                                                                                                         c/b           x
-                                                                                                                δ(x) = lim u(x, t) = lim t                    f       √                                                                (3.45)
+                                                                                                                δ(x) = lim u(x, t) = lim t                    f       √                                                                (3.44)
                                                                                                                            t→0                  t→0                     t
 
 -->
@@ -1553,7 +1532,7 @@ to see that, in terms of the \(f\) we used before, the initial condition
 will be satisfied if \(f\) is a mollifier and \(c/b = -1/2\). Thus, in terms of \(z\), the corresponding \(f\) must satisfy the second-order ODE
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{45}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{44}\)</span>
 
 <!--
 
@@ -1561,7 +1540,7 @@ will be satisfied if \(f\) is a mollifier and \(c/b = -1/2\). Thus, in terms of 
                                                                                                                                                                                            
                                                                                                     1 df  1              1 d           d                                            df  1
                                                                                         0=D      2
-                                                                                                   + z   + f (z) = D 2 +      zf (z) =                                            D    + zf                                            (3.46)
+                                                                                                   + z   + f (z) = D 2 +      zf (z) =                                            D    + zf                                            (3.45)
                                                                                               dz    2 dz  2         dz   2 dz          dz                                           dz  2
 
 -->
@@ -1579,12 +1558,12 @@ will be satisfied if \(f\) is a mollifier and \(c/b = -1/2\). Thus, in terms of 
 or, equivalently,
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{46}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{45}\)</span>
 
 <!--
 
                                                                                                                                     df  1
-                                                                                                                                D      + zf = C1                                                                                       (3.47)
+                                                                                                                                D      + zf = C1                                                                                       (3.46)
                                                                                                                                     dz  2
 
 -->
@@ -1601,14 +1580,14 @@ D \frac {d f}{dz} + \frac {1}{2}z f = C_1
 for some constant \(C_1\) that we are free to take as \(C_1 = 0\) since we are looking for just one solution. Solving the resulting first-order ODE we have
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{47}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{46}\)</span>
 
 <!--
 
                                                                                                                                                                   z2
                                                                                                                                      Z
                                                                                                                         1
-                                                                                                         log f (z) = −                    zdz + C2 = −               + C2                                                              (3.48)
+                                                                                                         log f (z) = −                    zdz + C2 = −               + C2                                                              (3.47)
                                                                                                                        2D                                         4D
 
 -->
@@ -1625,13 +1604,13 @@ for some constant \(C_1\) that we are free to take as \(C_1 = 0\) since we are l
 and therefore
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{48}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{47}\)</span>
 
 <!--
 
                                                                                                                                            z2
                                                                                                                                              
-                                                                                                                           f (z) = A exp −      .                                                                                      (3.49)
+                                                                                                                           f (z) = A exp −      .                                                                                      (3.48)
                                                                                                                                            4D
 
 -->
@@ -1648,7 +1627,7 @@ f(z) = A \exp \left ( -\frac {z^2}{4D}\right ) .
 Using
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{49}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{48}\)</span>
 
 <!--
 
@@ -1656,7 +1635,7 @@ Using
                                                                                                                            z2
                                                                                                                                  Z ∞                                    √
                                                                                                                                                              
-                                                                                                1=    f (z)dz =    A exp −                                        dz = 2 πDA                                                           (3.50)
+                                                                                                1=    f (z)dz =    A exp −                                        dz = 2 πDA                                                           (3.49)
                                                                                                    −∞           −∞         4D
 
 -->
@@ -1673,14 +1652,14 @@ Using
 we find that \(A = 1/\sqrt {4 \pi D}\) and from \(u(x,t) = f(x/\sqrt {t}) /\sqrt {t}\) we have the solution
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{50}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{49}\)</span>
 
 <!--
 
                                                                                                                                           x2
                                                                                                                                             
                                                                                                                                1
-                                                                                                                  u(x, t) = √      exp −       .                                                                                       (3.51)
+                                                                                                                  u(x, t) = √      exp −       .                                                                                       (3.50)
                                                                                                                               4πDt       4Dt
 
 -->
@@ -1697,14 +1676,14 @@ u(x,t) = \frac {1}{\sqrt {4 \pi D t}} \exp \left ( - \frac {x^2}{4Dt}\right ) .
 We recognise this as the fundamental solution in dimension \(d=1\) introduced for the corresponding boundary problem previously. The full solution in terms of the original variable is
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{51}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{50}\)</span>
 
 <!--
 
                                                                                                                                                    x2
                                                                                                                                                      
                                                                                                                                      1
-                                                                                                                c(x, t) = √              exp kt −       ,                                                                              (3.52)
+                                                                                                                c(x, t) = √              exp kt −       ,                                                                              (3.51)
                                                                                                                                     4πDt          4Dt
 
 -->
@@ -1742,12 +1721,12 @@ region of space. We shall consider two types of boundary conditions: perfectly r
 the Neumann condition at boundary \(\partial B\) that
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{52}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{51}\)</span>
 
 <!--
 
 
-                                                                                                               ∇c · n|∂B = 0                                                                                                    (3.53)
+                                                                                                               ∇c · n|∂B = 0                                                                                                    (3.52)
 
 -->
 
@@ -1763,12 +1742,12 @@ the Neumann condition at boundary \(\partial B\) that
 where \(\bf n\) is the outward normal direction from \(\partial B\). By comparison, the perfectly absorbing boundary condition is the Dirichlet condition
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{53}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{52}\)</span>
 
 <!--
 
 
-                                                                                                                    c|∂B = 0.                                                                                                   (3.54)
+                                                                                                                    c|∂B = 0.                                                                                                   (3.53)
 
 -->
 
@@ -1788,14 +1767,14 @@ We can use linear combinations of the fundamental solution over infinite spatial
 In one spatial dimension, we take \(\psi (x-x_0,t)\) to be our fundamental solution derived in the previous subsection corresponding to a point source at \(x_0 &gt; 0\). That is to say,
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{54}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{53}\)</span>
 
 <!--
 
                                                                                                                                  (x − x0 )2
                                                                                                                                            
                                                                                                                     1
-                                                                                               ψ(x − x0 , t) = √        exp kt −              .                                                                                 (3.55)
+                                                                                               ψ(x − x0 , t) = √        exp kt −              .                                                                                 (3.54)
                                                                                                                    4πDt             4Dt
 
 -->
@@ -1812,12 +1791,12 @@ In one spatial dimension, we take \(\psi (x-x_0,t)\) to be our fundamental solut
 First consider a perfectly reflecting boundary at the point \(x = 0\), which means
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{55}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{54}\)</span>
 
 <!--
 
                                                                                                                    ∂c
-                                                                                                                          = 0.                                                                                                  (3.56)
+                                                                                                                          = 0.                                                                                                  (3.55)
                                                                                                                    ∂x x=0
 
 -->
@@ -1834,12 +1813,12 @@ First consider a perfectly reflecting boundary at the point \(x = 0\), which mea
 We can show that \(c(x,t) = \psi (x-x_0,t) + \psi (-x-x_0,t)\) satisfies this boundary condition on the interval \([0, \infty )\) since
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{56}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{55}\)</span>
 
 <!--
 
                                                                            ∂ψ(x − x0 , t)       ∂ψ(−x − x0 , t)       ∂ψ(z, t)         ∂ψ(z ′ , t)
-                                                                                              +                     =                −                      =0                                                                  (3.57)
+                                                                                              +                     =                −                      =0                                                                  (3.56)
                                                                                ∂x         x=0       ∂x          x=0     ∂z     z=−x0     ∂z ′      z ′ =−x0
 
 
@@ -1856,17 +1835,17 @@ We can show that \(c(x,t) = \psi (x-x_0,t) + \psi (-x-x_0,t)\) satisfies this bo
 
 <p>
 where we made substitutions \(z = x- x_0\) in the first term and \(z&apos; = -x - x_0\) in the second. Then, since linear superposition returns another solution to a linear differential equation, the linear combination is also
-solution to <a href="BioTransport.html#expgro">3.26</a>
+solution to <a href="BioTransport.html#expgro">3.25</a>
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{57}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{56}\)</span>
 
 <!--
 
                                                                                                                   (x − x0 )2           (x + x0 )2
                                                                                                                                               
                                                                                                1
-                                                                                c(x, t) = √        exp(±kt) exp −              + exp −               .                                                                          (3.58)
+                                                                                c(x, t) = √        exp(±kt) exp −              + exp −               .                                                                          (3.57)
                                                                                               4πDt                   4Dt                  4Dt
 
 -->
@@ -1883,12 +1862,12 @@ c(x,t) = \frac {1}{\sqrt {4 \pi D t}} \exp (\pm kt) \left [ \exp \left (-\frac {
 For a perfectly absorbing boundary condition at \(x=0\) it is easy to see that \(c(x,t) = \psi (x-x_0,t) - \psi (-x-x_0,t)\) provides a solution on the interval \([0, \infty )\) since
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{58}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{57}\)</span>
 
 <!--
 
 
-                                                                                                    c(0, t) = ψ(−x0 , t) − ψ(−x0 , t) = 0                                                                                       (3.59)
+                                                                                                    c(0, t) = ψ(−x0 , t) − ψ(−x0 , t) = 0                                                                                       (3.58)
 
 -->
 
@@ -1904,14 +1883,14 @@ c(0,t) = \psi (-x_0,t) - \psi (-x_0,t) = 0
 and therefore
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{59}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{58}\)</span>
 
 <!--
 
                                                                                                                   (x − x0 )2           (x + x0 )2
                                                                                                                                               
                                                                                                1
-                                                                                c(x, t) = √        exp(±kt) exp −              − exp −               .                                                                          (3.60)
+                                                                                c(x, t) = √        exp(±kt) exp −              − exp −               .                                                                          (3.59)
                                                                                               4πDt                   4Dt                  4Dt
 
 -->
@@ -1929,14 +1908,14 @@ When we move to higher dimensions we can use the fundamental solution in dimensi
 corresponding to a point source at \((0,y_0)\) is given by
 </p>
 
-<span class="hidden"> \(\seteqnumber{0}{}{60}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{59}\)</span>
 
 <!--
 
                                                                                                                            x2 + (y − y0 )2
                                                                                                                                           
                                                                                                                1
-                                                                                          ψ(x, y − y0 , t) =      exp kt −                   .                                                                                  (3.61)
+                                                                                          ψ(x, y − y0 , t) =      exp kt −                   .                                                                                  (3.60)
                                                                                                              4πDt               4Dt
 
 -->
@@ -1952,7 +1931,7 @@ corresponding to a point source at \((0,y_0)\) is given by
 <p>
 If we take a perfectly reflecting boundary at the line \(y = 0\), the corresponding superposition solution corresponds to
 </p>
-<span class="hidden"> \(\seteqnumber{0}{}{61}\)</span>
+<span class="hidden"> \(\seteqnumber{0}{}{60}\)</span>
 
 
 <!--
