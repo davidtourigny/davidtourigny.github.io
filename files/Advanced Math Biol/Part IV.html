@@ -509,9 +509,9 @@ The problem Fisher posed was to search for solutions to equation <a href="TravWa
 new mutant arising at one end, and the traveling wave representing the propagation of this mutant along the shore line as it begins to dominate the population. If \(u(x,t)\) represents the frequency of this mutant allele at time
 \(t\) and distance \(x\) from where the mutant emerged, then the extreme cases \(u = 0\) (no member of the population carries the mutation) and \(u = 1\) (all members of the population carry the mutation) are precisely the
 homogenous steady states (constant in time and space) of this system. The traveling wave is then one that “switches” between these two homogenous steady states, as it moves up (or down) the shore line: at time \(t= 0\) it starts
-with \(u(x,0) = 1\) for all \(x &lt; x_0\) and \(u(x,0)= 0\) for all \(x &gt; x_0\) (\(x_0\) being the point beyond which the mutation remains constrained at the initial time). A traveling wave solution then means one that
-satisfies the ansatz \(u(x,t) = U(z)\) with \(z\equiv x - s t\) for some wave speed \(s &gt;0\). If we advance one unit of time then the solution at \(t=1\) is given by \(u(x - s)\), which is just the initial solution \(u(x)\)
-advanced by \(s\). In the next subsection we will characterise such solutions.
+with \(u(x,0) = 1\) for all \(x \leq x_1\) for some \(x_1\) and \(u(x,0)= 0\) for all \(x \geq x_2 &gt; x_1\) while continuous on the interval \((x_1,x_2)\). A traveling wave solution then means one that satisfies the
+ansatz \(u(x,t) = U(z)\) with \(z\equiv x - s t\) for some wave speed \(s &gt;0\). If we advance one unit of time then the solution at \(t=1\) is given by \(u(x - s)\), which is just the initial solution \(u(x)\) advanced by
+\(s\). In the next subsection we will characterise such solutions.
 </p>
 <!--
 ...... subsection Phase-plane method for traveling waves ......
@@ -803,8 +803,8 @@ Recalling once more that \(U(z) = u(x-st)\), we can identify the nature of this 
 <p>
 By studying the eigenvalues of the linearised system obtained after assuming a traveling wave solution to the FKPP equation <a href="TravWaves.html#fisher">4.3</a>, we used a physical argument to justify that we must have
 a minimum wave speed, \(s \geq 2\). Fisher and Kolmogrov actually argued something slightly stronger, proving that, for the initial conditions presented in the first subsection, \(u(x,t)\) tends to a travelling wave solution with
-wave speed \(s = 2\). Recall these initial conditions are such that at time \(t= 0\) the solution satisfies \(u(x,0)= 0\) for all \(x &gt; x_0\) for some \(x_0\), and \(u(x,0)= 0\) for all \(x &gt; x_0\). We will not be able to
-go through the entire proof here, but use some intuition to illustrate.
+wave speed \(s = 2\). Recall these initial conditions are localised in space such that at time \(t= 0\) the solution satisfies \(u(x,0)= 0\) for all \(x &gt; x_0 \) for some \(x_0\). We will not be able to go through the entire
+proof here, but use some intuition to illustrate.
 </p>
 
 <p>
@@ -862,7 +862,7 @@ between the linear and nonlinear solutions, and find that is must satisfy \(\del
 </p>
 
 <p>
-and by construction we have \(\delta u \geq 0 \) at \(t=0\). Thus, \(u\) is bounded by \(\hat {u}\) for all time.
+(think just diffusion and linear growth) and by construction we have \(\delta u \geq 0 \) at \(t=0\). Thus, \(u\) is bounded by \(\hat {u}\) for all time.
 </p>
 
 <p>
