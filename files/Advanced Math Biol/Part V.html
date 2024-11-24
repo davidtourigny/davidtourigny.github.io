@@ -596,7 +596,7 @@ concentration of amoeba \(c\) and synthesis and degradation rate constants \(\al
 <!--
 
                                                                                                                                  dϕ
-                                                                                                                                    = αc − βϕ.                                                     (5.7)--><a id="camptime"></a><!--
+                                                                                                                                    = αc − βϕ.                                                   (5.7)--><a id="camptime"></a><!--
                                                                                                                                  dt
 
 -->
@@ -618,7 +618,7 @@ Furthermore, assuming amoebae are produced at some constant rate \(\gamma \) and
 <!--
 
                                                                                                                                  dc
-                                                                                                                                    = γ − δc.                                                   (5.8)--><a id="amoebatime"></a><!--
+                                                                                                                                    = γ − δc.                                                  (5.8)--><a id="amoebatime"></a><!--
                                                                                                                                  dt
 
 -->
@@ -641,10 +641,10 @@ Allowing for spatial variation including transport by both diffusion and chemota
 
 
                                                                                                                     ∂c
-                                                                                                                       = ∇ · (Dc ∇c − χc∇ϕ) + γ − δc                 (5.9)                                --><a id="amoeba"></a><!--
+                                                                                                                       = ∇ · (Dc ∇c − χc∇ϕ) + γ − δc                 (5.9)                               --><a id="amoeba"></a><!--
                                                                                                                     ∂t
                                                                                                                     ∂ϕ
-                                                                                                                       = ∇ · (Dϕ ∇ϕ) + αc − βϕ                        (5.10)                                --><a id="camp"></a><!--
+                                                                                                                       = ∇ · (Dϕ ∇ϕ) + αc − βϕ                        (5.10)                               --><a id="camp"></a><!--
                                                                                                                     ∂t
 
 
@@ -661,8 +661,8 @@ where we have introduced separate diffusion coefficients for amoeba (\(D_c\)) an
 </p>
 
 <p>
-To understand the aggregation of slime molds, we are interested in solutions where \(c\) is not homogenous in space. For simplicity, we model a one-dimensional spatial domain parametrised by \(x\). A homogenous solution to the
-coupled system (<a href="SpatInstab.html#amoeba">5.9</a>-<a href="SpatInstab.html#camp">5.10</a>) at steady state is one where \(c(x,t) = c_0 \), \(\phi (x,t) = \phi _0 \), i.e. concentrations of both amoeba
+To understand the aggregation of slime molds, we are interested in solutions where \(c\) is not homogeneous in space. For simplicity, we model a one-dimensional spatial domain parametrised by \(x\). A homogeneous solution to
+the coupled system (<a href="SpatInstab.html#amoeba">5.9</a>-<a href="SpatInstab.html#camp">5.10</a>) at steady state is one where \(c(x,t) = c_0 \), \(\phi (x,t) = \phi _0 \), i.e. concentrations of both amoeba
 and cAMP are constant in space and time. In particular, this implies that
 </p>
 
@@ -671,7 +671,7 @@ and cAMP are constant in space and time. In particular, this implies that
 <!--
 
                                                                                                                                    γ            αγ
-                                                                                                                           c0 =      ,   ϕ0 =                                                                                       (5.11)
+                                                                                                                           c0 =      ,   ϕ0 =                                                                                     (5.11)
                                                                                                                                    δ            βδ
 
 -->
@@ -694,7 +694,7 @@ and we see that the Jacobian of the local dynamics described by equations (<a hr
 
                                                                                                       
                                                                                               −δ     0
-                                                                    J ≡ J(c0 , ϕ0 ) =                    ,                                                           (5.12)                                --><a id="Jacob"></a><!--
+                                                                    J ≡ J(c0 , ϕ0 ) =                    ,                                                           (5.12)                               --><a id="Jacob"></a><!--
                                                                                               α     −β
 
 -->
@@ -708,7 +708,7 @@ and we see that the Jacobian of the local dynamics described by equations (<a hr
 </p>
 
 <p>
-which has eigenvalues \(-\delta ,-\beta &lt; 0\) so that \((c_0,\phi _0)\) is stable steady state solution when \(D_c =D_\phi = \chi =0\). To trigger aggregation, conditions must be such that a homogenous solution
+which has eigenvalues \(-\delta ,-\beta &lt; 0\) so that \((c_0,\phi _0)\) is stable steady state solution when \(D_c =D_\phi = \chi =0\). To trigger aggregation, conditions must be such that a homogeneous solution
 becomes unstable to small perturbations when \(D_c,D_\phi \neq 0\). We consider small perturbations of the form
 </p>
 
@@ -717,7 +717,7 @@ becomes unstable to small perturbations when \(D_c,D_\phi \neq 0\). We consider 
 <!--
 
 
-                                                                                                          c(x, t) = c0 + C(x, t),        ϕ(x, t) = ϕ0 + Φ(x, t).                                                                    (5.13)
+                                                                                                          c(x, t) = c0 + C(x, t),        ϕ(x, t) = ϕ0 + Φ(x, t).                                                                  (5.13)
 
 -->
 
@@ -773,7 +773,7 @@ where, in going from the second to third line, we have neglected second order te
 <!--
 
 
-                                                                                                          C(x, t) = Ĉ(t) cos kx,        Φ(x, t) = Φ̂(t) cos kx,                                                                    (5.14)
+                                                                                                          C(x, t) = Ĉ(t) cos kx,        Φ(x, t) = Φ̂(t) cos kx,                                                                  (5.14)
 
 -->
 
@@ -796,10 +796,10 @@ which (after substituting and dividing through by \(\cos k x\)) gives the follow
 
 
                                                                                                                      dĈ                           χγ
-                                                                                                                         = −δ Ĉ − k 2 Dc Ĉ + k 2 Φ̂              (5.15)                            --><a id="odesystem1"></a><!--
+                                                                                                                         = −δ Ĉ − k 2 Dc Ĉ + k 2 Φ̂              (5.15)                           --><a id="odesystem1"></a><!--
                                                                                                                      dt                             δ
                                                                                                                      dΦ̂
-                                                                                                                         = αĈ − β Φ̂ − k 2 Dϕ Φ̂.                 (5.16)                            --><a id="odesystem2"></a><!--
+                                                                                                                         = αĈ − β Φ̂ − k 2 Dϕ Φ̂.                 (5.16)                           --><a id="odesystem2"></a><!--
                                                                                                                      dt
 
 
@@ -812,7 +812,7 @@ which (after substituting and dividing through by \(\cos k x\)) gives the follow
 \label {odesystem1} \frac {d\hat {C}}{dt} &amp;= - \delta \hat {C}-k^2 D_c \hat {C} + k^2 \frac { \chi \gamma }{\delta } \hat {\Phi } \\ \label {odesystem2} \frac {d\hat {\Phi }}{dt} &amp;=
 \alpha \hat {C} - \beta \hat {\Phi }- k^2 D_\phi \hat {\Phi }.
 \end{align}
-The stability of this linear system therefore determines the stability of the homogenous steady state of the system (<a href="SpatInstab.html#amoeba">5.9</a>-<a href="SpatInstab.html#camp">5.10</a>).
+The stability of this linear system therefore determines the stability of the homogeneous steady state of the system (<a href="SpatInstab.html#amoeba">5.9</a>-<a href="SpatInstab.html#camp">5.10</a>).
 </p>
 
 <p>
@@ -825,7 +825,7 @@ To evaluate the conditions for instability, we first observe that the correspond
 
                                                                                                                       
                                                                    −δ    0               Dc     0              χγ    0   1
-                                                     Jmod =                      − k2                   + k2                 .                                       (5.17)                             --><a id="modJacob"></a><!--
+                                                     Jmod =                      − k2                   + k2                 .                                       (5.17)                           --><a id="modJacob"></a><!--
                                                                    α    −β                0    Dϕ               δ    0   0
 
 -->
@@ -848,7 +848,7 @@ As usual, the conditions for the stability of \((c_0, \phi _0)\) are determined 
 <!--
 
 
-                                                                                                    det(Jmod − λ1) = λ2 − Tr(Jmod )λ + det(Jmod ) = 0,                                                                              (5.18)
+                                                                                                    det(Jmod − λ1) = λ2 − Tr(Jmod )λ + det(Jmod ) = 0,                                                                            (5.18)
 
 -->
 
@@ -869,7 +869,7 @@ which we solve using the quadratic formula to obtain
 <!--
 
                                                                                                                1            q                        
-                                                                                                     λ± =         Tr(Jmod ) ± Tr(Jmod )2 − 4det(Jmod ) .                                                                            (5.19)
+                                                                                                     λ± =         Tr(Jmod ) ± Tr(Jmod )2 − 4det(Jmod ) .                                                                          (5.19)
                                                                                                                2
 
 -->
@@ -892,7 +892,7 @@ From the stability condition \(\mbox {Re}(\lambda _{\pm }) &lt; 0\), we recognis
 <!--
 
 
-                                                                                          Tr(Jmod ) = Tr(J) − k 2 (Dc + Dϕ ) = −(δ + β) − k 2 (Dc + Dϕ ) < 0                                                                        (5.20)
+                                                                                          Tr(Jmod ) = Tr(J) − k 2 (Dc + Dϕ ) = −(δ + β) − k 2 (Dc + Dϕ ) < 0                                                                      (5.20)
 
 -->
 
@@ -932,8 +932,8 @@ quadratic in the variable \(k^2\)
 \mbox {det}({\bf J}_{\mbox {mod}} ) &amp;= (\delta + k^2D_c)(\beta + k^2 D_\phi ) - k^2 \frac {\chi \gamma \alpha }{\delta } \\ &amp;= (k^2)^2D_cD_\phi + k^2\left (D_c \beta + D_\phi \delta -
 \frac {\chi \gamma \alpha }{\delta }\right ) + \delta \beta
 \end{align*}
-and, if it remains positive for all values of \(k^2\), then the homogenous steady state remains stable. However, if it becomes negative for some value of \(k^2\) then we have a spatial instability. The condition for the determinant of
-the modified Jacobian to be negative is
+and, if it remains positive for all values of \(k^2\), then the homogeneous steady state remains stable. However, if it becomes negative for some value of \(k^2\) then we have a spatial instability. The condition for the determinant
+of the modified Jacobian to be negative is
 </p>
 
 <span class="hidden"> \(\seteqnumber{0}{}{20}\)</span>
@@ -941,7 +941,7 @@ the modified Jacobian to be negative is
 <!--
 
                                                 χγα   (δ + k 2 Dc )(β + k 2 Dϕ )
-                                                    >                            .                                                                   (5.21)                                    --><a id="instabcondition"></a><!--
+                                                    >                            .                                                                   (5.21)                                   --><a id="instabcondition"></a><!--
                                                  δ                k2
 
 -->
@@ -1009,10 +1009,10 @@ respectively. By now, we already know very well what such a system looks like ma
 
 
                                                                                                           ∂u
-                                                                                                             = ∇ · (Du ∇u) + f (u, v)                                    (5.22)                          --><a id="fullu"></a><!--
+                                                                                                             = ∇ · (Du ∇u) + f (u, v)                                    (5.22)                         --><a id="fullu"></a><!--
                                                                                                           ∂t
                                                                                                           ∂v
-                                                                                                             = ∇ · (Dv ∇v) + g(u, v)                                     (5.23)                          --><a id="fullv"></a><!--
+                                                                                                             = ∇ · (Dv ∇v) + g(u, v)                                     (5.23)                         --><a id="fullv"></a><!--
                                                                                                           ∂t
 
 
@@ -1025,16 +1025,16 @@ respectively. By now, we already know very well what such a system looks like ma
 \label {fullu} \frac {\partial u}{\partial t} &amp;= \nabla \cdot ( D_u \nabla u ) + f(u,v) \\ \label {fullv} \frac {\partial v}{\partial t} &amp;= \nabla \cdot ( D_v \nabla v) + g(u,v)
 \end{align}
 where \(f,g: \mathbb {R}^2 \to \mathbb {R}\) are general functions that describe the reaction term. This system appears quite similar to the Keller-Segel chemotaxis model, where two variables (in that case amoeba and
-cAMP) interact in a spatial-temporal domain and we will ask under what conditions the spatially homogenous (non-pattern) state becomes unstable (to drive pattern formation). However, there is a very important difference. In the
-Keller-Segel model, part of the interaction between amoeba and cAMP was described by an additional derivative term (recall the gradient parameter \(\chi &gt; 0\)) that explained the tendency of amoeba to move towards
-regions of space with higher concentrations of cAMP. In turn, this necessarily driving conditions where the spatially homogenous constant solution becomes unstable, leading to aggregation. On the contrary, in the reaction-diffusion
-system described by (<a href="SpatInstab.html#fullu">5.22</a>), (<a href="SpatInstab.html#fullv">5.23</a>), the only interaction between \(u\) and \(v\) occurs in the reaction terms. Since diffusion on its own has a
-tendency to smooth out gradients over time, a natural expectation is that the diffusive coupling of \(u\) and \(v\) should increase the stability of the spatially homogenous constant solution. Turing derived the conditions under
-which this (apparently reasonable) expectation turns out not to be true!
+cAMP) interact in a spatial-temporal domain and we will ask under what conditions the spatially homogeneous (non-pattern) state becomes unstable (to drive pattern formation). However, there is a very important difference. In
+the Keller-Segel model, part of the interaction between amoeba and cAMP was described by an additional derivative term (recall the gradient parameter \(\chi &gt; 0\)) that explained the tendency of amoeba to move towards
+regions of space with higher concentrations of cAMP. In turn, this necessarily driving conditions where the spatially homogeneous constant solution becomes unstable, leading to aggregation. On the contrary, in the
+reaction-diffusion system described by (<a href="SpatInstab.html#fullu">5.22</a>), (<a href="SpatInstab.html#fullv">5.23</a>), the only interaction between \(u\) and \(v\) occurs in the reaction terms. Since diffusion
+on its own has a tendency to smooth out gradients over time, a natural expectation is that the diffusive coupling of \(u\) and \(v\) should increase the stability of the spatially homogeneous constant solution. Turing derived the
+conditions under which this (apparently reasonable) expectation turns out not to be true!
 </p>
 
 <p>
-We will first assume stability of a steady state solution to the set of homogenous reaction equations in the absence of diffusion (set \(D_u = D_v = 0\) in <a href="SpatInstab.html#fullu">5.22</a> and <a
+We will first assume stability of a steady state solution to the set of homogeneous reaction equations in the absence of diffusion (set \(D_u = D_v = 0\) in <a href="SpatInstab.html#fullu">5.22</a> and <a
 href="SpatInstab.html#fullv">5.23</a> as we did in the Keller-Segel model), given by \(u=u_0, v=v_0\) such that \(f(u_0,v_0) = g(u_0,v_0) = 0\). The Jacobian matrix of the reaction system at this critical point is given
 by
 </p>
@@ -1045,7 +1045,7 @@ by
 
                                                                                                                                                   
                                                                                                                               fu              fv
-                                                                                                           J ≡ J(u0 , v0 ) =                                                                                                     (5.24)
+                                                                                                           J ≡ J(u0 , v0 ) =                                                                                                    (5.24)
                                                                                                                                gu             gv
 
 -->
@@ -1061,7 +1061,7 @@ by
 <p>
 where here we have used shorthand \(f_u = \partial f(u_0,v_0)/\partial u\), \(g_v = \partial g(u_0,v_0)/\partial v\),... and so on for partial derivatives evaluated at the steady state (important not to confuse this
 with the component notation for vectors or subscripts on diffusion coefficients!). As before, the stability condition \(\mbox {Re}(\lambda _{\pm }) &lt; 0\) for eigenvalues of \({\bf J} \) implies \(\mbox {Tr}({\bf J}) &lt;
-0\) and \(\mbox {det}({\bf J}) &gt; 0\) for \((c_0, \phi _0)\) to be a stable critical point of the homogenous system. Our assumption therefore requires
+0\) and \(\mbox {det}({\bf J}) &gt; 0\) for \((c_0, \phi _0)\) to be a stable critical point of the homogeneous system. Our assumption therefore requires
 </p>
 
 <span class="hidden"> \(\seteqnumber{0}{}{24}\)</span>
@@ -1069,7 +1069,7 @@ with the component notation for vectors or subscripts on diffusion coefficients!
 <!--
 
 
-                                                                                           Tr(J) = fu + gv < 0 and                 det(J) = fu gv − fv gu > 0.                                                                   (5.25)
+                                                                                           Tr(J) = fu + gv < 0 and                 det(J) = fu gv − fv gu > 0.                                                                  (5.25)
 
 -->
 
@@ -1082,7 +1082,7 @@ with the component notation for vectors or subscripts on diffusion coefficients!
 </p>
 
 <p>
-In the first instance when adding back in diffusion, we consider a one-dimensional spatial domain as for the Keller-Segel model and make the same type of perturbation to the homogenous steady state so that
+In the first instance when adding back in diffusion, we consider a one-dimensional spatial domain as for the Keller-Segel model and make the same type of perturbation to the homogeneous steady state so that
 </p>
 
 <span class="hidden"> \(\seteqnumber{0}{}{25}\)</span>
@@ -1090,7 +1090,7 @@ In the first instance when adding back in diffusion, we consider a one-dimension
 <!--
 
 
-                                                                                                u(x, t) = u0 + U (x, t),           v(x, t) = v0 + V (x, t)                                                                       (5.26)
+                                                                                                u(x, t) = u0 + U (x, t),           v(x, t) = v0 + V (x, t)                                                                      (5.26)
 
 -->
 
@@ -1111,7 +1111,7 @@ with
 <!--
 
 
-                                                                                                U (x, t) = Û (t) cos kx,          V (x, t) = V̂ (t) cos kx.                                                                     (5.27)
+                                                                                                U (x, t) = Û (t) cos kx,          V (x, t) = V̂ (t) cos kx.                                                                    (5.27)
 
 -->
 
@@ -1158,7 +1158,7 @@ with modified Jacobian
 
                                                                                                                                                          
                                                                                                                    fu     fv                  Du       0
-                                                                                                     Jmod =                        − k2                                                                                          (5.28)
+                                                                                                     Jmod =                        − k2                                                                                         (5.28)
                                                                                                                    gu     gv                   0       Dv
 
 -->
@@ -1181,7 +1181,7 @@ quadratic \(Q\) in \(k^2\):
 <!--
 
 
-                                                   det(Jmod ) = Du Dv k 4 − (Du gv + Dv fu )k 2 + fu gv − fv gu ≡ Q(k 2 ).                                               (5.29)                          --><a id="quadq"></a><!--
+                                                   det(Jmod ) = Du Dv k 4 − (Du gv + Dv fu )k 2 + fu gv − fv gu ≡ Q(k 2 ).                                               (5.29)                         --><a id="quadq"></a><!--
 
 -->
 
@@ -1203,7 +1203,7 @@ implies the condition
 <!--
 
 
-                                                                                                               Du gv + Dv fu > 0.                                                                                                (5.30)
+                                                                                                               Du gv + Dv fu > 0.                                                                                               (5.30)
 
 -->
 
@@ -1225,7 +1225,7 @@ furthermore have that the minimum of \(Q(z)\) is negative, so we set the derivat
 <!--
 
                                                                                                           dQ
-                                                                                                    0=       = 2Du Dv z − (Du gv + Dv fu )                                                                                       (5.31)
+                                                                                                    0=       = 2Du Dv z − (Du gv + Dv fu )                                                                                      (5.31)
                                                                                                           dz
 
 -->
@@ -1247,7 +1247,7 @@ and find the minimum is attained at
 <!--
 
                                                                                                                         (Du gv + Dv fu )
-                                                                                                             z∗ =                        .                                                                                       (5.32)
+                                                                                                             z∗ =                        .                                                                                      (5.32)
                                                                                                                             2Du Dv
 
 -->
@@ -1295,7 +1295,7 @@ which, from the condition \(Q^* &lt; 0\), we can obtain the condition for spatia
 <!--
 
                                                                                                        (Du gv + Dv fu )2
-                                                                                                                         > fu gv − fv gu .                                                                                       (5.33)
+                                                                                                                         > fu gv − fv gu .                                                                                      (5.33)
                                                                                                            4Du Dv
 
 -->
@@ -1309,7 +1309,7 @@ which, from the condition \(Q^* &lt; 0\), we can obtain the condition for spatia
 </p>
 
 <p>
-To summarise, we have therefore arrived at a set of necessary conditions (Turing conditions) for spatial instability of the homogenous steady state solution to the reaction-diffusion system (<a
+To summarise, we have therefore arrived at a set of necessary conditions (Turing conditions) for spatial instability of the homogeneous steady state solution to the reaction-diffusion system (<a
 href="SpatInstab.html#fullu">5.22</a>-<a href="SpatInstab.html#fullv">5.23</a>). These are
 </p>
 
@@ -1318,7 +1318,7 @@ href="SpatInstab.html#fullu">5.22</a>-<a href="SpatInstab.html#fullv">5.23</a>).
 <!--
 
 
-                                                                                                        fu + gv < 0,           fu gv − fv gu > 0                                                                                 (5.34)
+                                                                                                        fu + gv < 0,           fu gv − fv gu > 0                                                                                (5.34)
 
 -->
 
@@ -1339,7 +1339,7 @@ and
 <!--
 
                                                                                                                     (Du gv + Dv fu )2
-                                                                                            Du gv + Dv fu > 0,                        > fu gv − fv gu .                                                                          (5.35)
+                                                                                            Du gv + Dv fu > 0,                        > fu gv − fv gu .                                                                         (5.35)
                                                                                                                         4Du Dv
 
 -->
@@ -1365,7 +1365,7 @@ hold, then the unstable modes are those with wavenumbers \(k\) such that \(Q(k^2
 
 <p>
 In the previous subsection, we saw that the Turing conditions for a spatial instability in a reaction-diffusion system of the form (<a href="SpatInstab.html#fullu">5.22</a>-<a href="SpatInstab.html#fullv">5.23</a>)
-includes the condition that \(f_u\) and \(g_v\) (the partial derivatives of \(f\) and \(g\), respectively, evaluated at the homogenous steady state) must be of opposite sign. If, for example, \(g_v &lt; 0 &lt; f_u\), then we can
+includes the condition that \(f_u\) and \(g_v\) (the partial derivatives of \(f\) and \(g\), respectively, evaluated at the homogeneous steady state) must be of opposite sign. If, for example, \(g_v &lt; 0 &lt; f_u\), then we can
 think of the chemical \(u\) as an “activator” since \(f_u &gt;0\) implies that a small increase in \(u\) drives a further increase. Since \(g_v &lt;0\), the chemical \(v\) has the opposing effect and as such is called an inhibitor (or
 substrate). Such systems with relevance to biology are called activator-inhibitor or activator-substrate systems. We consider an explicit example:
 </p>
@@ -1391,7 +1391,7 @@ substrate). Such systems with relevance to biology are called activator-inhibito
 \begin{align*}
 \frac {\partial u}{\partial t} &amp;= (a- u +u^2v) + \nabla \cdot ( D_u\nabla u) \\ \frac {\partial v}{\partial t} &amp;= (b- u^2v) + \nabla \cdot ( D_v\nabla v),
 \end{align*}
-with \(a,b \geq 0\). The homogenous steady state is given by solving the algebraic system
+with \(a,b \geq 0\). The homogeneous steady state is given by solving the algebraic system
 </p>
 
 <span class="hidden"> \(\seteqnumber{0}{}{35}\)</span>
@@ -1741,7 +1741,7 @@ d &gt; (3 + \sqrt {8})b^2 , \quad b &gt; 1 .
 </p>
 
 <p>
-The last inequalities define a domain in \((b,d)\) parameter space called the Turing space (instead of setting \(a=0\) we could have derived a more general Turing space), within which the homogenous steady state solution is
+The last inequalities define a domain in \((b,d)\) parameter space called the Turing space (instead of setting \(a=0\) we could have derived a more general Turing space), within which the homogeneous steady state solution is
 unstable to certain spatial perturbations of given wavenumbers. In the next subsection, we will look into these wavenumbers in more detail.
 </p>
 <!--
@@ -1799,7 +1799,7 @@ spatial eigenvalue problem
 </p>
 
 <p>
-where \(k\) is the eigenvalue. We will then linearise the system around the homogenous steady state such that, for \(|{\bf w}|\) small,
+where \(k\) is the eigenvalue. We will then linearise the system around the homogeneous steady state such that, for \(|{\bf w}|\) small,
 </p>
 
 <span class="hidden"> \(\seteqnumber{0}{}{53}\)</span>
@@ -1902,7 +1902,7 @@ boundary conditions also.
 
 <p>
 We saw previously that satisfying the Turing conditions implies that the quadratic function \(Q\) defined in (<a href="SpatInstab.html#quadq">5.29</a>) achieves its minimum value \(Q^*\) below zero. However, this does not
-necessarily guarantee instability of the homogenous steady state. Now we know where the wavenumbers come from it is clear that, even though \(Q^* &lt; 0\), we still may not have any \(k\) within the range such that \(Q(k^2)
+necessarily guarantee instability of the homogeneous steady state. Now we know where the wavenumbers come from it is clear that, even though \(Q^* &lt; 0\), we still may not have any \(k\) within the range such that \(Q(k^2)
 &lt; 0\). For example, in eigenvalue problems on finite domains we will have a discrete set of wavenumbers that could all lie outside that range. Thankfully, we can determine the limits of that range as given by the roots of \(Q\)
 and then compare those with the known values of \(k\). The quadratic formula gives us the following roots for \(Q\):
 </p>
@@ -2132,7 +2132,7 @@ where \(\alpha \) is a real parameter and \(D_u,D_v \geq 0\) are the diffusion c
 
 <li>
 <p>
-(a) Find the Jacobian matrix of the reaction system (i.e., when \(D_u=D_v=0\)) evaluated at the non-trivial homogenous steady state \((u_0,v_0) = \mbox {const.} \neq 0\):
+(a) Find the Jacobian matrix of the reaction system (i.e., when \(D_u=D_v=0\)) evaluated at the non-trivial homogeneous steady state \((u_0,v_0) = \mbox {const.} \neq 0\):
 </p>
 <p>
 \[ {\bf J}(u_0,v_0) = \begin {pmatrix} f_u &amp; f_v \\ g_u &amp; g_v \end {pmatrix} .                  \]
